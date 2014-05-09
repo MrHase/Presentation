@@ -8,6 +8,19 @@
 #include <QGuiApplication>
 #include <QScreen>
 
+QString Orientation(Qt::ScreenOrientation orientation)
+{
+    switch (orientation) {
+        case Qt::PrimaryOrientation           : return "Primary";
+        case Qt::LandscapeOrientation         : return "Landscape";
+        case Qt::PortraitOrientation          : return "Portrait";
+        case Qt::InvertedLandscapeOrientation : return "Inverted landscape";
+        case Qt::InvertedPortraitOrientation  : return "Inverted portrait";
+        default                               : return "Unknown";
+    }
+}
+
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -31,12 +44,12 @@ MainWindow::MainWindow(QWidget *parent) :
             qDebug() << "  Logical DPI:" << screen->logicalDotsPerInch();
             qDebug() << "  Logical DPI X:" << screen->logicalDotsPerInchX();
             qDebug() << "  Logical DPI Y:" << screen->logicalDotsPerInchY();
-            //qDebug() << "  Orientation:" << Orientation(screen->orientation()); //! warum gibt es das hier nicht?
+            qDebug() << "  Orientation:" << Orientation(screen->orientation());
             qDebug() << "  Physical DPI:" << screen->physicalDotsPerInch();
             qDebug() << "  Physical DPI X:" << screen->physicalDotsPerInchX();
             qDebug() << "  Physical DPI Y:" << screen->physicalDotsPerInchY();
             qDebug() << "  Physical size:" << screen->physicalSize().width() << "x" << screen->physicalSize().height() << "mm";
-            //qDebug() << "  Primary orientation:" << Orientation(screen->primaryOrientation()); //!
+            qDebug() << "  Primary orientation:" << Orientation(screen->primaryOrientation());
             qDebug() << "  Refresh rate:" << screen->refreshRate() << "Hz";
             qDebug() << "  Size:" << screen->size().width() << "x" << screen->size().height();
             qDebug() << "  Virtual geometry:" << screen->virtualGeometry().x() << screen->virtualGeometry().y() << screen->virtualGeometry().width() << "x" << screen->virtualGeometry().height();
