@@ -18,18 +18,18 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_clicked()
 {
-    ui->widget_right->setParent(0);
-    ui->widget_right->showFullScreen();
+//    ui->widget_right->setParent(0);
+//    ui->widget_right->showFullScreen();
 
-    qDebug()<<"Clicked Right";
+//    qDebug()<<"Clicked Right";
 
 }
 
 void MainWindow::on_pushButton_2_clicked()
 {
-    ui->widget_left->setParent(0);
-    ui->widget_left->showFullScreen();
-    qDebug()<<"Clicked Left";
+//    ui->widget_left->setParent(0);
+//    ui->widget_left->showFullScreen();
+//    qDebug()<<"Clicked Left";
 }
 
 
@@ -38,7 +38,12 @@ void MainWindow::on_actionOpen_triggered()
     QString homedirectory = QDir::homePath();
     QString filename = QFileDialog::getOpenFileName(this,tr("Open File"),homedirectory,tr("Files(*.*)"));
 
+    if(filename==""){
+        return;
+    }
+
     Poppler::Document *doc = Poppler::Document::load(filename);
+
 
 
     // Access page of the PDF file
