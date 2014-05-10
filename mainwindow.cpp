@@ -24,7 +24,9 @@ QString Orientation(Qt::ScreenOrientation orientation)
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    toggleFullsreen(false)
+    toggleFullsreen(false),
+    pdfRenderer(new PdfRenderer()),
+    scene(new QGraphicsScene(this))
 {
     ui->setupUi(this);
 
@@ -81,33 +83,46 @@ void MainWindow::on_pushButton_2_clicked()
 
 void MainWindow::on_actionOpen_triggered()
 {
-    QString homedirectory = QDir::homePath();
-    QString filename = QFileDialog::getOpenFileName(this,tr("Open File"),homedirectory,tr("Files(*.*)"));
+    QString filename = QFileDialog::getOpenFileName(this,tr("Open File"),QDir::homePath(),tr("Files(*.pdf)"));
 
     if(filename==""){
         return;
     }
 
-    Poppler::Document *doc = Poppler::Document::load(filename);
+
+    pdfRenderer->setDocument(filename);
+    QImage rederedPage = pdfRenderer->getRenderedImage(0);
+
+//    QGraphicsScene *scene = new QGraphicsScene(this);
+
+    scene->addPixmap(QPixmap::fromImage(rederedPage));
+    ui->graphicsView->setScene(scene.get());
+
+
+//    delete scene;
 
 
 
-    // Access page of the PDF file
-    Poppler::Page* pdfPage = doc->page(0);  // Document starts at page 0
-    if (pdfPage == 0)
-    {
-        qDebug() << "Error....." ;
-    }
+//    Poppler::Document *doc = Poppler::Document::load(filename);
 
-    QImage image = pdfPage->renderToImage();
-    if (image.isNull()) {
-        qDebug() << "Error....." ;
-    }
-    QGraphicsScene *scene = new QGraphicsScene(this);
 
-    scene->addPixmap(QPixmap::fromImage(image));
-    ui->graphicsView->setScene(scene);
 
-    qDebug()<<filename;
+//    // Access page of the PDF file
+//    Poppler::Page* pdfPage = doc->page(0);  // Document starts at page 0
+//    if (pdfPage == 0)
+//    {
+//        qDebug() << "Error....." ;
+//    }
+
+//    QImage image = pdfPage->renderToImage();
+//    if (image.isNull()) {
+//        qDebug() << "Error....." ;
+//    }
+//    QGraphicsScene *scene = new QGraphicsScene(this);
+
+//    scene->addPixmap(QPixmap::fromImage(image));
+//    ui->graphicsView->setScene(scene);
+
+//    qDebug()<<filename;
 }
 

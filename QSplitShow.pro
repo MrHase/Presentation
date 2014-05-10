@@ -14,9 +14,11 @@ TEMPLATE = app
 CONFIG += c++11
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    pdfrenderer.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    pdfrenderer.h
 
 FORMS    += mainwindow.ui
 

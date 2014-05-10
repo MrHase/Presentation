@@ -6,7 +6,11 @@
 #include <QFileDialog>
 #include <QDir>
 #include <QDebug>
+#include <memory>
+#include <QGraphicsScene>
 
+
+#include "pdfrenderer.h"
 
 using namespace std;
 
@@ -16,7 +20,7 @@ class MainWindow;
 
 class MainWindow : public QMainWindow
 {
-    Q_OBJECT
+    Q_OBJECT    
 
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -31,6 +35,10 @@ private slots:
 private:
     Ui::MainWindow *ui;
     bool toggleFullsreen;
+
+    shared_ptr<PdfRenderer> pdfRenderer;
+    shared_ptr<QGraphicsScene> scene;
+
 };
 
 #endif // MAINWINDOW_H
