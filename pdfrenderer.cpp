@@ -13,6 +13,11 @@ PdfRenderer::PdfRenderer():
 
 }
 
+uint32_t PdfRenderer::pages()
+{
+    return doc->numPages();
+}
+
 PdfRenderer::~PdfRenderer()
 {
 }

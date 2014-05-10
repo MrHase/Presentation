@@ -15,10 +15,12 @@ CONFIG += c++11
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    pdfrenderer.cpp
+    pdfrenderer.cpp \
+    presentation.cpp
 
 HEADERS  += mainwindow.h \
-    pdfrenderer.h
+    pdfrenderer.h \
+    presentation.h
 
 FORMS    += mainwindow.ui
 

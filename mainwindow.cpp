@@ -7,6 +7,7 @@
 //#include <QDesktopWidget>
 #include <QGuiApplication>
 #include <QScreen>
+#include <QKeyEvent>
 
 QString Orientation(Qt::ScreenOrientation orientation)
 {
@@ -25,7 +26,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     toggleFullsreen(false),
-    pdfRenderer(new PdfRenderer()),
     scene(new QGraphicsScene(this))
 {
     ui->setupUi(this);
@@ -64,6 +64,26 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+
+}
+
+void MainWindow::keyReleaseEvent(QKeyEvent *event)
+{
+    switch(event->key()){
+    case Qt::Key_Up:
+        qDebug()<<"UP";
+        presentation.previousPage();
+        break;
+    case Qt::Key_Down:
+        qDebug()<<"Down";
+        presentation.nextPage();
+        break;
+    }
+    updatePresentation();
+}
+
 void MainWindow::on_pushButton_clicked()
 {
 //    ui->widget_right->setParent(0);
@@ -77,7 +97,16 @@ void MainWindow::on_pushButton_2_clicked()
 {
 //    ui->widget_left->setParent(0);
 //    ui->widget_left->showFullScreen();
-//    qDebug()<<"Clicked Left";
+    //    qDebug()<<"Clicked Left";
+}
+
+void MainWindow::updatePresentation()
+{
+    QImage currentPage=presentation.getCurrentPage();
+
+    scene->addPixmap(QPixmap::fromImage(currentPage));
+    ui->graphicsView->setScene(scene.get());
+
 }
 
 
@@ -89,40 +118,9 @@ void MainWindow::on_actionOpen_triggered()
         return;
     }
 
+    presentation.setDocument(filename.toStdString()); //! ugly!
 
-    pdfRenderer->setDocument(filename);
-    QImage rederedPage = pdfRenderer->getRenderedImage(0);
+    updatePresentation();
 
-//    QGraphicsScene *scene = new QGraphicsScene(this);
-
-    scene->addPixmap(QPixmap::fromImage(rederedPage));
-    ui->graphicsView->setScene(scene.get());
-
-
-//    delete scene;
-
-
-
-//    Poppler::Document *doc = Poppler::Document::load(filename);
-
-
-
-//    // Access page of the PDF file
-//    Poppler::Page* pdfPage = doc->page(0);  // Document starts at page 0
-//    if (pdfPage == 0)
-//    {
-//        qDebug() << "Error....." ;
-//    }
-
-//    QImage image = pdfPage->renderToImage();
-//    if (image.isNull()) {
-//        qDebug() << "Error....." ;
-//    }
-//    QGraphicsScene *scene = new QGraphicsScene(this);
-
-//    scene->addPixmap(QPixmap::fromImage(image));
-//    ui->graphicsView->setScene(scene);
-
-//    qDebug()<<filename;
 }
 

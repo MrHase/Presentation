@@ -9,6 +9,7 @@
 #include <memory>
 #include <QGraphicsScene>
 
+#include "presentation.h"
 
 #include "pdfrenderer.h"
 
@@ -26,6 +27,10 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+protected:
+    virtual void  keyPressEvent(QKeyEvent *event);
+    virtual void keyReleaseEvent ( QKeyEvent * event );
+
 private slots:
     void on_pushButton_clicked();
     void on_actionOpen_triggered();
@@ -33,12 +38,15 @@ private slots:
     void on_pushButton_2_clicked();
 
 private:
+
+    void updatePresentation();
+
     Ui::MainWindow *ui;
     bool toggleFullsreen;
 
-    shared_ptr<PdfRenderer> pdfRenderer;
     shared_ptr<QGraphicsScene> scene;
 
+    Presentation presentation;
 };
 
 #endif // MAINWINDOW_H

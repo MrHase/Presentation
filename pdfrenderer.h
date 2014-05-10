@@ -16,6 +16,8 @@ private:
 public:
     PdfRenderer(QString filePath);
     PdfRenderer();
+
+    uint32_t pages();
     virtual ~PdfRenderer();
 
 
