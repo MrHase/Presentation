@@ -42,17 +42,14 @@ QImage Presentation::getLeftSideOfPage()
 QImage Presentation::left_rightSideOfPage(bool left)
 {
     QImage retImage;
-
+    QImage orig = pdfRenderer.getRenderedImage(currentPage);
+    QSize origSize = orig.size();
     if (left)
     {
-        QImage orig = pdfRenderer.getRenderedImage(currentPage);
-        QSize origSize = orig.size();
         retImage = orig.copy(0,0,origSize.width()/2,origSize.height());
     }
     else
     {
-        QImage orig = pdfRenderer.getRenderedImage(currentPage);
-        QSize origSize = orig.size();
         retImage = orig.copy(origSize.width()/2,0,origSize.width()/2,origSize.height());
     }
 
