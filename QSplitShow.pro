@@ -16,13 +16,11 @@ CONFIG += c++11
 SOURCES += main.cpp\
         mainwindow.cpp \
     pdfrenderer.cpp \
-    presentation.cpp \
-    splitpresentation.cpp
+    presentation.cpp
 
 HEADERS  += mainwindow.h \
     pdfrenderer.h \
-    presentation.h \
-    splitpresentation.h
+    presentation.h
 
 FORMS    += mainwindow.ui
 

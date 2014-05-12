@@ -15,8 +15,12 @@ public:
     void previousPage();
 
     QImage getCurrentPage();
-private:
 
+    QImage getRightSideOfPage();
+    QImage getLeftSideOfPage();
+
+private:
+    QImage left_rightSideOfPage(bool left);
     PdfRenderer pdfRenderer;
 
     uint32_t currentPage=0;

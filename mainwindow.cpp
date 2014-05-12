@@ -25,8 +25,10 @@ QString Orientation(Qt::ScreenOrientation orientation)
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    toggleFullsreen(false),
-    scene(new QGraphicsScene(this))
+    split(false),
+    scene(new QGraphicsScene(this)),
+    scene_left(new QGraphicsScene(this)),
+    scene_right(new QGraphicsScene(this))
 {
     ui->setupUi(this);
 
@@ -101,6 +103,11 @@ void MainWindow::on_pushButton_clicked()
 void MainWindow::on_pushButton_2_clicked()
 {
     qDebug() << "split";
+
+    split = true;
+    updatePresentation();
+
+
 //    ui->widget_left->setParent(0);
 //    ui->widget_left->showFullScreen();
     //    qDebug()<<"Clicked Left";
@@ -112,6 +119,19 @@ void MainWindow::updatePresentation()
 
     scene->addPixmap(QPixmap::fromImage(currentPage));
     ui->graphicsView_3->setScene(scene.get());
+
+
+    if (split)
+    {
+        QImage leftSide = presentation.getLeftSideOfPage();
+        QImage rightSide = presentation.getRightSideOfPage();
+
+        scene_left->addPixmap(QPixmap::fromImage(leftSide));
+        scene_right->addPixmap(QPixmap::fromImage(rightSide));
+
+        ui->graphicsView_left->setScene(scene_left.get());
+        ui->graphicsView_right->setScene(scene_right.get());
+    }
 
 }
 

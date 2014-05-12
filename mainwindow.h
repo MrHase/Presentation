@@ -42,9 +42,12 @@ private:
     void updatePresentation();
 
     Ui::MainWindow *ui;
-    bool toggleFullsreen;
+    bool split;
 
     shared_ptr<QGraphicsScene> scene;
+    shared_ptr<QGraphicsScene> scene_left;
+    shared_ptr<QGraphicsScene> scene_right;
+
 
     Presentation presentation;
 };

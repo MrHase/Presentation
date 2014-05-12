@@ -33,10 +33,10 @@
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_2">
             <item>
-             <widget class="QGraphicsView" name="graphicsView_2"/>
+             <widget class="QGraphicsView" name="graphicsView_left"/>
             </item>
             <item>
-             <widget class="QGraphicsView" name="graphicsView"/>
+             <widget class="QGraphicsView" name="graphicsView_right"/>
             </item>
            </layout>
           </item>

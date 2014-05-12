@@ -28,3 +28,34 @@ QImage Presentation::getCurrentPage()
 {
     return pdfRenderer.getRenderedImage(currentPage);
 }
+
+QImage Presentation::getRightSideOfPage()
+{
+    return left_rightSideOfPage(false);
+}
+
+QImage Presentation::getLeftSideOfPage()
+{
+    return left_rightSideOfPage(true);
+}
+
+QImage Presentation::left_rightSideOfPage(bool left)
+{
+    QImage retImage;
+
+    if (left)
+    {
+        QImage orig = pdfRenderer.getRenderedImage(currentPage);
+        QSize origSize = orig.size();
+        retImage = orig.copy(0,0,origSize.width()/2,origSize.height());
+    }
+    else
+    {
+        QImage orig = pdfRenderer.getRenderedImage(currentPage);
+        QSize origSize = orig.size();
+        retImage = orig.copy(origSize.width()/2,0,origSize.width()/2,origSize.height());
+    }
+
+    return retImage;
+}
+
