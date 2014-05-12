@@ -6,7 +6,8 @@ Presentation::Presentation()
 
 void Presentation::setDocument(string filename)
 {
-    pdfRenderer.setDocument(QString(filename.c_str())); //! ugly... no QString in renderer
+//    pdfRenderer.setDocument(QString(filename.c_str())); //! ugly... no QString in renderer
+    pdfRenderer.setDocument(filename);
 }
 
 void Presentation::nextPage()

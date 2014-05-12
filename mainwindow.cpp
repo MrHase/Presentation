@@ -80,12 +80,17 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
         qDebug()<<"Down";
         presentation.nextPage();
         break;
+    case Qt::Key_Space:
+        qDebug()<<"Space";
+        presentation.nextPage();
+        break;
     }
     updatePresentation();
 }
 
 void MainWindow::on_pushButton_clicked()
 {
+    qDebug() << "swap";
 //    ui->widget_right->setParent(0);
 //    ui->widget_right->showFullScreen();
 
@@ -95,6 +100,7 @@ void MainWindow::on_pushButton_clicked()
 
 void MainWindow::on_pushButton_2_clicked()
 {
+    qDebug() << "split";
 //    ui->widget_left->setParent(0);
 //    ui->widget_left->showFullScreen();
     //    qDebug()<<"Clicked Left";
@@ -105,7 +111,7 @@ void MainWindow::updatePresentation()
     QImage currentPage=presentation.getCurrentPage();
 
     scene->addPixmap(QPixmap::fromImage(currentPage));
-    ui->graphicsView->setScene(scene.get());
+    ui->graphicsView_3->setScene(scene.get());
 
 }
 

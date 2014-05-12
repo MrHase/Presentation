@@ -6,6 +6,7 @@
 #include <QDebug>
 
 #include <memory>
+#include <string>
 
 using namespace std;
 class PdfRenderer
@@ -22,6 +23,9 @@ public:
 
 
     void setDocument(QString filePath);
+
+    //! convinience method... #ugly
+    void setDocument(string filePath);
     QImage getRenderedImage(int pageNum);
 };
 

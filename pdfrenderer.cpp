@@ -28,6 +28,11 @@ void PdfRenderer::setDocument(QString filePath)
     isDocumentSet = true;
 }
 
+void PdfRenderer::setDocument(string filePath)
+{
+    setDocument(QString(filePath.c_str()));
+}
+
 QImage PdfRenderer::getRenderedImage(int pageNum)
 {
     QImage ret;
