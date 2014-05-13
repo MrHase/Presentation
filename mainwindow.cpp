@@ -26,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     split(false),
+    presentationRunning(false),
     scene(new QGraphicsScene(this)),
     scene_left(new QGraphicsScene(this)),
     scene_right(new QGraphicsScene(this))
@@ -34,8 +35,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     qDebug() << "Number of screens:" << QGuiApplication::screens().size();
 
-    qDebug() << "Primary screen:" << QGuiApplication::primaryScreen()->name();
-
+    qDebug() << "Primary screen: " << QGuiApplication::primaryScreen()->name();
 
         foreach (QScreen *screen, QGuiApplication::screens()) {
             qDebug() << "Information for screen:" << screen->name();
@@ -66,10 +66,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::keyPressEvent(QKeyEvent *event)
-{
-
-}
 
 void MainWindow::keyReleaseEvent(QKeyEvent *event)
 {
@@ -77,6 +73,7 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
     case Qt::Key_Up:
         qDebug()<<"UP";
         presentation.previousPage();
+        updatePresentation();
         break;
     case Qt::Key_Down:
         qDebug()<<"Down";
@@ -85,6 +82,10 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
     case Qt::Key_Space:
         qDebug()<<"Space";
         presentation.nextPage();
+        break;
+    case Qt::Key_F5:
+        qDebug()<<"F5";
+        togglePresentation();
         break;
     }
     updatePresentation();
@@ -104,7 +105,19 @@ void MainWindow::on_pushButton_2_clicked()
 {
     qDebug() << "split";
 
-    split = true;
+    if (!split)
+    {
+        split = true;
+    }
+    else
+    {
+        split = false;
+    }
+
+
+    scene_left->clear();
+    scene_right->clear();
+
     updatePresentation();
 
 
@@ -115,23 +128,24 @@ void MainWindow::on_pushButton_2_clicked()
 
 void MainWindow::updatePresentation()
 {
-    QImage currentPage=presentation.getCurrentPage();
-
-    scene->addPixmap(QPixmap::fromImage(currentPage));
-    ui->graphicsView_3->setScene(scene.get());
-
+    QImage leftSide, rightSide;
 
     if (split)
     {
-        QImage leftSide = presentation.getLeftSideOfPage();
-        QImage rightSide = presentation.getRightSideOfPage();
-
-        scene_left->addPixmap(QPixmap::fromImage(leftSide));
-        scene_right->addPixmap(QPixmap::fromImage(rightSide));
-
-        ui->graphicsView_left->setScene(scene_left.get());
-        ui->graphicsView_right->setScene(scene_right.get());
+        leftSide = presentation.getLeftSideOfPage();
+        rightSide = presentation.getRightSideOfPage();
     }
+    else
+    {
+        leftSide=presentation.getCurrentPage();
+        rightSide=presentation.getCurrentPage();
+    }
+
+    scene_left->addPixmap(QPixmap::fromImage(leftSide));
+    scene_right->addPixmap(QPixmap::fromImage(rightSide));
+
+    ui->graphicsView_left->setScene(scene_left.get());
+    ui->graphicsView_right->setScene(scene_right.get());
 
 }
 
@@ -150,3 +164,57 @@ void MainWindow::on_actionOpen_triggered()
 
 }
 
+
+//void MainWindow::on_actionStart_Presentation_F5_triggered()
+//{
+//    if (!presentationRunning)
+//    {
+//        presentationRunning = true;
+//        ui->menuPresentation->t
+//        startPresentation();
+//    }
+//}
+
+void MainWindow::startPresentation()
+{
+    qDebug()<<"Start Presentation";
+
+    //! presentation and document was set before?
+    qDebug()<<"Screen Count.... " << QApplication::desktop()->screenCount();
+    qDebug()<<"Screen Num" << QApplication::desktop()->screenNumber(this);
+    QRect screenres = QApplication::desktop()->screenGeometry(1);
+            //    SecondDisplay secondDisplay = new SecondDisplay(); // Use your QWidget
+
+    ui->graphicsView_left->showFullScreen();
+    ui->graphicsView_left->move(QPoint(screenres.x(), screenres.y()));
+    ui->graphicsView_left->resize(screenres.width(), screenres.height());
+
+}
+
+void MainWindow::stopPresentation()
+{
+    qDebug()<<"Stop Presentation";
+}
+
+
+
+void MainWindow::on_actionToggle_Presentation_F5_triggered()
+{
+    togglePresentation();
+}
+
+void MainWindow::togglePresentation()
+{
+    if (!presentationRunning)
+    {
+        presentationRunning = true;
+        ui->actionToggle_Presentation_F5->setText("Stop Presentation F5");
+        startPresentation();
+    }
+    else
+    {
+        presentationRunning = false;
+        ui->actionToggle_Presentation_F5->setText("Start Presenation F5");
+        stopPresentation();
+    }
+}

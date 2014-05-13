@@ -28,9 +28,6 @@
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
-           <widget class="QGraphicsView" name="graphicsView_3"/>
-          </item>
-          <item>
            <layout class="QHBoxLayout" name="horizontalLayout_2">
             <item>
              <widget class="QGraphicsView" name="graphicsView_left"/>
@@ -45,14 +42,14 @@
             <item>
              <widget class="QPushButton" name="pushButton_2">
               <property name="text">
-               <string>Split_Presentation</string>
+               <string>Split Presentation</string>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QPushButton" name="pushButton">
               <property name="text">
-               <string>Swap&lt;-&gt;</string>
+               <string>Swap Frame &lt;-&gt;</string>
               </property>
              </widget>
             </item>
@@ -97,6 +94,7 @@
     <property name="title">
      <string>Presentation</string>
     </property>
+    <addaction name="actionToggle_Presentation_F5"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuPresentation"/>
@@ -110,6 +108,11 @@
   <action name="actionClose">
    <property name="text">
     <string>Close</string>
+   </property>
+  </action>
+  <action name="actionToggle_Presentation_F5">
+   <property name="text">
+    <string>Start Presentation (F5)</string>
    </property>
   </action>
  </widget>

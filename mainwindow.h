@@ -9,6 +9,8 @@
 #include <memory>
 #include <QGraphicsScene>
 
+#include <QDesktopWidget>
+
 #include "presentation.h"
 
 #include "pdfrenderer.h"
@@ -28,21 +30,26 @@ public:
     ~MainWindow();
 
 protected:
-    virtual void  keyPressEvent(QKeyEvent *event);
     virtual void keyReleaseEvent ( QKeyEvent * event );
 
 private slots:
     void on_pushButton_clicked();
     void on_actionOpen_triggered();
-
     void on_pushButton_2_clicked();
+    void on_actionToggle_Presentation_F5_triggered();
 
 private:
+
+    void togglePresentation();
+
+    void startPresentation();
+    void stopPresentation();
 
     void updatePresentation();
 
     Ui::MainWindow *ui;
     bool split;
+    bool presentationRunning;
 
     shared_ptr<QGraphicsScene> scene;
     shared_ptr<QGraphicsScene> scene_left;
