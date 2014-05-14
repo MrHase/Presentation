@@ -13,7 +13,9 @@
 
 #include "presentation.h"
 
+
 #include "pdfrenderer.h"
+#include "fullscreenpresentation.h"
 
 using namespace std;
 
@@ -24,10 +26,12 @@ class MainWindow;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT    
-
+    friend class EventHandler;
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
+
 
 protected:
     virtual void keyReleaseEvent ( QKeyEvent * event );
@@ -40,12 +44,12 @@ private slots:
 
 private:
 
+    void updatePresentation();
     void togglePresentation();
 
     void startPresentation();
     void stopPresentation();
 
-    void updatePresentation();
 
     Ui::MainWindow *ui;
     bool split;
@@ -54,6 +58,9 @@ private:
     shared_ptr<QGraphicsScene> scene;
     shared_ptr<QGraphicsScene> scene_left;
     shared_ptr<QGraphicsScene> scene_right;
+
+    shared_ptr<FullScreenPresentation> fullScreenPresentation;
+
 
 
     Presentation presentation;

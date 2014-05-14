@@ -16,13 +16,18 @@ CONFIG += c++11
 SOURCES += main.cpp\
         mainwindow.cpp \
     pdfrenderer.cpp \
-    presentation.cpp
+    presentation.cpp \
+    fullscreenpresentation.cpp \
+    eventhandler.cpp
 
 HEADERS  += mainwindow.h \
     pdfrenderer.h \
-    presentation.h
+    presentation.h \
+    fullscreenpresentation.h \
+    eventhandler.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    fullscreenpresentation.ui
 
 unix|win32: LIBS += -lpoppler-qt5
 

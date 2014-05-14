@@ -29,7 +29,8 @@ MainWindow::MainWindow(QWidget *parent) :
     presentationRunning(false),
     scene(new QGraphicsScene(this)),
     scene_left(new QGraphicsScene(this)),
-    scene_right(new QGraphicsScene(this))
+    scene_right(new QGraphicsScene(this)),
+    fullScreenPresentation(new FullScreenPresentation(0))
 {
     ui->setupUi(this);
 
@@ -69,26 +70,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::keyReleaseEvent(QKeyEvent *event)
 {
-    switch(event->key()){
-    case Qt::Key_Up:
-        qDebug()<<"UP";
-        presentation.previousPage();
-        updatePresentation();
-        break;
-    case Qt::Key_Down:
-        qDebug()<<"Down";
-        presentation.nextPage();
-        break;
-    case Qt::Key_Space:
-        qDebug()<<"Space";
-        presentation.nextPage();
-        break;
-    case Qt::Key_F5:
-        qDebug()<<"F5";
-        togglePresentation();
-        break;
-    }
-    updatePresentation();
+
+    //updatePresentation();
 }
 
 void MainWindow::on_pushButton_clicked()
@@ -147,6 +130,9 @@ void MainWindow::updatePresentation()
     ui->graphicsView_left->setScene(scene_left.get());
     ui->graphicsView_right->setScene(scene_right.get());
 
+//    fullScreenPresentation->setScene(scene_left.get());
+
+    fullScreenPresentation->setImageToWidget(leftSide);
 }
 
 
@@ -182,18 +168,21 @@ void MainWindow::startPresentation()
     //! presentation and document was set before?
     qDebug()<<"Screen Count.... " << QApplication::desktop()->screenCount();
     qDebug()<<"Screen Num" << QApplication::desktop()->screenNumber(this);
-    QRect screenres = QApplication::desktop()->screenGeometry(1);
+
+    fullScreenPresentation->showFullScreen();
+//    QRect screenres = QApplication::desktop()->screenGeometry(1);
             //    SecondDisplay secondDisplay = new SecondDisplay(); // Use your QWidget
 
-    ui->graphicsView_left->showFullScreen();
-    ui->graphicsView_left->move(QPoint(screenres.x(), screenres.y()));
-    ui->graphicsView_left->resize(screenres.width(), screenres.height());
+//    ui->graphicsView_left->showFullScreen();
+//    ui->graphicsView_left->move(QPoint(screenres.x(), screenres.y()));
+//    ui->graphicsView_left->resize(screenres.width(), screenres.height());
 
 }
 
 void MainWindow::stopPresentation()
 {
     qDebug()<<"Stop Presentation";
+    fullScreenPresentation->hide();
 }
 
 
