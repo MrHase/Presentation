@@ -132,7 +132,7 @@ void MainWindow::updatePresentation()
 
 //    fullScreenPresentation->setScene(scene_left.get());
 
-    fullScreenPresentation->setImageToWidget(leftSide);
+    fullScreenPresentation->setImage(leftSide);
 }
 
 

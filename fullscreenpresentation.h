@@ -24,14 +24,20 @@ public:
     explicit FullScreenPresentation(QWidget *parent = 0);
     ~FullScreenPresentation();
 
-    void setScene(QGraphicsScene *scene);
-    void setImageToWidgetSize();
 
-    void setImageToWidget(QImage image);
+
+    void setImage(QImage image);
+
+
+    void updatePresentation(); //! evtl als slot?
+
+    virtual void resizeEvent(QResizeEvent * event){updatePresentation();}
+    virtual void showEvent(QShowEvent *){updatePresentation();}
 
 private:
     Ui::FullScreenPresentation *ui;
     QGraphicsScene fullscreenScene;
+    QImage image;
 };
 
 #endif // FULLSCREENPRESENTATION_H

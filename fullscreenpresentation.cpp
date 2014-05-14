@@ -13,17 +13,16 @@ FullScreenPresentation::~FullScreenPresentation()
     delete ui;
 }
 
-void FullScreenPresentation::setScene(QGraphicsScene *scene)
+
+void FullScreenPresentation::setImage(QImage image)
 {
-    ui->graphicsView->setScene(scene);
+    this->image=image;
+    updatePresentation();
 }
 
-void FullScreenPresentation::setImageToWidgetSize()
-{
 
-}
 
-void FullScreenPresentation::setImageToWidget(QImage image)
+void FullScreenPresentation::updatePresentation()
 {
     fullscreenScene.clear();
 
