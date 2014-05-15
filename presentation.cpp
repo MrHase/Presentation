@@ -2,6 +2,7 @@
 
 Presentation::Presentation()
 {
+    qDebug()<<"Erstellt....";
 }
 
 void Presentation::setDocument(string filename)

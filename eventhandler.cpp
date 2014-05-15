@@ -1,10 +1,11 @@
 #include "eventhandler.h"
 #include <QKeyEvent>
+#include <QDebug>
 
 EventHandler::EventHandler(MainWindow *main):
     mainWindow(main)
 {
-
+    qDebug()<<"Eventhandler erstellt..... ";
 }
 
 bool EventHandler::eventFilter (QObject * o, QEvent * event)

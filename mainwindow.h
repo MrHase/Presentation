@@ -55,13 +55,11 @@ private:
     bool split;
     bool presentationRunning;
 
-    shared_ptr<QGraphicsScene> scene;
-    shared_ptr<QGraphicsScene> scene_left;
-    shared_ptr<QGraphicsScene> scene_right;
+    QGraphicsScene scene;
+    QGraphicsScene scene_left;
+    QGraphicsScene scene_right;
 
-    shared_ptr<FullScreenPresentation> fullScreenPresentation;
-
-
+    FullScreenPresentation *fullScreenPresentation = NULL;
 
     Presentation presentation;
 };

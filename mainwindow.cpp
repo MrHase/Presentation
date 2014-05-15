@@ -26,11 +26,10 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     split(false),
-    presentationRunning(false),
-    scene(new QGraphicsScene(this)),
-    scene_left(new QGraphicsScene(this)),
-    scene_right(new QGraphicsScene(this)),
-    fullScreenPresentation(new FullScreenPresentation(0))
+    presentationRunning(false)
+//    scene(new QGraphicsScene(this)),
+//    scene_left(new QGraphicsScene(this)),
+//    scene_right(new QGraphicsScene(this))
 {
     ui->setupUi(this);
 
@@ -98,8 +97,8 @@ void MainWindow::on_pushButton_2_clicked()
     }
 
 
-    scene_left->clear();
-    scene_right->clear();
+    scene_left.clear();
+    scene_right.clear();
 
     updatePresentation();
 
@@ -124,15 +123,18 @@ void MainWindow::updatePresentation()
         rightSide=presentation.getCurrentPage();
     }
 
-    scene_left->addPixmap(QPixmap::fromImage(leftSide));
-    scene_right->addPixmap(QPixmap::fromImage(rightSide));
+    scene_left.addPixmap(QPixmap::fromImage(leftSide));
+    scene_right.addPixmap(QPixmap::fromImage(rightSide));
 
-    ui->graphicsView_left->setScene(scene_left.get());
-    ui->graphicsView_right->setScene(scene_right.get());
+    ui->graphicsView_left->setScene(&scene_left);
+    ui->graphicsView_right->setScene(&scene_right);
 
 //    fullScreenPresentation->setScene(scene_left.get());
 
-    fullScreenPresentation->setImage(leftSide);
+    if (fullScreenPresentation != NULL)
+    {
+        fullScreenPresentation->setImage(leftSide);
+    }
 }
 
 
@@ -166,12 +168,17 @@ void MainWindow::startPresentation()
     qDebug()<<"Start Presentation";
 
     //! presentation and document was set before?
-    qDebug()<<"Screen Count.... " << QApplication::desktop()->screenCount();
-    qDebug()<<"Screen Num" << QApplication::desktop()->screenNumber(this);
 
+    presentationRunning = true;
+    ui->actionToggle_Presentation_F5->setText("Stop Presentation F5");
+
+    //create a new Window
+    fullScreenPresentation = new FullScreenPresentation(0);
     fullScreenPresentation->showFullScreen();
+
+
 //    QRect screenres = QApplication::desktop()->screenGeometry(1);
-            //    SecondDisplay secondDisplay = new SecondDisplay(); // Use your QWidget
+//    SecondDisplay secondDisplay = new SecondDisplay(); // Use your QWidget
 
 //    ui->graphicsView_left->showFullScreen();
 //    ui->graphicsView_left->move(QPoint(screenres.x(), screenres.y()));
@@ -182,7 +189,15 @@ void MainWindow::startPresentation()
 void MainWindow::stopPresentation()
 {
     qDebug()<<"Stop Presentation";
+
+    presentationRunning = false;
+    ui->actionToggle_Presentation_F5->setText("Start Presenation F5");
+
+    fullScreenPresentation->showNormal();
     fullScreenPresentation->hide();
+
+    delete fullScreenPresentation;
+    fullScreenPresentation = NULL;
 }
 
 
@@ -196,14 +211,10 @@ void MainWindow::togglePresentation()
 {
     if (!presentationRunning)
     {
-        presentationRunning = true;
-        ui->actionToggle_Presentation_F5->setText("Stop Presentation F5");
         startPresentation();
     }
     else
     {
-        presentationRunning = false;
-        ui->actionToggle_Presentation_F5->setText("Start Presenation F5");
         stopPresentation();
     }
 }
