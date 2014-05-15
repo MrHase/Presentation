@@ -26,6 +26,9 @@ void PdfRenderer::setDocument(QString filePath)
 {
     doc = shared_ptr<Poppler::Document>(Poppler::Document::load(filePath));
     isDocumentSet = true;
+    doc->setRenderBackend(Poppler::Document::SplashBackend);
+    doc->setRenderHint(Poppler::Document::Antialiasing, true);
+    doc->setRenderHint(Poppler::Document::TextAntialiasing, true);
 }
 
 void PdfRenderer::setDocument(string filePath)
