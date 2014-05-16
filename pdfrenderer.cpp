@@ -1,14 +1,28 @@
 #include "pdfrenderer.h"
 
+void PdfRenderer::renderDocumentIntoCache()
+{
+    for (int i = 0; i < doc->numPages(); i++)
+    {
+        Poppler::Page *page = doc->page(i);
+        if (page)
+        {
+            pageCache.push_back(page->renderToImage(renderOptionDpiXAxis,renderOptionDpiYAxis));
+        }
+    }
+}
+
 PdfRenderer::PdfRenderer(QString filePath):
     doc(Poppler::Document::load(filePath)),
     isDocumentSet(true)
 {
-
+    renderDocumentIntoCache();
 }
 
-PdfRenderer::PdfRenderer():
-    isDocumentSet(false)
+PdfRenderer::PdfRenderer(double optionDpiXAxis, double optionDpiYAxis):
+    isDocumentSet(false),
+    renderOptionDpiXAxis(optionDpiXAxis),
+    renderOptionDpiYAxis(optionDpiYAxis)
 {
 
 }
@@ -29,6 +43,8 @@ void PdfRenderer::setDocument(QString filePath)
     doc->setRenderBackend(Poppler::Document::SplashBackend);
     doc->setRenderHint(Poppler::Document::Antialiasing, true);
     doc->setRenderHint(Poppler::Document::TextAntialiasing, true);
+
+    renderDocumentIntoCache();
 }
 
 void PdfRenderer::setDocument(string filePath)
@@ -38,31 +54,34 @@ void PdfRenderer::setDocument(string filePath)
 
 QImage PdfRenderer::getRenderedImage(int pageNum)
 {
-    QImage ret;
-    if(!isDocumentSet)
-    {
-        qDebug() << "error.... Document must be set befor calling" ;
-    }
+    // Old stuff...
+//    QImage ret;
+//    if(!isDocumentSet)
+//    {
+//        qDebug() << "error.... Document must be set befor calling" ;
+//    }
 
-    if (pageNum < 0)
-    {
-        qDebug() << "error.... poage num must be greater than 0" ;
-    }
+//    if (pageNum < 0)
+//    {
+//        qDebug() << "error.... poage num must be greater than 0" ;
+//    }
 
-    // Access page of the PDF file
-    Poppler::Page* pdfPage = doc->page(pageNum);
-    if (!pdfPage)
-    {
-        qDebug() << "Error... no PdfPage";
-    }
+//    // Access page of the PDF file
+//    Poppler::Page* pdfPage = doc->page(pageNum);
+//    if (!pdfPage)
+//    {
+//        qDebug() << "Error... no PdfPage";
+//    }
 
-    ret = pdfPage->renderToImage();
-    if (ret.isNull())
-    {
-        qDebug() << "Error... Page couldnt be rendered";
-    }
+//    ret = pdfPage->renderToImage();
+//    if (ret.isNull())
+//    {
+//        qDebug() << "Error... Page couldnt be rendered";
+//    }
 
-    return ret;
+//    return ret;
+
+    return pageCache[pageNum];
 }
 
 

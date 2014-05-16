@@ -25,6 +25,8 @@ void FullScreenPresentation::setImage(QImage image)
 void FullScreenPresentation::updatePresentation()
 {
     fullscreenScene.clear();
+//    we need to set the Background to black... first try here
+//    fullscreenScene.setBackgroundBrush(QBrush(Qt::black));
 
     QSize widgetSize = this->size();
     QImage newImage = image.scaled(widgetSize, Qt::KeepAspectRatio);

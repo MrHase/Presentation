@@ -30,7 +30,11 @@
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_2">
             <item>
-             <widget class="QGraphicsView" name="graphicsView_left"/>
+             <widget class="QGraphicsView" name="graphicsView_left">
+              <property name="autoFillBackground">
+               <bool>false</bool>
+              </property>
+             </widget>
             </item>
             <item>
              <widget class="QGraphicsView" name="graphicsView_right"/>

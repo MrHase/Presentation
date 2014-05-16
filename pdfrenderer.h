@@ -7,6 +7,8 @@
 
 #include <memory>
 #include <string>
+#include <vector>
+
 
 using namespace std;
 class PdfRenderer
@@ -14,9 +16,15 @@ class PdfRenderer
 private:
     shared_ptr<Poppler::Document> doc;
     bool isDocumentSet;
+    vector<QImage> pageCache;
+    double renderOptionDpiXAxis; //= 144.0;
+    double renderOptionDpiYAxis; //= 144.0;
+
+    void renderDocumentIntoCache();
+
 public:
     PdfRenderer(QString filePath);
-    PdfRenderer();
+    PdfRenderer(double optionDpiXAxis=144.0, double optionDpiYAxis=144.0);
 
     uint32_t pages();
     virtual ~PdfRenderer();

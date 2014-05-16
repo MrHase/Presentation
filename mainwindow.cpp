@@ -129,8 +129,6 @@ void MainWindow::updatePresentation()
     ui->graphicsView_left->setScene(&scene_left);
     ui->graphicsView_right->setScene(&scene_right);
 
-//    fullScreenPresentation->setScene(scene_left.get());
-
     if (fullScreenPresentation != NULL)
     {
         fullScreenPresentation->setImage(leftSide);
