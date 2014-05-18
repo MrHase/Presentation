@@ -42,9 +42,13 @@ private slots:
     void on_pushButton_2_clicked();
     void on_actionToggle_Presentation_F5_triggered();
 
+    void on_cb_splitPDF_toggled(bool checked);
+
 private:
 
     void updatePresentation();
+    void updateOutputLists();
+
     void togglePresentation();
 
     void startPresentation();
