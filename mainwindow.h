@@ -10,12 +10,15 @@
 #include <QGraphicsScene>
 
 #include <QDesktopWidget>
+#include <QWindow>
 
 #include "presentation.h"
 
 
 #include "pdfrenderer.h"
 #include "fullscreenpresentation.h"
+#include "helperscreenpresentation.h"
+
 
 using namespace std;
 
@@ -37,9 +40,8 @@ protected:
     virtual void keyReleaseEvent ( QKeyEvent * event );
 
 private slots:
-    void on_pushButton_clicked();
+
     void on_actionOpen_triggered();
-    void on_pushButton_2_clicked();
     void on_actionToggle_Presentation_F5_triggered();
 
     void on_cb_splitPDF_toggled(bool checked);
@@ -47,7 +49,11 @@ private slots:
 private:
 
     void updatePresentation();
+
     void updateOutputLists();
+
+    QScreen* getRightScreen();
+    QScreen* getLeftScreen();
 
     void togglePresentation();
 
@@ -64,6 +70,7 @@ private:
     QGraphicsScene scene_right;
 
     FullScreenPresentation *fullScreenPresentation = NULL;
+    HelperScreenPresentation* helperScreen = NULL;
 
     Presentation presentation;
 };

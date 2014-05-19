@@ -18,16 +18,19 @@ SOURCES += main.cpp\
     pdfrenderer.cpp \
     presentation.cpp \
     fullscreenpresentation.cpp \
-    eventhandler.cpp
+    eventhandler.cpp \
+    helperscreenpresentation.cpp
 
 HEADERS  += mainwindow.h \
     pdfrenderer.h \
     presentation.h \
     fullscreenpresentation.h \
-    eventhandler.h
+    eventhandler.h \
+    helperscreenpresentation.h
 
 FORMS    += mainwindow.ui \
-    fullscreenpresentation.ui
+    fullscreenpresentation.ui \
+    helperscreenpresentation.ui
 
 unix|win32: LIBS += -lpoppler-qt5
 

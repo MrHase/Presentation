@@ -26,7 +26,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     split(false),
-    presentationRunning(false)
+    presentationRunning(false) //,
+//    helperScreen(0)
 //    scene(new QGraphicsScene(this)),
 //    scene_left(new QGraphicsScene(this)),
 //    scene_right(new QGraphicsScene(this))
@@ -76,44 +77,17 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
     //updatePresentation();
 }
 
-void MainWindow::on_pushButton_clicked()
-{
-    qDebug() << "swap";
-//    ui->widget_right->setParent(0);
-//    ui->widget_right->showFullScreen();
-
-//    qDebug()<<"Clicked Right";
-
-}
-
-void MainWindow::on_pushButton_2_clicked()
-{
-    qDebug() << "split";
-
-    if (!split)
-    {
-        split = true;
-    }
-    else
-    {
-        split = false;
-    }
 
 
-    scene_left.clear();
-    scene_right.clear();
 
-    updatePresentation();
-
-
-//    ui->widget_left->setParent(0);
-//    ui->widget_left->showFullScreen();
-    //    qDebug()<<"Clicked Left";
-}
 
 void MainWindow::updatePresentation()
 {
+
     QImage leftSide, rightSide;
+
+    scene_left.clear();
+    scene_right.clear();
 
     if (split)
     {
@@ -132,6 +106,7 @@ void MainWindow::updatePresentation()
     ui->graphicsView_left->setScene(&scene_left);
     ui->graphicsView_right->setScene(&scene_right);
 
+    //! ugly?
     if (fullScreenPresentation != NULL)
     {
         fullScreenPresentation->setImage(leftSide);
@@ -140,7 +115,35 @@ void MainWindow::updatePresentation()
 
 void MainWindow::updateOutputLists()
 {
-    ui->outputLeft->addItem("output1");
+
+    for (auto *screen: QGuiApplication::screens())
+    {
+        ui->outputLeft->addItem(screen->name());
+        ui->outputRight->addItem(screen->name());
+    }
+
+}
+
+QScreen *MainWindow::getRightScreen()
+{
+    for (auto *screen: QGuiApplication::screens())
+    {
+        if(ui->outputRight->currentText()==screen->name()){
+            return screen;
+        }
+    }
+    return NULL;
+}
+
+QScreen *MainWindow::getLeftScreen()
+{
+    for (auto *screen: QGuiApplication::screens())
+    {
+        if(ui->outputLeft->currentText()==screen->name()){
+            return screen;
+        }
+    }
+    return NULL;
 }
 
 
@@ -180,7 +183,48 @@ void MainWindow::startPresentation()
 
     //create a new Window
     fullScreenPresentation = new FullScreenPresentation(0);
-    fullScreenPresentation->showFullScreen();
+    helperScreen = new HelperScreenPresentation(0);
+
+
+    if ( getRightScreen() == NULL)
+    {
+        qDebug()<<"A selected screen does not exist!";
+        //! error msg
+        updateOutputLists();
+        return;
+    }
+    else
+    {
+        QRect rect_fullscreen = getRightScreen()->geometry();
+
+        qDebug()<<"rect_fullscreen:::::: w:" << rect_fullscreen.width() << "  h: " << rect_fullscreen.height();
+
+        fullScreenPresentation->setGeometry(rect_fullscreen);
+        fullScreenPresentation->showFullScreen();
+
+    }
+
+    if (getLeftScreen() == NULL)
+    {
+        qDebug()<<"A selected screen does not exist!";
+        //! error msg
+        updateOutputLists();
+        return;
+    }
+    else
+    {
+        QScreen *helper_S = getLeftScreen();
+        QRect helper_screen = getLeftScreen()->geometry();
+
+        qDebug()<<"helper_screen:::::: w:" << helper_screen.width() << "  h: " << helper_screen.height();
+
+        helperScreen->setGeometry(helper_screen);
+        helperScreen->move(helper_screen.topLeft());
+
+        helperScreen->showFullScreen();
+    }
+
+
 
 
 //    QRect screenres = QApplication::desktop()->screenGeometry(1);
@@ -200,10 +244,17 @@ void MainWindow::stopPresentation()
     ui->actionToggle_Presentation_F5->setText("Start Presenation F5");
 
     fullScreenPresentation->showNormal();
-    fullScreenPresentation->hide();
+//    fullScreenPresentation->hide();
+
+    fullScreenPresentation->close();
+
+    helperScreen->showNormal();
+    helperScreen->close();
 
     delete fullScreenPresentation;
+    delete helperScreen;
     fullScreenPresentation = NULL;
+    helperScreen = NULL;
 }
 
 
