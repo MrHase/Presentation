@@ -52,13 +52,15 @@ private:
 
     void updateOutputLists();
 
-    QScreen* getRightScreen();
-    QScreen* getLeftScreen();
+    QScreen* getMainPresentationScreen();
+    QScreen* getHelperScreen();
 
     void togglePresentation();
 
     void startPresentation();
     void stopPresentation();
+
+    void moveWidgetToScreenAndShowFullScreen(QWidget* widget, QScreen* screen);
 
 
     Ui::MainWindow *ui;
@@ -69,7 +71,7 @@ private:
     QGraphicsScene scene_left;
     QGraphicsScene scene_right;
 
-    FullScreenPresentation *fullScreenPresentation = NULL;
+    FullScreenPresentation *mainScreenPresentation = NULL;
     HelperScreenPresentation* helperScreen = NULL;
 
     Presentation presentation;

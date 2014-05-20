@@ -40,6 +40,11 @@ QImage Presentation::getLeftSideOfPage()
     return left_rightSideOfPage(true);
 }
 
+bool Presentation::documentSet() const
+{
+    return pdfRenderer.documentSet();
+}
+
 QImage Presentation::left_rightSideOfPage(bool left)
 {
     QImage retImage;

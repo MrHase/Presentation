@@ -30,22 +30,22 @@
           <item row="4" column="2">
            <widget class="QGraphicsView" name="graphicsView_right"/>
           </item>
-          <item row="4" column="1">
-           <widget class="QGraphicsView" name="graphicsView_left">
-            <property name="autoFillBackground">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="0">
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>TextLabel</string>
-            </property>
-           </widget>
+          <item row="5" column="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <widget class="QLabel" name="label_helperScreen">
+              <property name="text">
+               <string>Helper Screen</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="outputList_HelperScreen"/>
+            </item>
+           </layout>
           </item>
           <item row="5" column="1">
-           <widget class="QComboBox" name="outputLeft"/>
+           <widget class="QComboBox" name="outputList_MainScreen"/>
           </item>
           <item row="4" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout">
@@ -58,19 +58,19 @@
             </item>
            </layout>
           </item>
-          <item row="5" column="2">
-           <layout class="QHBoxLayout" name="horizontalLayout_2">
-            <item>
-             <widget class="QLabel" name="label_2">
-              <property name="text">
-               <string>TextLabel</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="outputRight"/>
-            </item>
-           </layout>
+          <item row="4" column="1">
+           <widget class="QGraphicsView" name="graphicsView_left">
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="label_mainScreen">
+            <property name="text">
+             <string>Main Screen</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -91,7 +91,7 @@
      <x>0</x>
      <y>0</y>
      <width>834</width>
-     <height>20</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

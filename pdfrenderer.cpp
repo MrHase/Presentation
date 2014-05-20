@@ -84,6 +84,11 @@ QImage PdfRenderer::getRenderedImage(int pageNum)
     return pageCache[pageNum];
 }
 
+bool PdfRenderer::documentSet() const
+{
+    return isDocumentSet;
+}
+
 
 
 

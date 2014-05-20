@@ -35,6 +35,7 @@ public:
     //! convinience method... #ugly
     void setDocument(string filePath);
     QImage getRenderedImage(int pageNum);
+    bool documentSet() const;
 };
 
 #endif // PDFRENDERER_H

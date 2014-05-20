@@ -107,9 +107,15 @@ void MainWindow::updatePresentation()
     ui->graphicsView_right->setScene(&scene_right);
 
     //! ugly?
-    if (fullScreenPresentation != NULL)
+    if (mainScreenPresentation != NULL)
     {
-        fullScreenPresentation->setImage(leftSide);
+        mainScreenPresentation->setImage(leftSide);
+    }
+
+    //! ugly?
+    if (helperScreen != NULL)
+    {
+        helperScreen->setImage(rightSide);
     }
 }
 
@@ -118,28 +124,28 @@ void MainWindow::updateOutputLists()
 
     for (auto *screen: QGuiApplication::screens())
     {
-        ui->outputLeft->addItem(screen->name());
-        ui->outputRight->addItem(screen->name());
+        ui->outputList_MainScreen->addItem(screen->name());
+        ui->outputList_HelperScreen->addItem(screen->name());
     }
 
 }
 
-QScreen *MainWindow::getRightScreen()
+QScreen *MainWindow::getMainPresentationScreen()
 {
     for (auto *screen: QGuiApplication::screens())
     {
-        if(ui->outputRight->currentText()==screen->name()){
+        if(ui->outputList_MainScreen->currentText()==screen->name()){
             return screen;
         }
     }
     return NULL;
 }
 
-QScreen *MainWindow::getLeftScreen()
+QScreen *MainWindow::getHelperScreen()
 {
     for (auto *screen: QGuiApplication::screens())
     {
-        if(ui->outputLeft->currentText()==screen->name()){
+        if(ui->outputList_HelperScreen->currentText()==screen->name()){
             return screen;
         }
     }
@@ -182,11 +188,11 @@ void MainWindow::startPresentation()
     ui->actionToggle_Presentation_F5->setText("Stop Presentation F5");
 
     //create a new Window
-    fullScreenPresentation = new FullScreenPresentation(0);
+    mainScreenPresentation = new FullScreenPresentation(0);
     helperScreen = new HelperScreenPresentation(0);
 
 
-    if ( getRightScreen() == NULL)
+    if ( getMainPresentationScreen() == NULL)
     {
         qDebug()<<"A selected screen does not exist!";
         //! error msg
@@ -195,16 +201,10 @@ void MainWindow::startPresentation()
     }
     else
     {
-        QRect rect_fullscreen = getRightScreen()->geometry();
-
-        qDebug()<<"rect_fullscreen:::::: w:" << rect_fullscreen.width() << "  h: " << rect_fullscreen.height();
-
-        fullScreenPresentation->setGeometry(rect_fullscreen);
-        fullScreenPresentation->showFullScreen();
-
+        moveWidgetToScreenAndShowFullScreen(mainScreenPresentation,getMainPresentationScreen());
     }
 
-    if (getLeftScreen() == NULL)
+    if (getHelperScreen() == NULL)
     {
         qDebug()<<"A selected screen does not exist!";
         //! error msg
@@ -213,26 +213,8 @@ void MainWindow::startPresentation()
     }
     else
     {
-        QScreen *helper_S = getLeftScreen();
-        QRect helper_screen = getLeftScreen()->geometry();
-
-        qDebug()<<"helper_screen:::::: w:" << helper_screen.width() << "  h: " << helper_screen.height();
-
-        helperScreen->setGeometry(helper_screen);
-        helperScreen->move(helper_screen.topLeft());
-
-        helperScreen->showFullScreen();
+        moveWidgetToScreenAndShowFullScreen(helperScreen,getHelperScreen());
     }
-
-
-
-
-//    QRect screenres = QApplication::desktop()->screenGeometry(1);
-//    SecondDisplay secondDisplay = new SecondDisplay(); // Use your QWidget
-
-//    ui->graphicsView_left->showFullScreen();
-//    ui->graphicsView_left->move(QPoint(screenres.x(), screenres.y()));
-//    ui->graphicsView_left->resize(screenres.width(), screenres.height());
 
 }
 
@@ -243,18 +225,31 @@ void MainWindow::stopPresentation()
     presentationRunning = false;
     ui->actionToggle_Presentation_F5->setText("Start Presenation F5");
 
-    fullScreenPresentation->showNormal();
+    mainScreenPresentation->showNormal();
 //    fullScreenPresentation->hide();
 
-    fullScreenPresentation->close();
+    mainScreenPresentation->close();
 
     helperScreen->showNormal();
     helperScreen->close();
 
-    delete fullScreenPresentation;
+    delete mainScreenPresentation;
     delete helperScreen;
-    fullScreenPresentation = NULL;
+    mainScreenPresentation = NULL;
     helperScreen = NULL;
+}
+
+void MainWindow::moveWidgetToScreenAndShowFullScreen(QWidget *widget, QScreen *screen)
+{
+    QRect rect = screen->availableGeometry();
+
+    qDebug()<<"screeen::::: " << getHelperScreen()->name();
+    qDebug()<<"rect:::::: w:" << rect.width() << "  h: " << rect.height() << "  x: " << rect.x() << "   y: " << rect.y();
+
+    //create a new point at the beginning of the screen an move the widget to that point
+    widget->setGeometry(rect);
+    widget->move(QPoint(rect.x(),rect.y()));
+    widget->showFullScreen();
 }
 
 

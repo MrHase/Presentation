@@ -19,6 +19,8 @@ public:
     QImage getRightSideOfPage();
     QImage getLeftSideOfPage();
 
+    bool documentSet() const;
+
 private:
     QImage left_rightSideOfPage(bool left);
     PdfRenderer pdfRenderer;
