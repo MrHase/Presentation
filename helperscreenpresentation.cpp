@@ -49,12 +49,26 @@ void HelperScreenPresentation::on_pushButton_clicked()
         timer.stop();
         timerIsRunning = false;
         ui->pushButton->setText("StartTimer");
+        seconds = 0;
+        minutes = 0;
     }
 
 }
 
 void HelperScreenPresentation::updateClockWidget()
 {
-    // We need a better clock widget here ;)
-    ui->label->setText(QString::number(seconds++));
+    seconds ++;
+    if (seconds %60 == 0)
+    {
+        minutes++;
+        seconds = 0;
+    }
+
+    QTime time (0,minutes,seconds);
+    QString text = time.toString("mm:ss");
+    if ((time.second() % 2) == 0)
+    {
+             text[2] = ' ';
+    }
+    ui->lcdNumber->display(text);
 }

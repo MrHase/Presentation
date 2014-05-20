@@ -9,6 +9,7 @@
 #include <QPixmap>
 #include <QGraphicsItem>
 #include <QTimer>
+#include <QTime>
 
 namespace Ui {
 class helperscreenpresentation;
