@@ -8,6 +8,10 @@
 #include <QGuiApplication>
 #include <QScreen>
 #include <QKeyEvent>
+#include "exception.h"
+#include <QMessageBox>
+
+const QString NO_OUTPUT="No output";
 
 QString Orientation(Qt::ScreenOrientation orientation)
 {
@@ -121,6 +125,13 @@ void MainWindow::updatePresentation()
 
 void MainWindow::updateOutputLists()
 {
+    //! wir müssen uns hier die ausgewählten bildschirme merken bevor wir die liste refreshen um sie danach wieder setzten zu können
+
+    //! ausserdem muss beim ersten aufruf der helper screen auf den screen gesetzt werden wo das programm ausgeführt wurde
+    //! Presentation muss beim ersten aufruf auf no_output gesetzt werden es sei denn es gibt einen weiteren screen....
+
+    ui->outputList_MainScreen->addItem(NO_OUTPUT);
+    ui->outputList_HelperScreen->addItem(NO_OUTPUT);
 
     for (auto *screen: QGuiApplication::screens())
     {
@@ -132,23 +143,33 @@ void MainWindow::updateOutputLists()
 
 QScreen *MainWindow::getMainPresentationScreen()
 {
+    QString name=ui->outputList_MainScreen->currentText();
+
+    if(name==NO_OUTPUT)
+        return NULL;
     for (auto *screen: QGuiApplication::screens())
     {
-        if(ui->outputList_MainScreen->currentText()==screen->name()){
+        if(name==screen->name()){
             return screen;
         }
     }
+    throw Exception();
     return NULL;
 }
 
 QScreen *MainWindow::getHelperScreen()
 {
+    QString name=ui->outputList_HelperScreen->currentText();
+
+    if(name==NO_OUTPUT)
+        return NULL;
     for (auto *screen: QGuiApplication::screens())
     {
-        if(ui->outputList_HelperScreen->currentText()==screen->name()){
+        if(name==screen->name()){
             return screen;
         }
     }
+    throw Exception();
     return NULL;
 }
 
@@ -182,38 +203,54 @@ void MainWindow::startPresentation()
 {
     qDebug()<<"Start Presentation";
 
+
+    // Check if everthing is ready to start the presentation:
+
+
+
     //! presentation and document was set before?
+
+    QScreen* screen_main=NULL;
+    QScreen* screen_helper=NULL;
+    try{
+        screen_main=getMainPresentationScreen();
+        screen_helper=getHelperScreen();
+    }catch(Exception& e){
+        QMessageBox msgBox;
+        msgBox.setText("The output device list is inconsistent and will be refreshed now. Please select the right output device and try again.");
+        msgBox.exec();
+        updateOutputLists();
+        return;
+    }
+
+    if(!screen_main && !screen_helper){
+        QMessageBox msgBox;
+        msgBox.setText("No output screen is selected.");
+        msgBox.exec();
+        return;
+    }
+
+    if(screen_main==screen_helper){ //! pointervergleich, ist das ok so? sollte eig...
+        QMessageBox msgBox;
+        msgBox.setText("Please choose different output devices for the presentation windows");
+        msgBox.exec();
+        return;
+    }
+
+    // Everthing seems fine! lets go!
 
     presentationRunning = true;
     ui->actionToggle_Presentation_F5->setText("Stop Presentation F5");
 
-    //create a new Window
-    mainScreenPresentation = new FullScreenPresentation(0);
-    helperScreen = new HelperScreenPresentation(0);
-
-
-    if ( getMainPresentationScreen() == NULL)
+    if ( screen_main)
     {
-        qDebug()<<"A selected screen does not exist!";
-        //! error msg
-        updateOutputLists();
-        return;
+        mainScreenPresentation = new FullScreenPresentation(0);
+        moveWidgetToScreenAndShowFullScreen(mainScreenPresentation,screen_main);
     }
-    else
+    if (screen_helper)
     {
-        moveWidgetToScreenAndShowFullScreen(mainScreenPresentation,getMainPresentationScreen());
-    }
-
-    if (getHelperScreen() == NULL)
-    {
-        qDebug()<<"A selected screen does not exist!";
-        //! error msg
-        updateOutputLists();
-        return;
-    }
-    else
-    {
-        moveWidgetToScreenAndShowFullScreen(helperScreen,getHelperScreen());
+        helperScreen = new HelperScreenPresentation(0);
+        moveWidgetToScreenAndShowFullScreen(helperScreen,screen_helper);
     }
 
 }
@@ -222,28 +259,31 @@ void MainWindow::stopPresentation()
 {
     qDebug()<<"Stop Presentation";
 
+
+
     presentationRunning = false;
     ui->actionToggle_Presentation_F5->setText("Start Presenation F5");
 
-    mainScreenPresentation->showNormal();
-//    fullScreenPresentation->hide();
+    if(mainScreenPresentation){
+        mainScreenPresentation->showNormal();
+        mainScreenPresentation->close();
+        delete mainScreenPresentation;
+        mainScreenPresentation = NULL;
+    }
 
-    mainScreenPresentation->close();
-
-    helperScreen->showNormal();
-    helperScreen->close();
-
-    delete mainScreenPresentation;
-    delete helperScreen;
-    mainScreenPresentation = NULL;
-    helperScreen = NULL;
+    if(helperScreen){
+        helperScreen->showNormal();
+        helperScreen->close();
+        delete helperScreen;
+        helperScreen = NULL;
+    }
 }
 
 void MainWindow::moveWidgetToScreenAndShowFullScreen(QWidget *widget, QScreen *screen)
 {
     QRect rect = screen->availableGeometry();
 
-    qDebug()<<"screeen::::: " << getHelperScreen()->name();
+    qDebug()<<"screeen::::: " << screen->name();
     qDebug()<<"rect:::::: w:" << rect.width() << "  h: " << rect.height() << "  x: " << rect.x() << "   y: " << rect.y();
 
     //create a new point at the beginning of the screen an move the widget to that point

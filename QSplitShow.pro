@@ -19,14 +19,16 @@ SOURCES += main.cpp\
     presentation.cpp \
     fullscreenpresentation.cpp \
     eventhandler.cpp \
-    helperscreenpresentation.cpp
+    helperscreenpresentation.cpp \
+    exception.cpp
 
 HEADERS  += mainwindow.h \
     pdfrenderer.h \
     presentation.h \
     fullscreenpresentation.h \
     eventhandler.h \
-    helperscreenpresentation.h
+    helperscreenpresentation.h \
+    exception.h
 
 FORMS    += mainwindow.ui \
     fullscreenpresentation.ui \
