@@ -40,7 +40,9 @@
      <item>
       <widget class="QPushButton" name="pushButton">
        <property name="styleSheet">
-        <string notr="true">background-color: rgba( 255, 255, 255, 0% );</string>
+        <string notr="true">background-color: rgba( 255, 255, 255, 0% );
+color: white;
+border: 2px solid rgba(255,255,255,100);</string>
        </property>
        <property name="text">
         <string>Start Timer</string>

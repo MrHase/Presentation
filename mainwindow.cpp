@@ -201,7 +201,7 @@ void MainWindow::startPresentation()
     }
     else
     {
-        moveWidgetToScreenAndShowFullScreen(mainScreenPresentation,getMainPresentationScreen());
+//        moveWidgetToScreenAndShowFullScreen(mainScreenPresentation,getMainPresentationScreen());
     }
 
     if (getHelperScreen() == NULL)
