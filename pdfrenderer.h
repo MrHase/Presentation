@@ -8,23 +8,37 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <functional>
 
 
 using namespace std;
+
+class RenderInfo
+{
+public:
+    uint32_t requested_width=0;
+    uint32_t requested_height=0;
+};
+
 class PdfRenderer
 {
 private:
     shared_ptr<Poppler::Document> doc;
-    bool isDocumentSet;
+    bool isDocumentSet=false;
     vector<QImage> pageCache;
+
+    /*
     double renderOptionDpiXAxis; //= 144.0;
     double renderOptionDpiYAxis; //= 144.0;
+    */
+    void renderDocumentIntoCache(RenderInfo ri);
 
-    void renderDocumentIntoCache();
+    void calculateDPI(RenderInfo ri, Poppler::Page *page, std::function<void(double dpi_x, double dpi_y)> use_dpi);
 
 public:
-    PdfRenderer(QString filePath);
-    PdfRenderer(double optionDpiXAxis=144.0, double optionDpiYAxis=144.0);
+    PdfRenderer(){}
+
+
 
     uint32_t pages();
     virtual ~PdfRenderer();
@@ -32,8 +46,9 @@ public:
 
     void setDocument(QString filePath);
 
-    //! convinience method... #ugly
-    void setDocument(string filePath);
+
+
+
     QImage getRenderedImage(int pageNum);
     bool documentSet() const;
 };
