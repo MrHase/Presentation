@@ -182,7 +182,7 @@ void MainWindow::on_actionOpen_triggered()
         return;
     }
 
-    presentation.setDocument(filename.toStdString()); //! ugly!
+    presentation.setDocument(filename);
 
     updatePresentation();
 

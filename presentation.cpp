@@ -5,7 +5,7 @@ Presentation::Presentation()
     qDebug()<<"Erstellt....";
 }
 
-void Presentation::setDocument(string filename)
+void Presentation::setDocument(QString filename)
 {
 //    pdfRenderer.setDocument(QString(filename.c_str())); //! ugly... no QString in renderer
     pdfRenderer.setDocument(filename);

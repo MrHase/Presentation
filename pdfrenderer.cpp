@@ -1,6 +1,6 @@
 #include "pdfrenderer.h"
 
-void PdfRenderer::renderDocumentIntoCache()
+void PdfRenderer::renderDocumentIntoCache(RenderInfo ri)
 {
     for (int i = 0; i < doc->numPages(); i++)
     {
@@ -12,31 +12,35 @@ void PdfRenderer::renderDocumentIntoCache()
             // calculation of DPI:
             // desired dpi = (resolution_of_screen * 72.0 )[dots] / smallest_side_of_pic[inch]
             //!900 needs to be resolved automatically!!
-            double dpi = (900 * 72.0) / page->pageSizeF().height();
-            qDebug() << "dpi: " << dpi;
-            QImage img = page->renderToImage(dpi,dpi);
+            //double dpi = (ri.requested_height * 72.0) / page->pageSizeF().height();
 
-            qDebug() << "image height: " << img.size().height();
+            double dpi_x=0,dpi_y=0;
+            calculateDPI(ri,page,[&](double calc_dpi_x,double calc_dpi_y){
+                dpi_x=calc_dpi_x;
+                dpi_y=calc_dpi_y;
+            });
+
+            QImage img = page->renderToImage(dpi_x,dpi_y);
+
+            qDebug()<<"i.width: "<<img.size().width() << "i.height: " << img.size().height();
 
             pageCache.push_back(img);
         }
     }
 }
 
-PdfRenderer::PdfRenderer(QString filePath):
-    doc(Poppler::Document::load(filePath)),
-    isDocumentSet(true)
-{
-    renderDocumentIntoCache();
-}
-
-PdfRenderer::PdfRenderer(double optionDpiXAxis, double optionDpiYAxis):
-    isDocumentSet(false),
-    renderOptionDpiXAxis(optionDpiXAxis),
-    renderOptionDpiYAxis(optionDpiYAxis)
+void PdfRenderer::calculateDPI(RenderInfo ri, Poppler::Page *page, std::function<void(double dpi_x, double dpi_y)> use_dpi)
 {
 
+    double dpi_x = (ri.requested_width * 72.0) / page->pageSizeF().width();
+    double dpi_y = (ri.requested_height * 72.0) / page->pageSizeF().height();
+
+    dpi_x=dpi_y; //! das ist natürlich blödsinn... wir müssen entscheiden ob wir breite oder höhe zum ausrechnen der dpi brauchen
+
+    use_dpi(dpi_x,dpi_y);
 }
+
+
 
 uint32_t PdfRenderer::pages()
 {
@@ -55,12 +59,10 @@ void PdfRenderer::setDocument(QString filePath)
     doc->setRenderHint(Poppler::Document::Antialiasing, true);
     doc->setRenderHint(Poppler::Document::TextAntialiasing, true);
 
-    renderDocumentIntoCache();
-}
-
-void PdfRenderer::setDocument(string filePath)
-{
-    setDocument(QString(filePath.c_str()));
+    RenderInfo ri;
+    ri.requested_height=1080;
+    //ri.requested_width=1920;
+    renderDocumentIntoCache(ri);
 }
 
 QImage PdfRenderer::getRenderedImage(int pageNum)

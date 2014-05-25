@@ -8,7 +8,7 @@ public:
     Presentation();
 
     // Init
-    void setDocument(string filename);
+    void setDocument(QString filename);
 
     // Navigation:
     void nextPage();
