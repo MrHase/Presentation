@@ -18,6 +18,7 @@ class RenderInfo
 public:
     uint32_t requested_width=0;
     uint32_t requested_height=0;
+    bool splitscreen=false;
 };
 
 class PdfRenderer
