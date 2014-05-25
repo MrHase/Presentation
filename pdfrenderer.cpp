@@ -10,7 +10,7 @@ void PdfRenderer::renderDocumentIntoCache()
             qDebug() << "p height: " << page->pageSizeF().height();
 
             // calculation of DPI:
-            // desired dpi = ((resolution_of_screen) * 72.0 ) / smallest_side_of_pic
+            // desired dpi = (resolution_of_screen * 72.0 )[dots] / smallest_side_of_pic[inch]
             //!900 needs to be resolved automatically!!
             double dpi = (900 * 72.0) / page->pageSizeF().height();
             qDebug() << "dpi: " << dpi;

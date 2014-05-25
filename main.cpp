@@ -8,6 +8,8 @@ int main(int argc, char *argv[])
     MainWindow w;
     EventHandler e(&w);
 
+    //HighRes on MAC?
+//    a.setAttribute(Qt::AA_UseHighDpiPixmaps);
     a.installEventFilter(&e);
 
 

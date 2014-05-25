@@ -31,9 +31,14 @@ void FullScreenPresentation::updatePresentation()
     QSize widgetSize = this->size();
     QImage newImage = image.scaled(widgetSize, Qt::KeepAspectRatio);
 
+//    newImage.setDevicePixelRatio(2.0);
+
     qDebug()<<"Widgetsize "<< widgetSize.width() << "     .... " << widgetSize.height();
 
-    fullscreenScene.addPixmap(QPixmap::fromImage(newImage));
+    QPixmap pixMap = QPixmap::fromImage(newImage);
+//    map.setDevicePixelRatio(2.0);
+
+    fullscreenScene.addPixmap(pixMap);
     fullscreenScene.setSceneRect(0,0,newImage.size().width(),newImage.size().height());
     ui->graphicsView->setScene(&fullscreenScene);
 }
