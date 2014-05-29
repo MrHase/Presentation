@@ -32,10 +32,20 @@ void PdfRenderer::renderDocumentIntoCache(RenderInfo ri)
 void PdfRenderer::calculateDPI(RenderInfo ri, Poppler::Page *page, std::function<void(double dpi_x, double dpi_y)> use_dpi)
 {
 
-    double dpi_x = (ri.requested_width * 72.0) / page->pageSizeF().width();
+    double splitscreen=(ri.splitscreen)?2:1;
+    double dpi_x = (ri.requested_width * 72.0) / (page->pageSizeF().width()/splitscreen);
     double dpi_y = (ri.requested_height * 72.0) / page->pageSizeF().height();
 
-    dpi_x=dpi_y; //! das ist natürlich blödsinn... wir müssen entscheiden ob wir breite oder höhe zum ausrechnen der dpi brauchen
+
+    double factor=(page->pageSizeF().width()/splitscreen)/page->pageSizeF().height();
+    double fake_w=factor*ri.requested_height;
+    //double fake_h=ri.requested_height; // not necessary
+
+    if(fake_w<ri.requested_width){
+        dpi_x=dpi_y; //! das ist natürlich blödsinn... wir müssen entscheiden ob wir breite oder höhe zum ausrechnen der dpi brauchen
+    }else{
+        dpi_y=dpi_x;
+    }
 
     use_dpi(dpi_x,dpi_y);
 }
@@ -61,7 +71,8 @@ void PdfRenderer::setDocument(QString filePath)
 
     RenderInfo ri;
     ri.requested_height=1080;
-    //ri.requested_width=1920;
+    ri.requested_width=1920;
+    ri.splitscreen=true;
     renderDocumentIntoCache(ri);
 }
 
