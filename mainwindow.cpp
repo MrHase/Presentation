@@ -104,6 +104,9 @@ void MainWindow::updatePresentation()
         rightSide=presentation.getCurrentPage();
     }
 
+    leftSide.setDevicePixelRatio(this->devicePixelRatio());
+    rightSide.setDevicePixelRatio(this->devicePixelRatio());
+
     scene_left.addPixmap(QPixmap::fromImage(leftSide));
     scene_right.addPixmap(QPixmap::fromImage(rightSide));
 

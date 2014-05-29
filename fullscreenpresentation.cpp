@@ -25,20 +25,14 @@ void FullScreenPresentation::setImage(QImage image)
 void FullScreenPresentation::updatePresentation()
 {
     fullscreenScene.clear();
-//    we need to set the Background to black... first try here
-//    fullscreenScene.setBackgroundBrush(QBrush(Qt::black));
 
-    QSize widgetSize = this->size();
-    QImage newImage = image.scaled(widgetSize, Qt::KeepAspectRatio);
+    image.setDevicePixelRatio(this->devicePixelRatio());
 
-//    newImage.setDevicePixelRatio(2.0);
+    QPixmap pixMap = QPixmap::fromImage(image);
 
-    qDebug()<<"Widgetsize "<< widgetSize.width() << "     .... " << widgetSize.height();
+    QGraphicsPixmapItem *item = fullscreenScene.addPixmap(pixMap);
+    fullscreenScene.setSceneRect(0,0,this->size().width(),this->size().height());
 
-    QPixmap pixMap = QPixmap::fromImage(newImage);
-//    map.setDevicePixelRatio(2.0);
-
-    fullscreenScene.addPixmap(pixMap);
-    fullscreenScene.setSceneRect(0,0,newImage.size().width(),newImage.size().height());
     ui->graphicsView->setScene(&fullscreenScene);
+//    ui->graphicsView->fitInView(item);
 }

@@ -28,6 +28,24 @@
    </property>
    <item>
     <widget class="QGraphicsView" name="graphicsView">
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="autoFillBackground">
+      <bool>true</bool>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: black</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <property name="lineWidth">
+      <number>0</number>
+     </property>
      <property name="verticalScrollBarPolicy">
       <enum>Qt::ScrollBarAlwaysOff</enum>
      </property>
@@ -35,7 +53,7 @@
       <enum>Qt::ScrollBarAlwaysOff</enum>
      </property>
      <property name="renderHints">
-      <set>QPainter::TextAntialiasing</set>
+      <set>QPainter::Antialiasing|QPainter::HighQualityAntialiasing|QPainter::NonCosmeticDefaultPen|QPainter::SmoothPixmapTransform|QPainter::TextAntialiasing</set>
      </property>
     </widget>
    </item>

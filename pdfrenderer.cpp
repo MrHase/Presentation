@@ -20,7 +20,7 @@ void PdfRenderer::renderDocumentIntoCache(RenderInfo ri)
                 dpi_y=calc_dpi_y;
             });
 
-            QImage img = page->renderToImage(dpi_x,dpi_y);
+            QImage img = page->renderToImage(dpi_x*2,dpi_y*2);
 
             qDebug()<<"i.width: "<<img.size().width() << "i.height: " << img.size().height();
 
