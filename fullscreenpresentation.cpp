@@ -30,8 +30,17 @@ void FullScreenPresentation::updatePresentation()
 
     QPixmap pixMap = QPixmap::fromImage(image);
 
-    QGraphicsPixmapItem *item = fullscreenScene.addPixmap(pixMap);
-    fullscreenScene.setSceneRect(0,0,this->size().width(),this->size().height());
+
+    QRect rect = image.rect();
+    rect.setHeight(rect.height()/this->devicePixelRatio());
+    rect.setWidth(rect.width()/this->devicePixelRatio());
+
+    fullscreenScene.addPixmap(pixMap);
+
+    fullscreenScene.setSceneRect(rect);
+
+
+//    fullscreenScene.setSceneRect(0,0,this->size().width(),this->size().height());
 
     ui->graphicsView->setScene(&fullscreenScene);
 //    ui->graphicsView->fitInView(item);
