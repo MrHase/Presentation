@@ -114,13 +114,13 @@ void MainWindow::updatePresentation()
     ui->graphicsView_right->setScene(&scene_right);
 
     //! ugly?
-    if (mainScreenPresentation != NULL)
+    if (mainScreenPresentation)
     {
         mainScreenPresentation->setImage(leftSide);
     }
 
     //! ugly?
-    if (helperScreen != NULL)
+    if (helperScreen)
     {
         helperScreen->setImage(rightSide);
     }
@@ -149,7 +149,7 @@ QScreen *MainWindow::getMainPresentationScreen()
     QString name=ui->outputList_MainScreen->currentText();
 
     if(name==NO_OUTPUT)
-        return NULL;
+        return nullptr;
     for (auto *screen: QGuiApplication::screens())
     {
         if(name==screen->name()){
@@ -157,7 +157,7 @@ QScreen *MainWindow::getMainPresentationScreen()
         }
     }
     throw Exception();
-    return NULL;
+    return nullptr;
 }
 
 QScreen *MainWindow::getHelperScreen()
@@ -165,7 +165,7 @@ QScreen *MainWindow::getHelperScreen()
     QString name=ui->outputList_HelperScreen->currentText();
 
     if(name==NO_OUTPUT)
-        return NULL;
+        return nullptr;
     for (auto *screen: QGuiApplication::screens())
     {
         if(name==screen->name()){
@@ -173,7 +173,7 @@ QScreen *MainWindow::getHelperScreen()
         }
     }
     throw Exception();
-    return NULL;
+    return nullptr;
 }
 
 
@@ -213,8 +213,8 @@ void MainWindow::startPresentation()
 
     //! presentation and document was set before?
 
-    QScreen* screen_main=NULL;
-    QScreen* screen_helper=NULL;
+    QScreen* screen_main=nullptr;
+    QScreen* screen_helper=nullptr;
     try{
         screen_main=getMainPresentationScreen();
         screen_helper=getHelperScreen();
@@ -271,14 +271,14 @@ void MainWindow::stopPresentation()
         mainScreenPresentation->showNormal();
         mainScreenPresentation->close();
         delete mainScreenPresentation;
-        mainScreenPresentation = NULL;
+        mainScreenPresentation = nullptr;
     }
 
     if(helperScreen){
         helperScreen->showNormal();
         helperScreen->close();
         delete helperScreen;
-        helperScreen = NULL;
+        helperScreen = nullptr;
     }
 }
 

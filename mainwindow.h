@@ -71,8 +71,8 @@ private:
     QGraphicsScene scene_left;
     QGraphicsScene scene_right;
 
-    FullScreenPresentation *mainScreenPresentation = NULL;
-    HelperScreenPresentation* helperScreen = NULL;
+    FullScreenPresentation *mainScreenPresentation = nullptr;
+    HelperScreenPresentation* helperScreen = nullptr;
 
     Presentation presentation;
 };
