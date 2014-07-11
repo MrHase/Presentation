@@ -32,22 +32,8 @@ public:
 };
 
 
-class PdfRendererWorker: public QObject
+class PdfRenderer
 {
-private:
-
-    Q_OBJECT
-public slots:
-    void renderTheDocumentIntoCache(const &parameter, int another);
-
-    signals:
-    void resultReady(const QString &result);
-};
-
-class PdfRenderer : public QObject
-{
-    Q_OBJECT
-
 private:
     shared_ptr<Poppler::Document> doc;
     bool isDocumentSet=false;
@@ -96,13 +82,6 @@ public:
     void setSize(const QRect &value);
     double getThisDevicePixelRatio() const;
     void setThisDevicePixelRatio(double value);
-
-signals:
-    void renderDocumentIntoCache_Signal(RenderInfo ri);
-
-public slots:
-    void handleResult();
-
 
 };
 

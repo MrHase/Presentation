@@ -8,10 +8,10 @@ Presentation::Presentation(double dpri):
 
 
 Presentation::Presentation(QString file_n, double dpri):
-    filename(file_n),
     renderer_preview(dpri),
     renderer_mainScreen(dpri),
-    renderer_helperScreen(dpri)
+    renderer_helperScreen(dpri),
+    filename(file_n)
 {
 
 }
