@@ -14,6 +14,8 @@ void PdfRenderer::renderDocumentIntoCache(RenderInfo ri)
 {
     if (isDocumentSet)
     {
+        pageCache.resize(doc->numPages());
+
         for (int i = 0; i < doc->numPages(); i++)
         {
             Poppler::Page *page = doc->page(i);
@@ -35,11 +37,25 @@ void PdfRenderer::renderDocumentIntoCache(RenderInfo ri)
     //            });
 
                 DpiRequest request = calculateDPI(ri,page);
+
+                //! deletee!!
+                thread *t=new thread([=](){
+                    //! use unique_lock or
+
+                    qDebug()<<"Test : "<<i;
+                    QImage img = page->renderToImage(request.dpiWidth*thisDevicePixelRatio,request.dpiHeight*thisDevicePixelRatio);
+                    qDebug()<<"i.width: "<<img.size().width() << "i.height: " << img.size().height() << "dpri: " << thisDevicePixelRatio;
+                    mutex_cache.lock();
+                    //pageCache.push_back(img);
+                    pageCache[i]=img;
+                    mutex_cache.unlock();
+                });
+                /*
                 QImage img = page->renderToImage(request.dpiWidth*thisDevicePixelRatio,request.dpiHeight*thisDevicePixelRatio);
-
                 qDebug()<<"i.width: "<<img.size().width() << "i.height: " << img.size().height() << "dpri: " << thisDevicePixelRatio;
-
                 pageCache.push_back(img);
+                */
+
             }
         }
     }
@@ -172,6 +188,14 @@ QImage PdfRenderer::getRenderedImage(int pageNum)
 //    }
 
 //    return ret;
+
+    //! use locker
+    QImage img;
+    mutex_cache.lock();
+
+    img=pageCache[pageNum];
+    mutex_cache.unlock();
+    return img;
 
     return pageCache[pageNum];
 }

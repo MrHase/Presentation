@@ -15,10 +15,6 @@ public:
     // Init preview
     void setPreviewDocument();
 
-    // Navigation:
-    void preview_nextPage();
-    void preview_previousPage();
-
     QImage preview_getCurrentPage();
 
     QImage getRightSideOfPreviewPage();
@@ -34,6 +30,11 @@ public:
 
     QRect getHelper_rect() const;
     void setHelper_rect(const QRect &value);
+
+
+
+    void nextPage();
+    void previousPage();
 
 private:
     QImage left_rightSideOfPreviewPage(bool left);
@@ -54,9 +55,6 @@ private:
     QRect main_rect;
     QRect helper_rect;
 
-
-    void nextPage();
-    void previousPage();
 
 };
 

@@ -44,16 +44,6 @@ void Presentation::setPreviewDocument()
     }
 }
 
-void Presentation::preview_nextPage()
-{
-    nextPage();
-}
-
-void Presentation::preview_previousPage()
-{
-    previousPage();
-}
-
 QImage Presentation::preview_getCurrentPage()
 {
     return renderer_preview.getRenderedImage(currentPage);

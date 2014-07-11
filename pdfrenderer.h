@@ -10,7 +10,7 @@
 #include <vector>
 #include <functional>
 
-#include <QThread>
+#include <thread>
 
 #include "exception.h"
 
@@ -42,7 +42,7 @@ private:
     QRect size;
     double thisDevicePixelRatio;
 
-    QThread workerThread;
+    mutex mutex_cache;
 
 
 

@@ -306,20 +306,12 @@ void MainWindow::moveWidgetToScreenAndShowFullScreen(QWidget *widget, QScreen *s
 
 void MainWindow::next()
 {
-    if (presentationRunning)
-    {
-
-    }
-    presentation.preview_nextPage();
+    presentation.nextPage();
 }
 
 void MainWindow::prev()
 {
-    if (presentationRunning)
-    {
-
-    }
-    presentation.preview_previousPage();
+    presentation.previousPage();
 }
 
 
