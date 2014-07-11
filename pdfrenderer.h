@@ -10,35 +10,70 @@
 #include <vector>
 #include <functional>
 
+#include <QThread>
+
+#include "exception.h"
 
 using namespace std;
 
 class RenderInfo
 {
 public:
-    uint32_t requested_width=0;
-    uint32_t requested_height=0;
-    bool splitscreen=false;
+    uint32_t requested_width = 0; // size in points? ich geh jetzt davon aus
+    uint32_t requested_height = 0;
+    bool splitscreen = false; // two slides on one page
 };
 
-class PdfRenderer
+class DpiRequest
 {
+public:
+    double dpiWidth;
+    double dpiHeight;
+};
+
+
+class PdfRendererWorker: public QObject
+{
+private:
+
+    Q_OBJECT
+public slots:
+    void renderTheDocumentIntoCache(const &parameter, int another);
+
+    signals:
+    void resultReady(const QString &result);
+};
+
+class PdfRenderer : public QObject
+{
+    Q_OBJECT
+
 private:
     shared_ptr<Poppler::Document> doc;
     bool isDocumentSet=false;
     vector<QImage> pageCache;
 
+    QRect size;
+    double thisDevicePixelRatio;
+
+    QThread workerThread;
+
+
+
+
     /*
     double renderOptionDpiXAxis; //= 144.0;
     double renderOptionDpiYAxis; //= 144.0;
     */
-    void renderDocumentIntoCache(RenderInfo ri);
+
 
     void calculateDPI(RenderInfo ri, Poppler::Page *page, std::function<void(double dpi_x, double dpi_y)> use_dpi);
+    DpiRequest calculateDPI(RenderInfo ri, Poppler::Page *page);
+
 
 public:
-    PdfRenderer(){}
-
+    PdfRenderer(double dpri);
+    PdfRenderer(QRect size, double dpri);
 
 
     uint32_t pages();
@@ -49,9 +84,26 @@ public:
 
 
 
+    void renderDocumentIntoCache(RenderInfo ri);
+
+
 
     QImage getRenderedImage(int pageNum);
     bool documentSet() const;
+
+
+    QRect getSize() const;
+    void setSize(const QRect &value);
+    double getThisDevicePixelRatio() const;
+    void setThisDevicePixelRatio(double value);
+
+signals:
+    void renderDocumentIntoCache_Signal(RenderInfo ri);
+
+public slots:
+    void handleResult();
+
+
 };
 
 #endif // PDFRENDERER_H

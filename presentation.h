@@ -2,30 +2,62 @@
 #define PRESENTATION_H
 
 #include "pdfrenderer.h"
+#include <iostream>
+
 class Presentation
 {
 public:
-    Presentation();
+    Presentation(double dpri);
+    Presentation(QString file_n, double dpri);
 
-    // Init
-    void setDocument(QString filename);
+    void setDocumentFile(QString file_n);
+
+    // Init preview
+    void setPreviewDocument();
 
     // Navigation:
-    void nextPage();
-    void previousPage();
+    void preview_nextPage();
+    void preview_previousPage();
 
-    QImage getCurrentPage();
+    QImage preview_getCurrentPage();
 
-    QImage getRightSideOfPage();
-    QImage getLeftSideOfPage();
+    QImage getRightSideOfPreviewPage();
+    QImage getLeftSideOfPreviewPage();
 
     bool documentSet() const;
 
-private:
-    QImage left_rightSideOfPage(bool left);
-    PdfRenderer pdfRenderer;
+    QRect getPreview_rect() const;
+    void setPreview_rect(const QRect &value);
 
-    uint32_t currentPage=0;
+    QRect getMain_rect() const;
+    void setMain_rect(const QRect &value);
+
+    QRect getHelper_rect() const;
+    void setHelper_rect(const QRect &value);
+
+private:
+    QImage left_rightSideOfPreviewPage(bool left);
+
+    PdfRenderer renderer_preview;
+    PdfRenderer renderer_mainScreen;
+    PdfRenderer renderer_helperScreen;
+
+    uint32_t currentPage = 0;
+
+    QString filename;
+
+
+
+    // rectangles for the supported screens
+    // should be okay for now, maybe once a map...
+    QRect preview_rect;
+    QRect main_rect;
+    QRect helper_rect;
+
+
+    void nextPage();
+    void previousPage();
+
 };
 
 #endif // PRESENTATION_H

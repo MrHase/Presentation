@@ -47,21 +47,20 @@ private slots:
     void on_cb_splitPDF_toggled(bool checked);
 
 private:
-
     void updatePresentation();
-
     void updateOutputLists();
 
     QScreen* getMainPresentationScreen();
     QScreen* getHelperScreen();
 
     void togglePresentation();
-
     void startPresentation();
     void stopPresentation();
 
     void moveWidgetToScreenAndShowFullScreen(QWidget* widget, QScreen* screen);
 
+    void next();
+    void prev();
 
     Ui::MainWindow *ui;
     bool split;

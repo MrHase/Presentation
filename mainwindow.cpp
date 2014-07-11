@@ -30,7 +30,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     split(false),
-    presentationRunning(false) //,
+    presentationRunning(false),
+    presentation((double)this->devicePixelRatio())
 //    helperScreen(0)
 //    scene(new QGraphicsScene(this)),
 //    scene_left(new QGraphicsScene(this)),
@@ -42,28 +43,29 @@ MainWindow::MainWindow(QWidget *parent) :
 
     qDebug() << "Primary screen: " << QGuiApplication::primaryScreen()->name();
 
-    foreach (QScreen *screen, QGuiApplication::screens()) {
-        qDebug() << "Information for screen:" << screen->name();
-        qDebug() << "  Available geometry:" << screen->availableGeometry().x() << screen->availableGeometry().y() << screen->availableGeometry().width() << "x" << screen->availableGeometry().height();
-        qDebug() << "  Available size:" << screen->availableSize().width() << "x" << screen->availableSize().height();
-        qDebug() << "  Available virtual geometry:" << screen->availableVirtualGeometry().x() << screen->availableVirtualGeometry().y() << screen->availableVirtualGeometry().width() << "x" << screen->availableVirtualGeometry().height();
-        qDebug() << "  Available virtual size:" << screen->availableVirtualSize().width() << "x" << screen->availableVirtualSize().height();
-        qDebug() << "  Depth:" << screen->depth() << "bits";
-        qDebug() << "  Geometry:" << screen->geometry().x() << screen->geometry().y() << screen->geometry().width() << "x" << screen->geometry().height();
-        qDebug() << "  Logical DPI:" << screen->logicalDotsPerInch();
-        qDebug() << "  Logical DPI X:" << screen->logicalDotsPerInchX();
-        qDebug() << "  Logical DPI Y:" << screen->logicalDotsPerInchY();
-        qDebug() << "  Orientation:" << Orientation(screen->orientation());
-        qDebug() << "  Physical DPI:" << screen->physicalDotsPerInch();
-        qDebug() << "  Physical DPI X:" << screen->physicalDotsPerInchX();
-        qDebug() << "  Physical DPI Y:" << screen->physicalDotsPerInchY();
-        qDebug() << "  Physical size:" << screen->physicalSize().width() << "x" << screen->physicalSize().height() << "mm";
-        qDebug() << "  Primary orientation:" << Orientation(screen->primaryOrientation());
-        qDebug() << "  Refresh rate:" << screen->refreshRate() << "Hz";
-        qDebug() << "  Size:" << screen->size().width() << "x" << screen->size().height();
-        qDebug() << "  Virtual geometry:" << screen->virtualGeometry().x() << screen->virtualGeometry().y() << screen->virtualGeometry().width() << "x" << screen->virtualGeometry().height();
-        qDebug() << "  Virtual size:" << screen->virtualSize().width() << "x" << screen->virtualSize().height();
-    }
+//    foreach (QScreen *screen, QGuiApplication::screens()) {
+//        qDebug() << "Information for screen:" << screen->name();
+//        qDebug() << "  Available geometry:" << screen->availableGeometry().x() << screen->availableGeometry().y() << screen->availableGeometry().width() << "x" << screen->availableGeometry().height();
+//        qDebug() << "  Available size:" << screen->availableSize().width() << "x" << screen->availableSize().height();
+//        qDebug() << "  Available virtual geometry:" << screen->availableVirtualGeometry().x() << screen->availableVirtualGeometry().y() << screen->availableVirtualGeometry().width() << "x" << screen->availableVirtualGeometry().height();
+//        qDebug() << "  Available virtual size:" << screen->availableVirtualSize().width() << "x" << screen->availableVirtualSize().height();
+//        qDebug() << "  Depth:" << screen->depth() << "bits";
+//        qDebug() << "  Geometry:" << screen->geometry().x() << screen->geometry().y() << screen->geometry().width() << "x" << screen->geometry().height();
+//        qDebug() << "  Logical DPI:" << screen->logicalDotsPerInch();
+//        qDebug() << "  Logical DPI X:" << screen->logicalDotsPerInchX();
+//        qDebug() << "  Logical DPI Y:" << screen->logicalDotsPerInchY();
+//        qDebug() << "  Orientation:" << Orientation(screen->orientation());
+//        qDebug() << "  Physical DPI:" << screen->physicalDotsPerInch();
+//        qDebug() << "  Physical DPI X:" << screen->physicalDotsPerInchX();
+//        qDebug() << "  Physical DPI Y:" << screen->physicalDotsPerInchY();
+//        qDebug() << "  Physical size:" << screen->physicalSize().width() << "x" << screen->physicalSize().height() << "mm";
+//        qDebug() << "  Primary orientation:" << Orientation(screen->primaryOrientation());
+//        qDebug() << "  Refresh rate:" << screen->refreshRate() << "Hz";
+//        qDebug() << "  Size:" << screen->size().width() << "x" << screen->size().height();
+//        qDebug() << "  Virtual geometry:" << screen->virtualGeometry().x() << screen->virtualGeometry().y() << screen->virtualGeometry().width() << "x" << screen->virtualGeometry().height();
+//        qDebug() << "  Virtual size:" << screen->virtualSize().width() << "x" << screen->virtualSize().height();
+//    }
+
 
     updateOutputLists();
 
@@ -95,13 +97,13 @@ void MainWindow::updatePresentation()
 
     if (split)
     {
-        leftSide = presentation.getLeftSideOfPage();
-        rightSide = presentation.getRightSideOfPage();
+        leftSide = presentation.getLeftSideOfPreviewPage();
+        rightSide = presentation.getRightSideOfPreviewPage();
     }
     else
     {
-        leftSide=presentation.getCurrentPage();
-        rightSide=presentation.getCurrentPage();
+        leftSide=presentation.preview_getCurrentPage();
+        rightSide=presentation.preview_getCurrentPage();
     }
 
     leftSide.setDevicePixelRatio(this->devicePixelRatio());
@@ -156,7 +158,7 @@ QScreen *MainWindow::getMainPresentationScreen()
             return screen;
         }
     }
-    throw Exception();
+    throw InconsitentScreenException();
     return nullptr;
 }
 
@@ -172,7 +174,7 @@ QScreen *MainWindow::getHelperScreen()
             return screen;
         }
     }
-    throw Exception();
+    throw InconsitentScreenException();
     return nullptr;
 }
 
@@ -181,11 +183,17 @@ void MainWindow::on_actionOpen_triggered()
 {
     QString filename = QFileDialog::getOpenFileName(this,tr("Open File"),QDir::homePath(),tr("Files(*.pdf)"));
 
+    //sets the rectangle for the preview in order to render the document for the right size
+    presentation.setPreview_rect(ui->graphicsView_left->rect());
+
     if(filename==""){
         return;
     }
 
-    presentation.setDocument(filename);
+    //set the document file, for the presentation
+    presentation.setDocumentFile(filename);
+
+    presentation.setPreviewDocument();
 
     updatePresentation();
 
@@ -218,8 +226,9 @@ void MainWindow::startPresentation()
     try{
         screen_main=getMainPresentationScreen();
         screen_helper=getHelperScreen();
-    }catch(Exception& e){
+    }catch(exception& e){
         QMessageBox msgBox;
+        std::cerr << e.what() << std::endl;
         msgBox.setText("The output device list is inconsistent and will be refreshed now. Please select the right output device and try again.");
         msgBox.exec();
         updateOutputLists();
@@ -295,6 +304,24 @@ void MainWindow::moveWidgetToScreenAndShowFullScreen(QWidget *widget, QScreen *s
     widget->showFullScreen();
 }
 
+void MainWindow::next()
+{
+    if (presentationRunning)
+    {
+
+    }
+    presentation.preview_nextPage();
+}
+
+void MainWindow::prev()
+{
+    if (presentationRunning)
+    {
+
+    }
+    presentation.preview_previousPage();
+}
+
 
 
 void MainWindow::on_actionToggle_Presentation_F5_triggered()
@@ -326,3 +353,5 @@ void MainWindow::on_cb_splitPDF_toggled(bool checked)
 
     updatePresentation();
 }
+
+

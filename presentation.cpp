@@ -1,54 +1,83 @@
-#include "presentation.h"
-
-Presentation::Presentation()
+    #include "presentation.h"
+Presentation::Presentation(double dpri):
+    renderer_preview(dpri),
+    renderer_mainScreen(dpri),
+    renderer_helperScreen(dpri)
 {
-    qDebug()<<"Erstellt....";
 }
 
-void Presentation::setDocument(QString filename)
+
+Presentation::Presentation(QString file_n, double dpri):
+    filename(file_n),
+    renderer_preview(dpri),
+    renderer_mainScreen(dpri),
+    renderer_helperScreen(dpri)
 {
-//    pdfRenderer.setDocument(QString(filename.c_str())); //! ugly... no QString in renderer
-    pdfRenderer.setDocument(filename);
+
 }
 
-void Presentation::nextPage()
+void Presentation::setDocumentFile(QString file_n)
 {
-    //! check if an pdf document is open
-
-    if(currentPage<(pdfRenderer.pages()-1))
-        currentPage++;
+    filename = file_n;
 }
 
-void Presentation::previousPage()
+void Presentation::setPreviewDocument()
 {
-    if(currentPage>0)
-        currentPage--;
+    // setup the renderer and the size for rendering
+    renderer_preview.setDocument(filename);
+
+    qDebug()<< "preview_rect height: " << preview_rect.height();
+    qDebug()<< "preview_rect width: " << preview_rect.width();
+
+    RenderInfo ri;
+    ri.requested_height = preview_rect.height();
+    ri.requested_width = preview_rect.width();
+    ri.splitscreen = true;
+
+    try
+    {
+        renderer_preview.renderDocumentIntoCache(ri);
+    }
+    catch (exception& e)
+    {
+        std::cerr << e.what() << std::endl;
+    }
 }
 
-QImage Presentation::getCurrentPage()
+void Presentation::preview_nextPage()
 {
-    return pdfRenderer.getRenderedImage(currentPage);
+    nextPage();
 }
 
-QImage Presentation::getRightSideOfPage()
+void Presentation::preview_previousPage()
 {
-    return left_rightSideOfPage(false);
+    previousPage();
 }
 
-QImage Presentation::getLeftSideOfPage()
+QImage Presentation::preview_getCurrentPage()
 {
-    return left_rightSideOfPage(true);
+    return renderer_preview.getRenderedImage(currentPage);
+}
+
+QImage Presentation::getRightSideOfPreviewPage()
+{
+    return left_rightSideOfPreviewPage(false);
+}
+
+QImage Presentation::getLeftSideOfPreviewPage()
+{
+    return left_rightSideOfPreviewPage(true);
 }
 
 bool Presentation::documentSet() const
 {
-    return pdfRenderer.documentSet();
+    return renderer_preview.documentSet();
 }
 
-QImage Presentation::left_rightSideOfPage(bool left)
+QImage Presentation::left_rightSideOfPreviewPage(bool left)
 {
     QImage retImage;
-    QImage orig = pdfRenderer.getRenderedImage(currentPage);
+    QImage orig = renderer_preview.getRenderedImage(currentPage);
     QSize origSize = orig.size();
     if (left)
     {
@@ -60,5 +89,48 @@ QImage Presentation::left_rightSideOfPage(bool left)
     }
 
     return retImage;
+}
+QRect Presentation::getHelper_rect() const
+{
+    return helper_rect;
+}
+
+void Presentation::setHelper_rect(const QRect &value)
+{
+    helper_rect = value;
+}
+
+QRect Presentation::getMain_rect() const
+{
+    return main_rect;
+}
+
+void Presentation::setMain_rect(const QRect &value)
+{
+    main_rect = value;
+}
+
+QRect Presentation::getPreview_rect() const
+{
+    return preview_rect;
+}
+
+void Presentation::setPreview_rect(const QRect &value)
+{
+    preview_rect = value;
+}
+
+
+void Presentation::nextPage()
+{
+
+    if(currentPage < (renderer_preview.pages() - 1))
+        currentPage++;
+}
+
+void Presentation::previousPage()
+{
+    if(currentPage > 0)
+        currentPage--;
 }
 

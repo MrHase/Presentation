@@ -1,54 +1,122 @@
 #include "pdfrenderer.h"
 
+
+QRect PdfRenderer::getSize() const
+{
+    return size;
+}
+
+void PdfRenderer::setSize(const QRect &value)
+{
+    size = value;
+}
 void PdfRenderer::renderDocumentIntoCache(RenderInfo ri)
 {
-    for (int i = 0; i < doc->numPages(); i++)
+    if (isDocumentSet)
     {
-        Poppler::Page *page = doc->page(i);
-        if (page)
+        for (int i = 0; i < doc->numPages(); i++)
         {
-            qDebug() << "p height: " << page->pageSizeF().height();
+            Poppler::Page *page = doc->page(i);
+            if (page)
+            {
+                qDebug() << "p height: " << page->pageSizeF().height();
 
-            // calculation of DPI:
-            // desired dpi = (resolution_of_screen * 72.0 )[dots] / smallest_side_of_pic[inch]
-            //!900 needs to be resolved automatically!!
-            //double dpi = (ri.requested_height * 72.0) / page->pageSizeF().height();
+                // calculation of DPI:
+                // desired dpi = (resolution_of_screen * 72.0 )[dots] / smallest_side_of_pic[inch]
+                //!900 needs to be resolved automatically!!
+                //double dpi = (ri.requested_height * 72.0) / page->pageSizeF().height();
 
-            double dpi_x=0,dpi_y=0;
-            calculateDPI(ri,page,[&](double calc_dpi_x,double calc_dpi_y){
-                dpi_x=calc_dpi_x;
-                dpi_y=calc_dpi_y;
-            });
+    //            double dpi_x=0,dpi_y=0;
 
-            QImage img = page->renderToImage(dpi_x*2,dpi_y*2);
+                //! ugly imho. lets use a class for that?
+    //            calculateDPI(ri,page,[&](double calc_dpi_x,double calc_dpi_y){
+    //                dpi_x=calc_dpi_x;
+    //                dpi_y=calc_dpi_y;
+    //            });
 
-            qDebug()<<"i.width: "<<img.size().width() << "i.height: " << img.size().height();
+                DpiRequest request = calculateDPI(ri,page);
+                QImage img = page->renderToImage(request.dpiWidth*thisDevicePixelRatio,request.dpiHeight*thisDevicePixelRatio);
 
-            pageCache.push_back(img);
+                qDebug()<<"i.width: "<<img.size().width() << "i.height: " << img.size().height() << "dpri: " << thisDevicePixelRatio;
+
+                pageCache.push_back(img);
+            }
         }
+    }
+    else
+    {
+//        throw RendererException;
+        qDebug()<<"Error Docuemnt was not set";
     }
 }
 
-void PdfRenderer::calculateDPI(RenderInfo ri, Poppler::Page *page, std::function<void(double dpi_x, double dpi_y)> use_dpi)
+
+//! imho much more readable :)
+
+double PdfRenderer::getThisDevicePixelRatio() const
 {
+    return thisDevicePixelRatio;
+}
+
+void PdfRenderer::setThisDevicePixelRatio(double value)
+{
+    thisDevicePixelRatio = value;
+}
+DpiRequest PdfRenderer::calculateDPI(RenderInfo ri, Poppler::Page *page)
+{
+    DpiRequest ret;
 
     double splitscreen=(ri.splitscreen)?2:1;
-    double dpi_x = (ri.requested_width * 72.0) / (page->pageSizeF().width()/splitscreen);
-    double dpi_y = (ri.requested_height * 72.0) / page->pageSizeF().height();
-
+    ret.dpiWidth = (ri.requested_width * 72.0) / (page->pageSizeF().width()/splitscreen);
+    ret.dpiHeight = (ri.requested_height * 72.0) / page->pageSizeF().height();
 
     double factor=(page->pageSizeF().width()/splitscreen)/page->pageSizeF().height();
     double fake_w=factor*ri.requested_height;
-    //double fake_h=ri.requested_height; // not necessary
 
     if(fake_w<ri.requested_width){
-        dpi_x=dpi_y; //! das ist natürlich blödsinn... wir müssen entscheiden ob wir breite oder höhe zum ausrechnen der dpi brauchen
+        ret.dpiWidth=ret.dpiHeight;
     }else{
-        dpi_y=dpi_x;
+        ret.dpiHeight=ret.dpiWidth;
     }
 
-    use_dpi(dpi_x,dpi_y);
+
+
+    return ret;
 }
+
+PdfRenderer::PdfRenderer(double dpri):
+    thisDevicePixelRatio(dpri)
+{
+
+}
+
+PdfRenderer::PdfRenderer(QRect size, double dpri):
+    size(size),
+    thisDevicePixelRatio(dpri)
+{
+
+}
+
+//void PdfRenderer::calculateDPI(RenderInfo ri, Poppler::Page *page, std::function<void(double dpi_x, double dpi_y)> use_dpi)
+//{
+
+//    double splitscreen=(ri.splitscreen)?2:1;
+//    double dpi_x = (ri.requested_width * 72.0) / (page->pageSizeF().width()/splitscreen);
+//    double dpi_y = (ri.requested_height * 72.0) / page->pageSizeF().height();
+
+
+//    double factor=(page->pageSizeF().width()/splitscreen)/page->pageSizeF().height();
+//    double fake_w=factor*ri.requested_height;
+//    //double fake_h=ri.requested_height; // not necessary
+
+//    if(fake_w<ri.requested_width){
+//        dpi_x=dpi_y; //! das ist natürlich blödsinn... wir müssen entscheiden ob wir breite oder höhe zum ausrechnen der dpi brauchen
+//    }else{
+//        dpi_y=dpi_x;
+//    }
+
+//    use_dpi(dpi_x,dpi_y);
+//}
 
 
 
@@ -69,11 +137,11 @@ void PdfRenderer::setDocument(QString filePath)
     doc->setRenderHint(Poppler::Document::Antialiasing, true);
     doc->setRenderHint(Poppler::Document::TextAntialiasing, true);
 
-    RenderInfo ri;
-    ri.requested_height=1080;
-    ri.requested_width=1920;
-    ri.splitscreen=true;
-    renderDocumentIntoCache(ri);
+//    RenderInfo ri;
+//    ri.requested_height=1080;
+//    ri.requested_width=1920;
+//    ri.splitscreen=true;
+//    renderDocumentIntoCache(ri);
 }
 
 QImage PdfRenderer::getRenderedImage(int pageNum)

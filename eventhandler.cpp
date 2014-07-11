@@ -7,7 +7,7 @@
 EventHandler::EventHandler(MainWindow *main):
     mainWindow(main)
 {
-    qDebug()<<"Eventhandler erstellt..... ";
+    qDebug()<<"Eventhandler created... ";
 }
 
 bool EventHandler::eventFilter (QObject * o, QEvent * event)
@@ -18,21 +18,25 @@ bool EventHandler::eventFilter (QObject * o, QEvent * event)
     {
         if ((event->type() == QEvent::KeyRelease) || (event->type() == QEvent::KeyPress) )
         {
-            if(event->type()==QEvent::KeyRelease){
+            if(event->type()==QEvent::KeyRelease)
+            {
                 QKeyEvent *key=static_cast<QKeyEvent*>(event);
                 switch(key->key()){
                 case Qt::Key_Up:
                     qDebug()<<"UP";
-                    mainWindow->presentation.previousPage();
-                    mainWindow->updatePresentation();
+                    mainWindow->prev();
+//                    mainWindow->presentation.preview_previousPage();
+//                    mainWindow->updatePresentation();
                     break;
                 case Qt::Key_Down:
                     qDebug()<<"Down";
-                    mainWindow->presentation.nextPage();
+                    mainWindow->next();
+//                    mainWindow->presentation.preview_nextPage();
                     break;
                 case Qt::Key_Space:
                     qDebug()<<"Space";
-                    mainWindow->presentation.nextPage();
+                    mainWindow->next();
+//                    mainWindow->presentation.preview_nextPage();
                     break;
                 case Qt::Key_F5:
                     qDebug()<<"F5";

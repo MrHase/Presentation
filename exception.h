@@ -3,15 +3,25 @@
 
 #include <QString>
 #include <string>
+#include <exception>
+
 using namespace std;
 
-class Exception
+class InconsitentScreenException: public exception
 {
 public:
-    Exception();
+    InconsitentScreenException();
 
-    static string OUTPUT_SCREENS_INCONSISTENT(){return "Inconsistent output screen list";}
-    static string TEST(){return "TEST";}
+    string OUTPUT_SCREENS_INCONSISTENT = "Inconsistent output screen list";
+    virtual const char* what() const throw() {return OUTPUT_SCREENS_INCONSISTENT.c_str();}
+};
+
+class RendererException: public exception
+{
+public:
+    RendererException();
+    string NO_DOCUMENT_SET_IN_RENDERER_EXCEPTION = "No document was set in this renderer";
+    virtual const char* what() const throw() {return NO_DOCUMENT_SET_IN_RENDERER_EXCEPTION.c_str();}
 };
 
 #endif // EXCEPTION_H
