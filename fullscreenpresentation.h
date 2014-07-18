@@ -34,6 +34,8 @@ public:
     virtual void resizeEvent(QResizeEvent * event){updatePresentation();}
     virtual void showEvent(QShowEvent *){updatePresentation();}
 
+    QSize getPresentationWidgetSize();
+
 private:
     Ui::FullScreenPresentation *ui;
     QGraphicsScene fullscreenScene;

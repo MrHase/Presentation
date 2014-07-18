@@ -38,7 +38,8 @@ public:
     virtual void resizeEvent(QResizeEvent * event){updatePresentation();}
     virtual void showEvent(QShowEvent *){updatePresentation();}
 
-
+    QSize getPresentationWidgetSize();
+    void setHelperScreenScene(const QGraphicsScene &value);
 
 private slots:
     void on_pushButton_clicked();
@@ -46,7 +47,7 @@ private slots:
 
 private:
     Ui::helperscreenpresentation *ui;
-    QGraphicsScene scene;
+    QGraphicsScene helperScreenScene;
     QImage image;
 
     bool timerIsRunning;

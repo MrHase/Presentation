@@ -118,13 +118,30 @@ void MainWindow::updatePresentation()
     //! ugly?
     if (mainScreenPresentation)
     {
-        mainScreenPresentation->setImage(leftSide);
+        if (split)
+        {
+            mainScreenPresentation->setImage(presentation.getLeftSideOfMainScreen());
+        }
+        else
+        {
+            //!TBD
+//            mainScreenPresentation->setImage(presentation.get());
+        }
+
     }
 
     //! ugly?
     if (helperScreen)
     {
-        helperScreen->setImage(rightSide);
+        //if split is active we need to figure out, which side of the page we need to put in to the windo
+        if (split)
+        {
+            helperScreen->setImage(presentation.getRightSideOfHelperScreen());
+        }
+        else
+        {
+            //!TBD
+        }
     }
 }
 
@@ -183,20 +200,22 @@ void MainWindow::on_actionOpen_triggered()
 {
     QString filename = QFileDialog::getOpenFileName(this,tr("Open File"),QDir::homePath(),tr("Files(*.pdf)"));
 
-    //sets the rectangle for the preview in order to render the document for the right size
-    presentation.setPreview_rect(ui->graphicsView_left->rect());
-
     if(filename==""){
         return;
     }
 
+
     //set the document file, for the presentation
     presentation.setDocumentFile(filename);
 
-    presentation.setPreviewDocument();
+    //sets the rectangle for the preview in order to render the document for the right size
+    presentation.setPreview_size(ui->graphicsView_left->size());
 
+    //sets the previewDocument
+    presentation.setPreviewDocument(this->devicePixelRatio());
+
+    //updates the presentation
     updatePresentation();
-
 }
 
 
@@ -250,7 +269,6 @@ void MainWindow::startPresentation()
     }
 
     // Everthing seems fine! lets go!
-
     presentationRunning = true;
     ui->actionToggle_Presentation_F5->setText("Stop Presentation F5");
 
@@ -258,11 +276,24 @@ void MainWindow::startPresentation()
     {
         mainScreenPresentation = new FullScreenPresentation(0);
         moveWidgetToScreenAndShowFullScreen(mainScreenPresentation,screen_main);
+        qDebug()<<"main screen resulution: h:" << mainScreenPresentation->getPresentationWidgetSize().height() << "w: " << mainScreenPresentation->getPresentationWidgetSize().width() << "dpri: " << mainScreenPresentation->devicePixelRatio();;
+
+        //set the sizes of the presentation attributes
+        presentation.setMain_size(mainScreenPresentation->getPresentationWidgetSize());
+        presentation.setMainScreenDocument(mainScreenPresentation->devicePixelRatio());
+
     }
+
     if (screen_helper)
     {
         helperScreen = new HelperScreenPresentation(0);
         moveWidgetToScreenAndShowFullScreen(helperScreen,screen_helper);
+        qDebug()<<"helper screen resolution: h:" << helperScreen->getPresentationWidgetSize().height() << "w: " << helperScreen->getPresentationWidgetSize().width() << "dpri: " << helperScreen->devicePixelRatio();
+
+        //set the sizes of the presentation attributes
+        presentation.setHelper_size(helperScreen->getPresentationWidgetSize());
+        presentation.setHelperScreenDocument(helperScreen->devicePixelRatio());
+
     }
 
 }

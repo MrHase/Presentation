@@ -24,14 +24,25 @@ void HelperScreenPresentation::setImage(QImage image)
 
 void HelperScreenPresentation::updatePresentation()
 {
-    scene.clear();
+    helperScreenScene.clear();
 
-    QSize widgetSize = this->size();
-    QImage newImage = image.scaled(widgetSize, Qt::KeepAspectRatio);
+    image.setDevicePixelRatio(this->devicePixelRatio());
 
-    scene.addPixmap(QPixmap::fromImage(newImage));
-    scene.setSceneRect(0,0,newImage.size().width(),newImage.size().height());
-    ui->graphicsView->setScene(&scene);
+    QPixmap pixMap = QPixmap::fromImage(image);
+
+    //to be able to use high-dpi displays we need to adjust the rectangle...
+    QRect rect = image.rect();
+    rect.setHeight(rect.height()/devicePixelRatio());
+    rect.setWidth(rect.width()/devicePixelRatio());
+
+    helperScreenScene.addPixmap(pixMap);
+    helperScreenScene.setSceneRect(rect);
+    ui->graphicsView->setScene(&helperScreenScene);
+}
+
+QSize HelperScreenPresentation::getPresentationWidgetSize()
+{
+    return ui->graphicsView->size();
 }
 
 void HelperScreenPresentation::on_pushButton_clicked()
@@ -72,3 +83,4 @@ void HelperScreenPresentation::updateClockWidget()
     }
     ui->lcdNumber->display(text);
 }
+

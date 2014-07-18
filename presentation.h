@@ -13,31 +13,40 @@ public:
     void setDocumentFile(QString file_n);
 
     // Init preview
-    void setPreviewDocument();
+    void setPreviewDocument(int dpri);
 
     QImage preview_getCurrentPage();
 
     QImage getRightSideOfPreviewPage();
     QImage getLeftSideOfPreviewPage();
 
+    QImage getRightSideOfMainScreen();
+    QImage getLeftSideOfMainScreen();
+
+    QImage getRightSideOfHelperScreen();
+    QImage getLeftSideOfHelperScreen();
+
     bool documentSet() const;
-
-    QRect getPreview_rect() const;
-    void setPreview_rect(const QRect &value);
-
-    QRect getMain_rect() const;
-    void setMain_rect(const QRect &value);
-
-    QRect getHelper_rect() const;
-    void setHelper_rect(const QRect &value);
-
-
 
     void nextPage();
     void previousPage();
 
+    void setHelperScreenDocument(int dpri);
+    void setMainScreenDocument(int dpri);
+
+    QSize getPreview_size() const;
+    void setPreview_size(const QSize &value);
+
+    QSize getMain_size() const;
+    void setMain_size(const QSize &value);
+
+    QSize getHelper_size() const;
+    void setHelper_size(const QSize &value);
+
 private:
-    QImage left_rightSideOfPreviewPage(bool left);
+    QImage left_rightSideOfPage(bool left, PdfRenderer &renderer);
+
+    void setRendererDocument(int dpri, PdfRenderer &renderer, QSize size);
 
     PdfRenderer renderer_preview;
     PdfRenderer renderer_mainScreen;
@@ -51,9 +60,9 @@ private:
 
     // rectangles for the supported screens
     // should be okay for now, maybe once a map...
-    QRect preview_rect;
-    QRect main_rect;
-    QRect helper_rect;
+    QSize preview_size;
+    QSize main_size;
+    QSize helper_size;
 
 
 };

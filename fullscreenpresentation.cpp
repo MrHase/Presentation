@@ -31,17 +31,18 @@ void FullScreenPresentation::updatePresentation()
     QPixmap pixMap = QPixmap::fromImage(image);
 
 
+    //to be able to use high-dpi displays we need to adjust the rectangle...
     QRect rect = image.rect();
-    rect.setHeight(rect.height()/this->devicePixelRatio());
-    rect.setWidth(rect.width()/this->devicePixelRatio());
+    rect.setHeight(rect.height()/devicePixelRatio());
+    rect.setWidth(rect.width()/devicePixelRatio());
 
     fullscreenScene.addPixmap(pixMap);
-
     fullscreenScene.setSceneRect(rect);
 
-
-//    fullscreenScene.setSceneRect(0,0,this->size().width(),this->size().height());
-
     ui->graphicsView->setScene(&fullscreenScene);
-//    ui->graphicsView->fitInView(item);
+}
+
+QSize FullScreenPresentation::getPresentationWidgetSize()
+{
+    return ui->graphicsView->size();
 }
