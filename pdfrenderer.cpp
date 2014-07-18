@@ -45,9 +45,13 @@ void PdfRenderer::renderDocumentIntoCache(RenderInfo ri)
                     qDebug()<<"Test : "<<i;
                     QImage img = page->renderToImage(request.dpiWidth*thisDevicePixelRatio,request.dpiHeight*thisDevicePixelRatio);
                     qDebug()<<"i.width: "<<img.size().width() << "i.height: " << img.size().height() << "dpri: " << thisDevicePixelRatio;
+
+                    //! hier ist doch call by value, oder?
+                    //! funktioniert dass dann noch mit dem Mutex??
                     mutex_cache.lock();
                     //pageCache.push_back(img);
-                    pageCache[i]=img;
+                    pageCache[i]=img; //!und wieso funktioniert das?
+
                     mutex_cache.unlock();
                 });
                 /*
