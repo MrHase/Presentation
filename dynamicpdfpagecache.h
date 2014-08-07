@@ -49,8 +49,6 @@ public:
     void setDocument(QString docFilePath);
 
     QImage* getElementFromPos(int pos);
-    QImage* getNextElement();
-    QImage* getPreviousElement();
 
     void initializeCache();
 
@@ -65,7 +63,6 @@ public:
     bool getIsDocumentSet() const;
 
 private:
-
     const uint8_t DISTANCE_TO_CACHE_BORDER = 8;
     const uint8_t ELEMENTS_IN_CACHE = (DISTANCE_TO_CACHE_BORDER *2) +1;
 
@@ -98,11 +95,11 @@ private:
     DotsPerInch calculateDPI(QSize size, Poppler::Page *page);
     QImage* getRenderedImageFromCache(int pageNum);
 
-    void fillCacheToCurrentPosAndSetEnd(int pos);
-    void fillCacheToCurrentPosAndSetBegin(int pos);
+    void fillCacheAfterCacheEnd(int pos);
+    void fillCacheBeforeCacheBegin(int pos);
 
     void fillCacheAndSetNewBorders(int pos);
-    void fillCacheToPos(int pos);
+    void fillCacheFromPos(int pos);
 
     void renderPagesAsThreadsPositiveDirection(int start, int end);
     void renderPagesAsThreadsNegativeDirection(int start, int end);

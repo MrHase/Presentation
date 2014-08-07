@@ -1,5 +1,5 @@
     #include "presentation.h"
-Presentation::Presentation(double dpri):
+Presentation::Presentation():
     cache_preview(0),
     cache_mainScreen(0),
     cache_helperScreen(0)
@@ -10,7 +10,7 @@ Presentation::Presentation(double dpri):
 }
 
 
-Presentation::Presentation(QString file_n, double dpri):
+Presentation::Presentation(QString file_n):
 //    renderer_preview(0),
     cache_preview(0),
     cache_mainScreen(0),
@@ -204,6 +204,23 @@ QSize Presentation::getHelper_size() const
 void Presentation::setHelper_size(const QSize &value)
 {
     helper_size = value;
+}
+
+QRect Presentation::getRectOfImage(bool split)
+{
+    QRect ret;
+    if (split)
+    {
+        QImage image = getRightSideOfPreviewPage();
+        ret = image.rect();
+    }
+    else
+    {
+        QImage image = preview_getCurrentPage();
+        ret = image.rect();
+    }
+
+    return ret;
 }
 
 QSize Presentation::getMain_size() const

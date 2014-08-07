@@ -54,17 +54,17 @@ QImage* DynamicPdfPageCache::getRenderedImageFromCache(int pageNum)
     return ret;
 }
 
-void DynamicPdfPageCache::fillCacheToCurrentPosAndSetEnd(int pos)
+void DynamicPdfPageCache::fillCacheAfterCacheEnd(int pos)
 {
-    int distanceToCacheEnd = cacheEnd - pos;
+    int distanceToCacheEnd = pos - cacheEnd;
 
     // check if we run out of bounces first
-    int end = ((pos + (ELEMENTS_IN_CACHE/2) ) > pageCache.size()) ? pageCache.size() : (pos + (ELEMENTS_IN_CACHE/2) );
+    int end = ((pos + (DISTANCE_TO_CACHE_BORDER) ) > pageCache.size()) ? pageCache.size()-1 : (pos + (DISTANCE_TO_CACHE_BORDER) );
 
     // cache has to be completely new generated...
-    if (distanceToCacheEnd > (ELEMENTS_IN_CACHE/2))
+    if (distanceToCacheEnd > (DISTANCE_TO_CACHE_BORDER))
     {
-        renderPagesAsThreadsNegativeDirection(pos-1, (ELEMENTS_IN_CACHE/2)-1);
+        renderPagesAsThreadsNegativeDirection(pos-1, DISTANCE_TO_CACHE_BORDER);
         renderPagesAsThreadsPositiveDirection(pos+1, end);
     }
     //borders lay within already present data
@@ -74,7 +74,7 @@ void DynamicPdfPageCache::fillCacheToCurrentPosAndSetEnd(int pos)
         renderPagesAsThreadsPositiveDirection(pos+1, end);
     }
 
-    cacheBegin = pos - (ELEMENTS_IN_CACHE/2);
+    cacheBegin = pos - DISTANCE_TO_CACHE_BORDER;
     cacheEnd = end;
 
     // delete all pages laying before the cache
@@ -84,17 +84,17 @@ void DynamicPdfPageCache::fillCacheToCurrentPosAndSetEnd(int pos)
     deletePagesFromCachePositiveDirection(cacheEnd, pageCache.size());
 }
 
-void DynamicPdfPageCache::fillCacheToCurrentPosAndSetBegin(int pos)
+void DynamicPdfPageCache::fillCacheBeforeCacheBegin(int pos)
 {
     int distanceToCacheBegin = cacheBegin - pos;
     // check if we run out of bounces first
-    int end = ((pos - (ELEMENTS_IN_CACHE/2) ) < 0) ? 0 : (pos - (ELEMENTS_IN_CACHE/2) );
+    int end = ((pos - DISTANCE_TO_CACHE_BORDER ) < 0) ? 0 : (pos - DISTANCE_TO_CACHE_BORDER );
 
     // cache has to be completely new generated
-    if (distanceToCacheBegin > (ELEMENTS_IN_CACHE/2) )
+    if (distanceToCacheBegin > DISTANCE_TO_CACHE_BORDER )
     {
         renderPagesAsThreadsNegativeDirection(pos-1,end);
-        renderPagesAsThreadsPositiveDirection(pos+1, (ELEMENTS_IN_CACHE/2)-1);
+        renderPagesAsThreadsPositiveDirection(pos+1, DISTANCE_TO_CACHE_BORDER);
     }
     else
     {
@@ -103,7 +103,7 @@ void DynamicPdfPageCache::fillCacheToCurrentPosAndSetBegin(int pos)
     }
 
     cacheBegin = end;
-    cacheEnd = pos + (ELEMENTS_IN_CACHE/2);
+    cacheEnd = pos + DISTANCE_TO_CACHE_BORDER;
 
     // delete all pages laying before the cache
     deletePagesFromCachePositiveDirection(0, cacheBegin);
@@ -114,63 +114,6 @@ void DynamicPdfPageCache::fillCacheToCurrentPosAndSetBegin(int pos)
 }
 
 
-
-QImage * DynamicPdfPageCache::getNextElement()
-{
-    cacheCurrentPos++;
-
-    //may insert new elements into cache
-    if ((cacheEnd - cacheCurrentPos) < (ELEMENTS_IN_CACHE/2))
-    {
-        qDebug()<<"GET_NEXT_IMAGE: added new element into cache";
-
-        // do not run out of borders
-        if (cacheEnd < sizeOfDocument)
-        {
-            cacheEnd++;
-            renderPageAsThread(cacheEnd);
-        }
-    }
-
-    //may delete elements form cache
-    if ((cacheCurrentPos - cacheBegin) > (ELEMENTS_IN_CACHE/2))
-    {
-        qDebug()<<"GET_NEXT_IMAGE: removed element from cache";
-        deletePageFromCache(cacheBegin);
-        cacheBegin++;
-    }
-
-    return getRenderedImageFromCache(cacheCurrentPos);
-}
-
-QImage *DynamicPdfPageCache::getPreviousElement()
-{
-    cacheCurrentPos--;
-
-    //may delete new elements from cache
-    if ((cacheEnd - cacheCurrentPos) > (ELEMENTS_IN_CACHE/2))
-    {
-        qDebug()<<"GET_PREVIOUS_IMAGE: removed element from cache";
-        deletePageFromCache(cacheEnd);
-        cacheEnd--;
-    }
-
-    //may add elements into cache
-    if ((cacheCurrentPos - cacheBegin) < (ELEMENTS_IN_CACHE/2))
-    {
-        qDebug()<<"GET_PREVIOUS_IMAGE: added a new element into cache";
-
-        // do not run out of borders
-        if (cacheBegin > 0)
-        {
-            cacheBegin--;
-            renderPageAsThread(cacheBegin);
-        }
-    }
-
-    return getRenderedImageFromCache(cacheCurrentPos);
-
-}
 
 DotsPerInch DynamicPdfPageCache::calculateDPI(QSize size, Poppler::Page *page)
 {
@@ -201,6 +144,7 @@ DotsPerInch DynamicPdfPageCache::calculateDPI(QSize size, Poppler::Page *page)
 void DynamicPdfPageCache::renderPage( Poppler::Page *page,int i)
 {
 
+    // setting a higher priority to the current thread
 #if (__MACH__ || __linux__ )
     struct sched_param threadparam;
     threadparam.sched_priority = 10;
@@ -241,6 +185,7 @@ void DynamicPdfPageCache::setDisplaySize(const QSize &value)
 {
     displaySize = value;
 }
+
 int DynamicPdfPageCache::getPixelRatio() const
 {
     return pixelRatio;
@@ -334,17 +279,17 @@ void DynamicPdfPageCache::fillCacheAndSetNewBorders(int pos)
 
 
 
-void DynamicPdfPageCache::fillCacheToPos(int pos)
+void DynamicPdfPageCache::fillCacheFromPos(int pos)
 {
     // cachemiss is behind cache
     if (pos > cacheEnd)
     {
-        fillCacheToCurrentPosAndSetEnd(pos);
+        fillCacheAfterCacheEnd(pos);
     }
     // cachemiss is before cache
     if (pos < cacheBegin)
     {
-        fillCacheToCurrentPosAndSetBegin(pos);
+        fillCacheBeforeCacheBegin(pos);
     }
 }
 
@@ -398,7 +343,7 @@ QImage *DynamicPdfPageCache::getElementFromPos(int pos)
         qDebug()<< "cache miss!!  pos: " << pos ;
         Poppler::Page * page = doc->page(pos);
         renderPage(page,pos);
-        fillCacheToPos(pos);
+        fillCacheFromPos(pos);
 
     }
     // position lay in current cache area

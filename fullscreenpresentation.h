@@ -8,7 +8,8 @@
 #include <QDebug>
 #include <QPixmap>
 #include <QGraphicsItem>
-
+#include <QResizeEvent>
+#include <QShowEvent>
 using namespace std;
 
 
@@ -31,8 +32,16 @@ public:
 
     void updatePresentation(); //! evtl als slot?
 
-    virtual void resizeEvent(QResizeEvent * event){updatePresentation();}
-    virtual void showEvent(QShowEvent *){updatePresentation();}
+    virtual void resizeEvent(QResizeEvent * event)
+    {
+        event->accept();
+        updatePresentation();
+    }
+    virtual void showEvent(QShowEvent * event)
+    {
+        event->accept();
+        updatePresentation();
+    }
 
     QSize getPresentationWidgetSize();
 

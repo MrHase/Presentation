@@ -10,6 +10,8 @@
 #include <QGraphicsItem>
 #include <QTimer>
 #include <QTime>
+#include <QResizeEvent>
+#include <QShowEvent>
 
 namespace Ui {
 class helperscreenpresentation;
@@ -35,8 +37,16 @@ public:
 
     void updatePresentation(); //! evtl als slot?
 
-    virtual void resizeEvent(QResizeEvent * event){updatePresentation();}
-    virtual void showEvent(QShowEvent *){updatePresentation();}
+    virtual void resizeEvent(QResizeEvent * event)
+    {
+        event->accept();
+        updatePresentation();
+    }
+    virtual void showEvent(QShowEvent * event)
+    {
+        event->accept();
+        updatePresentation();
+    }
 
     QSize getPresentationWidgetSize();
     void setHelperScreenScene(const QGraphicsScene &value);

@@ -41,7 +41,8 @@ void PdfRenderer::renderDocumentIntoCache(RenderInfo ri)
                 //! deletee!!
                 // variable capture:
                 // = copy, & reference
-                thread *t=new thread([=](){
+                new thread([=](){
+//                thread *t=new thread([=](){
                     //! use unique_lock or
 
                     qDebug()<<"Test : "<<i;

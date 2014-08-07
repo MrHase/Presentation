@@ -9,8 +9,8 @@
 class Presentation
 {
 public:
-    Presentation(double dpri);
-    Presentation(QString file_n, double dpri);
+    Presentation();
+    Presentation(QString file_n);
 
     void setDocumentFile(QString file_n);
 
@@ -45,6 +45,8 @@ public:
     QSize getHelper_size() const;
     void setHelper_size(const QSize &value);
 
+
+    QRect getRectOfImage(bool split);
 private:
     QImage left_rightSideOfPage(bool left, PdfRenderer &renderer);
     QImage left_rightSideOfPage(bool left_right, QImage & image);

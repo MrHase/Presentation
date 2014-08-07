@@ -37,7 +37,7 @@ public:
 
 
 protected:
-    virtual void keyReleaseEvent ( QKeyEvent * event );
+//    virtual void keyReleaseEvent ( QKeyEvent * event );
 
 private slots:
 

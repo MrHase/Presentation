@@ -31,7 +31,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow),
     split(false),
     presentationRunning(false),
-    presentation((double)this->devicePixelRatio())
+    presentation()
 //    helperScreen(0)
 //    scene(new QGraphicsScene(this)),
 //    scene_left(new QGraphicsScene(this)),
@@ -77,11 +77,11 @@ MainWindow::~MainWindow()
 }
 
 
-void MainWindow::keyReleaseEvent(QKeyEvent *event)
-{
+//void MainWindow::keyReleaseEvent(QKeyEvent *event)
+//{
 
-    //updatePresentation();
-}
+//    //updatePresentation();
+//}
 
 
 
@@ -375,6 +375,8 @@ void MainWindow::on_cb_splitPDF_toggled(bool checked)
     scene_left.clear();
     scene_right.clear();
 
+    scene_left.setSceneRect(presentation.getRectOfImage(checked));
+    scene_right.setSceneRect(presentation.getRectOfImage(checked));
     updatePresentation();
 }
 
