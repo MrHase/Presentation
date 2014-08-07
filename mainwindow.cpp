@@ -215,6 +215,7 @@ void MainWindow::on_actionOpen_triggered()
     presentation.setPreviewDocument(this->devicePixelRatio());
 
     //updates the presentation
+    sleep(1);
     updatePresentation();
 }
 

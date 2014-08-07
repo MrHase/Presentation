@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     fullscreenpresentation.cpp \
     eventhandler.cpp \
     helperscreenpresentation.cpp \
-    exception.cpp
+    exception.cpp \
+    dynamicpdfpagecache.cpp
 
 HEADERS  += mainwindow.h \
     pdfrenderer.h \
@@ -29,7 +30,8 @@ HEADERS  += mainwindow.h \
     fullscreenpresentation.h \
     eventhandler.h \
     helperscreenpresentation.h \
-    exception.h
+    exception.h \
+    dynamicpdfpagecache.h
 
 FORMS    += mainwindow.ui \
     fullscreenpresentation.ui \

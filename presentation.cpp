@@ -1,16 +1,22 @@
     #include "presentation.h"
 Presentation::Presentation(double dpri):
-    renderer_preview(0),
-    renderer_mainScreen(0),
-    renderer_helperScreen(0)
+    cache_preview(0),
+    cache_mainScreen(0),
+    cache_helperScreen(0)
+//    renderer_preview(0),
+//    renderer_mainScreen(0),
+//    renderer_helperScreen(0)
 {
 }
 
 
 Presentation::Presentation(QString file_n, double dpri):
-    renderer_preview(0),
-    renderer_mainScreen(0),
-    renderer_helperScreen(0),
+//    renderer_preview(0),
+    cache_preview(0),
+    cache_mainScreen(0),
+    cache_helperScreen(0),
+//    renderer_mainScreen(0),
+//    renderer_helperScreen(0),
     filename(file_n)
 {
 
@@ -23,8 +29,12 @@ void Presentation::setDocumentFile(QString file_n)
 
 void Presentation::setPreviewDocument(int dpri)
 {
+//    setRendererDocument(dpri, renderer_preview, preview_size);
 
-    setRendererDocument(dpri, renderer_preview, preview_size);
+    setCacheDocument(dpri,cache_preview,preview_size);
+
+    numOfPages = cache_preview.getSizeOfDocument();
+
 //    // setup the renderer and the size for rendering
 //    renderer_preview.setDocument(filename);
 //    renderer_preview.setThisDevicePixelRatio(dpri);
@@ -49,43 +59,62 @@ void Presentation::setPreviewDocument(int dpri)
 
 QImage Presentation::preview_getCurrentPage()
 {
-    return renderer_preview.getRenderedImage(currentPage);
+    return getCurrentImageFromCache(cache_preview);
+//    return renderer_preview.getRenderedImage(currentPage);
 }
 
 QImage Presentation::getRightSideOfPreviewPage()
 {
-    return left_rightSideOfPage(false,renderer_preview);
+    QImage page = getCurrentImageFromCache(cache_preview);
+    return left_rightSideOfPage(false,page);
 }
 
 QImage Presentation::getLeftSideOfPreviewPage()
 {
-    return left_rightSideOfPage(true,renderer_preview);
+    QImage page = getCurrentImageFromCache(cache_preview);
+    return left_rightSideOfPage(true,page);
 }
 
 QImage Presentation::getRightSideOfMainScreen()
 {
-    return left_rightSideOfPage(false, renderer_mainScreen);
+    QImage page = getCurrentImageFromCache(cache_mainScreen);
+    return left_rightSideOfPage(false, page);
 }
 
 QImage Presentation::getLeftSideOfMainScreen()
 {
-    return left_rightSideOfPage(true, renderer_mainScreen);
+    QImage page = getCurrentImageFromCache(cache_mainScreen);
+    return left_rightSideOfPage(true, page);
 }
 
 QImage Presentation::getRightSideOfHelperScreen()
 {
-    return left_rightSideOfPage(false, renderer_helperScreen);
+    QImage page = getCurrentImageFromCache(cache_helperScreen);
+    return left_rightSideOfPage(false, page);
 }
 
 QImage Presentation::getLeftSideOfHelperScreen()
 {
-    return left_rightSideOfPage(true, renderer_helperScreen);
+    QImage page = getCurrentImageFromCache(cache_helperScreen);
+    return left_rightSideOfPage(true, page);
 }
 
 bool Presentation::documentSet() const
 {
-    return renderer_preview.documentSet();
+    bool ret = false;
+    if (cache_preview.getIsDocumentSet() || cache_mainScreen.getIsDocumentSet() || cache_helperScreen.getIsDocumentSet())
+    {
+        ret = true;
+    }
+
+    return ret;
+//    return (cache_helperScreen.getIsDocumentSet()
+//            || cache_mainScreen.getIsDocumentSet()
+//            || cache_helperScreen.getIsDocumentSet()) ?
+//                true: false;
+//    return renderer_preview.documentSet();
 }
+
 
 QImage Presentation::left_rightSideOfPage(bool left, PdfRenderer& renderer)
 {
@@ -102,6 +131,36 @@ QImage Presentation::left_rightSideOfPage(bool left, PdfRenderer& renderer)
     }
 
     return retImage;
+}
+
+QImage Presentation::left_rightSideOfPage(bool left_right, QImage &image)
+{
+    QImage ret;
+
+    QSize origSize = image.size();
+    if (left_right)
+    {
+        ret = image.copy(0,0,origSize.width()/2,origSize.height());
+    }
+    else
+    {
+        ret = image.copy(origSize.width()/2,0,origSize.width()/2,origSize.height());
+    }
+
+    return ret;
+}
+
+QImage Presentation::getCurrentImageFromCache(DynamicPdfPageCache &cache)
+{
+    QImage ret;
+    QImage * tmp = cache.getElementFromPos(currentPage);
+
+    if (tmp != nullptr)
+    {
+        ret = *tmp;
+    }
+
+    return ret;
 }
 
 void Presentation::setRendererDocument(int dpri, PdfRenderer &renderer, QSize size)
@@ -127,6 +186,16 @@ void Presentation::setRendererDocument(int dpri, PdfRenderer &renderer, QSize si
         std::cerr << e.what() << std::endl;
     }
 }
+
+void Presentation::setCacheDocument(int dpri, DynamicPdfPageCache &cache, QSize size)
+{
+    cache.setDocument(filename);
+    cache.setPixelRatio(dpri);
+    cache.setDisplaySize(size);
+
+    cache.initializeCache();
+}
+
 QSize Presentation::getHelper_size() const
 {
     return helper_size;
@@ -160,8 +229,7 @@ void Presentation::setPreview_size(const QSize &value)
 
 void Presentation::nextPage()
 {
-
-    if(currentPage < (renderer_preview.pages() - 1))
+    if(currentPage < (numOfPages-1))
         currentPage++;
 }
 
@@ -173,11 +241,13 @@ void Presentation::previousPage()
 
 void Presentation::setHelperScreenDocument(int dpri)
 {
-    setRendererDocument(dpri,renderer_helperScreen,helper_size);
+    setCacheDocument(dpri,cache_helperScreen,helper_size);
+//    setRendererDocument(dpri,renderer_helperScreen,helper_size);
 }
 
 void Presentation::setMainScreenDocument(int dpri)
 {
-    setRendererDocument(dpri,renderer_mainScreen,main_size);
+    setCacheDocument(dpri,cache_mainScreen,main_size);
+//    setRendererDocument(dpri,renderer_mainScreen,main_size);
 }
 

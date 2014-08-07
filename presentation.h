@@ -2,7 +2,9 @@
 #define PRESENTATION_H
 
 #include "pdfrenderer.h"
+#include "dynamicpdfpagecache.h"
 #include <iostream>
+#include <unistd.h>
 
 class Presentation
 {
@@ -45,14 +47,25 @@ public:
 
 private:
     QImage left_rightSideOfPage(bool left, PdfRenderer &renderer);
+    QImage left_rightSideOfPage(bool left_right, QImage & image);
+
+
+    QImage getCurrentImageFromCache(DynamicPdfPageCache & cache);
 
     void setRendererDocument(int dpri, PdfRenderer &renderer, QSize size);
+    void setCacheDocument(int dpri, DynamicPdfPageCache & cache, QSize size);
 
-    PdfRenderer renderer_preview;
-    PdfRenderer renderer_mainScreen;
-    PdfRenderer renderer_helperScreen;
+
+    DynamicPdfPageCache cache_preview;
+    DynamicPdfPageCache cache_mainScreen;
+    DynamicPdfPageCache cache_helperScreen;
+
+//    PdfRenderer renderer_preview;
+//    PdfRenderer renderer_mainScreen;
+//    PdfRenderer renderer_helperScreen;
 
     uint32_t currentPage = 0;
+    uint32_t numOfPages = 0;
 
     QString filename;
 

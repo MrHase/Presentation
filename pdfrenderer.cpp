@@ -39,6 +39,8 @@ void PdfRenderer::renderDocumentIntoCache(RenderInfo ri)
                 DpiRequest request = calculateDPI(ri,page);
 
                 //! deletee!!
+                // variable capture:
+                // = copy, & reference
                 thread *t=new thread([=](){
                     //! use unique_lock or
 
@@ -46,7 +48,7 @@ void PdfRenderer::renderDocumentIntoCache(RenderInfo ri)
                     QImage img = page->renderToImage(request.dpiWidth*thisDevicePixelRatio,request.dpiHeight*thisDevicePixelRatio);
                     qDebug()<<"i.width: "<<img.size().width() << "i.height: " << img.size().height() << "dpri: " << thisDevicePixelRatio;
 
-                    //! hier ist doch call by value, oder?
+                    //! hier ist doch copy by value, oder?
                     //! funktioniert dass dann noch mit dem Mutex??
                     mutex_cache.lock();
                     //pageCache.push_back(img);
@@ -82,6 +84,7 @@ void PdfRenderer::setThisDevicePixelRatio(double value)
 {
     thisDevicePixelRatio = value;
 }
+
 DpiRequest PdfRenderer::calculateDPI(RenderInfo ri, Poppler::Page *page)
 {
     DpiRequest ret;

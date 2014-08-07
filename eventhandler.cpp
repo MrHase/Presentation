@@ -12,6 +12,10 @@ EventHandler::EventHandler(MainWindow *main):
 
 bool EventHandler::eventFilter (QObject * o, QEvent * event)
 {
+    if (o == nullptr || event == nullptr)
+    {
+        return false;
+    }
     bool ret = false;
     //handle keyboard events only, if a document was set before...
     if (mainWindow->presentation.documentSet())
@@ -25,17 +29,20 @@ bool EventHandler::eventFilter (QObject * o, QEvent * event)
                 case Qt::Key_Up:
                     qDebug()<<"UP";
                     mainWindow->prev();
+                    mainWindow->updatePresentation();
 //                    mainWindow->presentation.preview_previousPage();
 //                    mainWindow->updatePresentation();
                     break;
                 case Qt::Key_Down:
                     qDebug()<<"Down";
                     mainWindow->next();
+                    mainWindow->updatePresentation();
 //                    mainWindow->presentation.preview_nextPage();
                     break;
                 case Qt::Key_Space:
                     qDebug()<<"Space";
                     mainWindow->next();
+                    mainWindow->updatePresentation();
 //                    mainWindow->presentation.preview_nextPage();
                     break;
                 case Qt::Key_F5:
@@ -48,8 +55,6 @@ bool EventHandler::eventFilter (QObject * o, QEvent * event)
                     break;
                 }
             }
-            qDebug()<<"Event handled...." ;
-            mainWindow->updatePresentation();
             ret = true;
         }
     }
