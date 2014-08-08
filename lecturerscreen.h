@@ -14,16 +14,16 @@
 #include <QShowEvent>
 
 namespace Ui {
-class helperscreenpresentation;
+class lecturerscreen;
 }
 
-class HelperScreenPresentation : public QWidget
+class LecturerScreen : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit HelperScreenPresentation(QWidget *parent = 0);
-    ~HelperScreenPresentation();
+    explicit LecturerScreen(QWidget *parent = 0);
+    ~LecturerScreen();
 
 
 
@@ -56,7 +56,7 @@ private slots:
     void updateClockWidget();
 
 private:
-    Ui::helperscreenpresentation *ui;
+    Ui::lecturerscreen *ui;
     QGraphicsScene helperScreenScene;
     QImage image;
 

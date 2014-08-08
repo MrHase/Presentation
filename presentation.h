@@ -1,7 +1,6 @@
 #ifndef PRESENTATION_H
 #define PRESENTATION_H
 
-#include "pdfrenderer.h"
 #include "dynamicpdfpagecache.h"
 #include <iostream>
 #include <unistd.h>
@@ -15,7 +14,7 @@ public:
     void setDocumentFile(QString file_n);
 
     // Init preview
-    void setPreviewDocument(int dpri);
+    void setPreviewDocument(int dpri, double splitscreen);
 
     QImage preview_getCurrentPage();
 
@@ -25,16 +24,20 @@ public:
     QImage getRightSideOfMainScreen();
     QImage getLeftSideOfMainScreen();
 
-    QImage getRightSideOfHelperScreen();
-    QImage getLeftSideOfHelperScreen();
+    QImage getRightSideOfLecturerScreen();
+    QImage getLeftSideOfLecturerScreen();
+
+    QImage getCurrentMainScreen();
+    QImage getCurrentLectureScreen();
+
 
     bool documentSet() const;
 
     void nextPage();
     void previousPage();
 
-    void setHelperScreenDocument(int dpri);
-    void setMainScreenDocument(int dpri);
+    void setHelperScreenDocument(int dpri, double splitscreen);
+    void setMainScreenDocument(int dpri, double splitscreen);
 
     QSize getPreview_size() const;
     void setPreview_size(const QSize &value);
@@ -48,19 +51,19 @@ public:
 
     QRect getRectOfImage(bool split);
 private:
-    QImage left_rightSideOfPage(bool left, PdfRenderer &renderer);
+
     QImage left_rightSideOfPage(bool left_right, QImage & image);
 
 
     QImage getCurrentImageFromCache(DynamicPdfPageCache & cache);
 
-    void setRendererDocument(int dpri, PdfRenderer &renderer, QSize size);
-    void setCacheDocument(int dpri, DynamicPdfPageCache & cache, QSize size);
+
+    void setCacheDocument(int dpri, DynamicPdfPageCache & cache, QSize size, double splitscreen);
 
 
     DynamicPdfPageCache cache_preview;
     DynamicPdfPageCache cache_mainScreen;
-    DynamicPdfPageCache cache_helperScreen;
+    DynamicPdfPageCache cache_lecturerScreen;
 
 //    PdfRenderer renderer_preview;
 //    PdfRenderer renderer_mainScreen;

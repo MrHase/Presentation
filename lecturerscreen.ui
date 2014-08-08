@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>helperscreenpresentation</class>
- <widget class="QWidget" name="helperscreenpresentation">
+ <class>lecturerscreen</class>
+ <widget class="QWidget" name="lecturerscreen">
   <property name="geometry">
    <rect>
     <x>0</x>

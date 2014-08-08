@@ -17,7 +17,6 @@
 #include <windows.h>
 #endif
 
-#include "pdfrenderer.h"
 
 using namespace std;
 
@@ -41,12 +40,12 @@ public:
 class DynamicPdfPageCache
 {
 public:
-    DynamicPdfPageCache(QSize size, int pixelRatio);
+
     DynamicPdfPageCache(int pixelRatio);
 
     ~DynamicPdfPageCache();
 
-    void setDocument(QString docFilePath);
+    void setDocument(QString docFilePath, double splitscreen);
 
     QImage* getElementFromPos(int pos);
 
@@ -62,12 +61,19 @@ public:
 
     bool getIsDocumentSet() const;
 
+
+
 private:
+
+    vector<thread> threads;
+
     const uint8_t DISTANCE_TO_CACHE_BORDER = 8;
     const uint8_t ELEMENTS_IN_CACHE = (DISTANCE_TO_CACHE_BORDER *2) +1;
 
     Poppler::Document *doc;
     vector<QImage*> pageCache;
+
+    double splitscreen=1.0;
 
     bool isDocumentSet = false;
 

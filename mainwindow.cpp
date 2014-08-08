@@ -124,6 +124,7 @@ void MainWindow::updatePresentation()
         }
         else
         {
+            mainScreenPresentation->setImage(presentation.getCurrentMainScreen());
             //!TBD
 //            mainScreenPresentation->setImage(presentation.get());
         }
@@ -131,16 +132,16 @@ void MainWindow::updatePresentation()
     }
 
     //! ugly?
-    if (helperScreen)
+    if (lecturerScreen)
     {
         //if split is active we need to figure out, which side of the page we need to put in to the windo
         if (split)
         {
-            helperScreen->setImage(presentation.getRightSideOfHelperScreen());
+            lecturerScreen->setImage(presentation.getRightSideOfLecturerScreen());
         }
         else
         {
-            //!TBD
+            lecturerScreen->setImage(presentation.getCurrentLectureScreen());
         }
     }
 }
@@ -212,10 +213,11 @@ void MainWindow::on_actionOpen_triggered()
     presentation.setPreview_size(ui->graphicsView_left->size());
 
     //sets the previewDocument
-    presentation.setPreviewDocument(this->devicePixelRatio());
+
+    presentation.setPreviewDocument(this->devicePixelRatio(),(ui->cb_splitPDF->isChecked())?2:1);
 
     //updates the presentation
-    sleep(1);
+    sleep(1); //! das muss raus!
     updatePresentation();
 }
 
@@ -281,19 +283,19 @@ void MainWindow::startPresentation()
 
         //set the sizes of the presentation attributes
         presentation.setMain_size(mainScreenPresentation->getPresentationWidgetSize());
-        presentation.setMainScreenDocument(mainScreenPresentation->devicePixelRatio());
+        presentation.setMainScreenDocument(mainScreenPresentation->devicePixelRatio(),(ui->cb_splitPDF->isChecked())?2:1);
 
     }
 
     if (screen_helper)
     {
-        helperScreen = new HelperScreenPresentation(0);
-        moveWidgetToScreenAndShowFullScreen(helperScreen,screen_helper);
-        qDebug()<<"helper screen resolution: h:" << helperScreen->getPresentationWidgetSize().height() << "w: " << helperScreen->getPresentationWidgetSize().width() << "dpri: " << helperScreen->devicePixelRatio();
+        lecturerScreen = new LecturerScreen(0);
+        moveWidgetToScreenAndShowFullScreen(lecturerScreen,screen_helper);
+        qDebug()<<"helper screen resolution: h:" << lecturerScreen->getPresentationWidgetSize().height() << "w: " << lecturerScreen->getPresentationWidgetSize().width() << "dpri: " << lecturerScreen->devicePixelRatio();
 
         //set the sizes of the presentation attributes
-        presentation.setHelper_size(helperScreen->getPresentationWidgetSize());
-        presentation.setHelperScreenDocument(helperScreen->devicePixelRatio());
+        presentation.setHelper_size(lecturerScreen->getPresentationWidgetSize());
+        presentation.setHelperScreenDocument(lecturerScreen->devicePixelRatio(),(ui->cb_splitPDF->isChecked())?2:1);
 
     }
 
@@ -315,11 +317,11 @@ void MainWindow::stopPresentation()
         mainScreenPresentation = nullptr;
     }
 
-    if(helperScreen){
-        helperScreen->showNormal();
-        helperScreen->close();
-        delete helperScreen;
-        helperScreen = nullptr;
+    if(lecturerScreen){
+        lecturerScreen->showNormal();
+        lecturerScreen->close();
+        delete lecturerScreen;
+        lecturerScreen = nullptr;
     }
 }
 

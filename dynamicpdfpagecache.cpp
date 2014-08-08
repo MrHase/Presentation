@@ -1,12 +1,5 @@
 #include "dynamicpdfpagecache.h"
 
-DynamicPdfPageCache::DynamicPdfPageCache(QSize display, int pixelRatio):
-    displaySize(display),
-    pixelRatio(pixelRatio)
-{
-
-}
-
 DynamicPdfPageCache::DynamicPdfPageCache(int pixelRatio):
     pixelRatio(pixelRatio)
 {
@@ -20,9 +13,15 @@ DynamicPdfPageCache::~DynamicPdfPageCache()
     delete doc;
 }
 
-void DynamicPdfPageCache::setDocument(QString docFilePath)
+void DynamicPdfPageCache::setDocument(QString docFilePath,double splitscreen)
 {
+
+    //! alle threads anhalten
+    //! cache löschen+leeren
+
     isDocumentSet = true;
+    this->splitscreen=splitscreen;
+
     doc = Poppler::Document::load(docFilePath);
 
     doc->setRenderBackend(Poppler::Document::SplashBackend);
@@ -119,9 +118,9 @@ DotsPerInch DynamicPdfPageCache::calculateDPI(QSize size, Poppler::Page *page)
 {
     DotsPerInch ret;
 
-//    double splitscreen = (ri.splitscreen)?2:1;
+//    double splitscreen = (ri.splitscreen)?2:1; //!
 //    double splitscreen = 1.0;
-    double splitscreen = 2.0;
+    //double splitscreen = 2.0;
     ret.dpiWidth = (size.width() * 72.0) / (page->pageSizeF().width()/splitscreen);
     ret.dpiHeight = (size.height() * 72.0) / page->pageSizeF().height();
 
@@ -169,7 +168,8 @@ void DynamicPdfPageCache::initializeCache()
     for (int i = 0; i < end; i++)
     {
         Poppler::Page *page = doc->page(i);
-        new thread (&DynamicPdfPageCache::renderPage,this,page, i);
+        //new thread (&DynamicPdfPageCache::renderPage,this,page, i); //! memory leak
+        threads.push_back(thread(&DynamicPdfPageCache::renderPage,this,page, i));
     }
 
     cacheCurrentPos = 0;
@@ -209,7 +209,7 @@ bool DynamicPdfPageCache::getIsDocumentSet() const
 void DynamicPdfPageCache::renderPageAsThread(int pageNum)
 {
     Poppler::Page *page = doc->page(pageNum);
-    new thread (&DynamicPdfPageCache::renderPage,this,page, pageNum);
+    threads.push_back( thread (&DynamicPdfPageCache::renderPage,this,page, pageNum));
 }
 
 void DynamicPdfPageCache::deletePageFromCache(int pageNum)

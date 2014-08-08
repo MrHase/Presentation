@@ -2,7 +2,7 @@
 Presentation::Presentation():
     cache_preview(0),
     cache_mainScreen(0),
-    cache_helperScreen(0)
+    cache_lecturerScreen(0)
 //    renderer_preview(0),
 //    renderer_mainScreen(0),
 //    renderer_helperScreen(0)
@@ -14,7 +14,7 @@ Presentation::Presentation(QString file_n):
 //    renderer_preview(0),
     cache_preview(0),
     cache_mainScreen(0),
-    cache_helperScreen(0),
+    cache_lecturerScreen(0),
 //    renderer_mainScreen(0),
 //    renderer_helperScreen(0),
     filename(file_n)
@@ -27,11 +27,11 @@ void Presentation::setDocumentFile(QString file_n)
     filename = file_n;
 }
 
-void Presentation::setPreviewDocument(int dpri)
+void Presentation::setPreviewDocument(int dpri,double splitscreen)
 {
 //    setRendererDocument(dpri, renderer_preview, preview_size);
 
-    setCacheDocument(dpri,cache_preview,preview_size);
+    setCacheDocument(dpri,cache_preview,preview_size,splitscreen);
 
     numOfPages = cache_preview.getSizeOfDocument();
 
@@ -87,22 +87,32 @@ QImage Presentation::getLeftSideOfMainScreen()
     return left_rightSideOfPage(true, page);
 }
 
-QImage Presentation::getRightSideOfHelperScreen()
+QImage Presentation::getRightSideOfLecturerScreen()
 {
-    QImage page = getCurrentImageFromCache(cache_helperScreen);
+    QImage page = getCurrentImageFromCache(cache_lecturerScreen);
     return left_rightSideOfPage(false, page);
 }
 
-QImage Presentation::getLeftSideOfHelperScreen()
+QImage Presentation::getLeftSideOfLecturerScreen()
 {
-    QImage page = getCurrentImageFromCache(cache_helperScreen);
+    QImage page = getCurrentImageFromCache(cache_lecturerScreen);
     return left_rightSideOfPage(true, page);
+}
+
+QImage Presentation::getCurrentMainScreen()
+{
+    return getCurrentImageFromCache(cache_mainScreen);
+}
+
+QImage Presentation::getCurrentLectureScreen()
+{
+    return getCurrentImageFromCache(cache_lecturerScreen);
 }
 
 bool Presentation::documentSet() const
 {
     bool ret = false;
-    if (cache_preview.getIsDocumentSet() || cache_mainScreen.getIsDocumentSet() || cache_helperScreen.getIsDocumentSet())
+    if (cache_preview.getIsDocumentSet() || cache_mainScreen.getIsDocumentSet() || cache_lecturerScreen.getIsDocumentSet())
     {
         ret = true;
     }
@@ -116,22 +126,6 @@ bool Presentation::documentSet() const
 }
 
 
-QImage Presentation::left_rightSideOfPage(bool left, PdfRenderer& renderer)
-{
-    QImage retImage;
-    QImage orig = renderer.getRenderedImage(currentPage);
-    QSize origSize = orig.size();
-    if (left)
-    {
-        retImage = orig.copy(0,0,origSize.width()/2,origSize.height());
-    }
-    else
-    {
-        retImage = orig.copy(origSize.width()/2,0,origSize.width()/2,origSize.height());
-    }
-
-    return retImage;
-}
 
 QImage Presentation::left_rightSideOfPage(bool left_right, QImage &image)
 {
@@ -163,37 +157,16 @@ QImage Presentation::getCurrentImageFromCache(DynamicPdfPageCache &cache)
     return ret;
 }
 
-void Presentation::setRendererDocument(int dpri, PdfRenderer &renderer, QSize size)
+
+void Presentation::setCacheDocument(int dpri, DynamicPdfPageCache &cache, QSize size,double splitscreen)
 {
-    // setup the renderer and the size for rendering
-    renderer.setDocument(filename);
-    renderer.setThisDevicePixelRatio(dpri);
+    //! alter cache deleten und neu anlegen?
 
-    qDebug()<< "size height: " << size.height() << "size width : " << size.width();
+    cache.setDocument(filename,splitscreen); //!
+    cache.setPixelRatio(dpri); //! mit in den SetDocument/Constructur
+    cache.setDisplaySize(size); //! constructor
 
-
-    RenderInfo ri;
-    ri.requested_height = size.height();
-    ri.requested_width = size.width();
-    ri.splitscreen = true;
-
-    try
-    {
-        renderer.renderDocumentIntoCache(ri);
-    }
-    catch (exception& e)
-    {
-        std::cerr << e.what() << std::endl;
-    }
-}
-
-void Presentation::setCacheDocument(int dpri, DynamicPdfPageCache &cache, QSize size)
-{
-    cache.setDocument(filename);
-    cache.setPixelRatio(dpri);
-    cache.setDisplaySize(size);
-
-    cache.initializeCache();
+    cache.initializeCache(); //! constructor
 }
 
 QSize Presentation::getHelper_size() const
@@ -256,15 +229,15 @@ void Presentation::previousPage()
         currentPage--;
 }
 
-void Presentation::setHelperScreenDocument(int dpri)
+void Presentation::setHelperScreenDocument(int dpri,double splitscreen)
 {
-    setCacheDocument(dpri,cache_helperScreen,helper_size);
+    setCacheDocument(dpri,cache_lecturerScreen,helper_size,splitscreen);
 //    setRendererDocument(dpri,renderer_helperScreen,helper_size);
 }
 
-void Presentation::setMainScreenDocument(int dpri)
+void Presentation::setMainScreenDocument(int dpri,double splitscreen)
 {
-    setCacheDocument(dpri,cache_mainScreen,main_size);
+    setCacheDocument(dpri,cache_mainScreen,main_size,splitscreen);
 //    setRendererDocument(dpri,renderer_mainScreen,main_size);
 }
 

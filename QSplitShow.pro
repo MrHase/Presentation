@@ -16,26 +16,24 @@ CONFIG += c++11
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    pdfrenderer.cpp \
     presentation.cpp \
     fullscreenpresentation.cpp \
     eventhandler.cpp \
-    helperscreenpresentation.cpp \
     exception.cpp \
-    dynamicpdfpagecache.cpp
+    dynamicpdfpagecache.cpp \
+    lecturerscreen.cpp
 
 HEADERS  += mainwindow.h \
-    pdfrenderer.h \
     presentation.h \
     fullscreenpresentation.h \
     eventhandler.h \
-    helperscreenpresentation.h \
     exception.h \
-    dynamicpdfpagecache.h
+    dynamicpdfpagecache.h \
+    lecturerscreen.h
 
 FORMS    += mainwindow.ui \
     fullscreenpresentation.ui \
-    helperscreenpresentation.ui
+    lecturerscreen.ui
 
 unix|win32: LIBS += -lpoppler-qt5
 

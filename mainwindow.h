@@ -15,9 +15,9 @@
 #include "presentation.h"
 
 
-#include "pdfrenderer.h"
+
 #include "fullscreenpresentation.h"
-#include "helperscreenpresentation.h"
+#include "lecturerscreen.h"
 
 
 using namespace std;
@@ -71,7 +71,7 @@ private:
     QGraphicsScene scene_right;
 
     FullScreenPresentation *mainScreenPresentation = nullptr;
-    HelperScreenPresentation* helperScreen = nullptr;
+    LecturerScreen* lecturerScreen = nullptr;
 
     Presentation presentation;
 };

@@ -1,9 +1,9 @@
-#include "helperscreenpresentation.h"
-#include "ui_helperscreenpresentation.h"
+#include "lecturerscreen.h"
+#include "ui_lecturerscreen.h"
 
-HelperScreenPresentation::HelperScreenPresentation(QWidget *parent) :
+LecturerScreen::LecturerScreen(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::helperscreenpresentation),
+    ui(new Ui::lecturerscreen),
     timerIsRunning(false),
     timer(this)
 {
@@ -11,18 +11,18 @@ HelperScreenPresentation::HelperScreenPresentation(QWidget *parent) :
     connect(&timer,SIGNAL(timeout()),this,SLOT(updateClockWidget()));
 }
 
-HelperScreenPresentation::~HelperScreenPresentation()
+LecturerScreen::~LecturerScreen()
 {
     delete ui;
 }
 
-void HelperScreenPresentation::setImage(QImage image)
+void LecturerScreen::setImage(QImage image)
 {
     this->image = image;
     updatePresentation();
 }
 
-void HelperScreenPresentation::updatePresentation()
+void LecturerScreen::updatePresentation()
 {
     helperScreenScene.clear();
 
@@ -40,12 +40,12 @@ void HelperScreenPresentation::updatePresentation()
     ui->graphicsView->setScene(&helperScreenScene);
 }
 
-QSize HelperScreenPresentation::getPresentationWidgetSize()
+QSize LecturerScreen::getPresentationWidgetSize()
 {
     return ui->graphicsView->size();
 }
 
-void HelperScreenPresentation::on_pushButton_clicked()
+void LecturerScreen::on_pushButton_clicked()
 {
     if (!timerIsRunning)
     {
@@ -66,7 +66,7 @@ void HelperScreenPresentation::on_pushButton_clicked()
 
 }
 
-void HelperScreenPresentation::updateClockWidget()
+void LecturerScreen::updateClockWidget()
 {
     seconds ++;
     if (seconds %60 == 0)
