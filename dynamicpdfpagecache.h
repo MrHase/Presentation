@@ -65,8 +65,6 @@ public:
 
 private:
 
-    vector<thread> threads;
-
     const uint8_t DISTANCE_TO_CACHE_BORDER = 8;
     const uint8_t ELEMENTS_IN_CACHE = (DISTANCE_TO_CACHE_BORDER *2) +1;
 

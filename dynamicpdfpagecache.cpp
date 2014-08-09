@@ -169,7 +169,8 @@ void DynamicPdfPageCache::initializeCache()
     {
         Poppler::Page *page = doc->page(i);
         //new thread (&DynamicPdfPageCache::renderPage,this,page, i); //! memory leak
-        threads.push_back(thread(&DynamicPdfPageCache::renderPage,this,page, i));
+        thread render_thread(&DynamicPdfPageCache::renderPage,this,page, i);
+        render_thread.detach();
     }
 
     cacheCurrentPos = 0;
@@ -209,7 +210,8 @@ bool DynamicPdfPageCache::getIsDocumentSet() const
 void DynamicPdfPageCache::renderPageAsThread(int pageNum)
 {
     Poppler::Page *page = doc->page(pageNum);
-    threads.push_back( thread (&DynamicPdfPageCache::renderPage,this,page, pageNum));
+    thread render_thread(&DynamicPdfPageCache::renderPage,this,page, pageNum);
+    render_thread.detach();
 }
 
 void DynamicPdfPageCache::deletePageFromCache(int pageNum)
