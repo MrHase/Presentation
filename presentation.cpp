@@ -31,7 +31,7 @@ void Presentation::setPreviewDocument(int dpri,double splitscreen)
 {
 //    setRendererDocument(dpri, renderer_preview, preview_size);
 
-    setCacheDocument(dpri,cache_preview,preview_size,splitscreen);
+    setCacheDocument(dpri,cache_preview,preview_size,splitscreen,true);
 
     numOfPages = cache_preview.getSizeOfDocument();
 
@@ -109,6 +109,11 @@ QImage Presentation::getCurrentLectureScreen()
     return getCurrentImageFromCache(cache_lecturerScreen);
 }
 
+vector<QImage> Presentation::getThumbnailsFromDocument()
+{
+    return cache_preview.getThumbnails();
+}
+
 bool Presentation::documentSet() const
 {
     bool ret = false;
@@ -158,7 +163,7 @@ QImage Presentation::getCurrentImageFromCache(DynamicPdfPageCache &cache)
 }
 
 
-void Presentation::setCacheDocument(int dpri, DynamicPdfPageCache &cache, QSize size,double splitscreen)
+void Presentation::setCacheDocument(int dpri, DynamicPdfPageCache &cache, QSize size, double splitscreen, bool createThumbnails)
 {
     //! alter cache deleten und neu anlegen?
 
@@ -166,7 +171,7 @@ void Presentation::setCacheDocument(int dpri, DynamicPdfPageCache &cache, QSize 
     cache.setPixelRatio(dpri); //! mit in den SetDocument/Constructur
     cache.setDisplaySize(size); //! constructor
 
-    cache.initializeCache(); //! constructor
+    cache.initializeCache(createThumbnails); //! constructor
 }
 
 QSize Presentation::getHelper_size() const
@@ -220,13 +225,27 @@ void Presentation::setPreview_size(const QSize &value)
 void Presentation::nextPage()
 {
     if(currentPage < (numOfPages-1))
+    {
         currentPage++;
+    }
 }
 
 void Presentation::previousPage()
 {
     if(currentPage > 0)
+    {
         currentPage--;
+    }
+}
+
+void Presentation::goToPage(uint16_t pageNum)
+{
+    //just to make sure
+    if (pageNum <= numOfPages )
+    {
+        currentPage = pageNum;
+        qDebug() << "set page to " << currentPage;
+    }
 }
 
 void Presentation::setHelperScreenDocument(int dpri,double splitscreen)

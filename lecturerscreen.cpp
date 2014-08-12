@@ -1,14 +1,35 @@
 #include "lecturerscreen.h"
 #include "ui_lecturerscreen.h"
 
-LecturerScreen::LecturerScreen(QWidget *parent) :
+LecturerScreen::LecturerScreen(QWidget *parent, Presentation *aPresentation) :
     QWidget(parent),
     ui(new Ui::lecturerscreen),
     timerIsRunning(false),
-    timer(this)
+    timer(this),
+    presentation(aPresentation)
 {
     ui->setupUi(this);
     connect(&timer,SIGNAL(timeout()),this,SLOT(updateClockWidget()));
+
+    if (presentation == nullptr)
+    {
+        qDebug()<<"Error..... presentation was null... should never happen";
+        exit(EXIT_FAILURE);
+    }
+
+    // set thumbnails to the preview list
+    vector<QImage> thumbs = presentation->getThumbnailsFromDocument();
+    for (uint8_t i = 0; i < thumbs.size(); i++)
+    {
+        QString s = tr("Slide") + " " + QString::number(i);
+        QListWidgetItem  *item = new QListWidgetItem(s,ui->listWidget);
+        item->setData(Qt::DecorationRole,QPixmap::fromImage(thumbs[i]));
+    }
+
+    QTime time (0,minutes,seconds);
+    QString text = time.toString("mm:ss");
+    ui->lcdNumber->display(text);
+
 }
 
 LecturerScreen::~LecturerScreen()
@@ -84,3 +105,8 @@ void LecturerScreen::updateClockWidget()
     ui->lcdNumber->display(text);
 }
 
+
+void LecturerScreen::on_listWidget_doubleClicked(const QModelIndex &index)
+{
+    presentation->goToPage(index.row());
+}

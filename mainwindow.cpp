@@ -98,12 +98,12 @@ void MainWindow::updatePresentation()
     if (split)
     {
         leftSide = presentation.getLeftSideOfPreviewPage();
-        rightSide = presentation.getRightSideOfPreviewPage();
+//        rightSide = presentation.getRightSideOfPreviewPage();
     }
     else
     {
         leftSide=presentation.preview_getCurrentPage();
-        rightSide=presentation.preview_getCurrentPage();
+//        rightSide=presentation.preview_getCurrentPage();
     }
 
     leftSide.setDevicePixelRatio(this->devicePixelRatio());
@@ -217,7 +217,22 @@ void MainWindow::on_actionOpen_triggered()
     presentation.setPreviewDocument(this->devicePixelRatio(),(ui->cb_splitPDF->isChecked())?2:1);
 
     //updates the presentation
-    sleep(1); //! das muss raus!
+    vector<QImage> thumbs;
+    //!muss auch irgendwie schöner gehen, oder??
+    while(presentation.getThumbnailsFromDocument().size() == 0){
+        usleep(50000);
+    }
+    thumbs = presentation.getThumbnailsFromDocument();
+
+    for (uint8_t i = 0; i < thumbs.size(); i++)
+    {
+        qDebug() << "adding thumbnail " << i;
+        QString s = tr("Slide") + " " + QString::number(i);
+        QListWidgetItem  *item = new QListWidgetItem(s,ui->listWidget);
+        item->setData(Qt::DecorationRole,QPixmap::fromImage(thumbs[i]));
+    }
+
+
     updatePresentation();
 }
 
@@ -289,7 +304,7 @@ void MainWindow::startPresentation()
 
     if (screen_helper)
     {
-        lecturerScreen = new LecturerScreen(0);
+        lecturerScreen = new LecturerScreen(0,&presentation);
         moveWidgetToScreenAndShowFullScreen(lecturerScreen,screen_helper);
         qDebug()<<"helper screen resolution: h:" << lecturerScreen->getPresentationWidgetSize().height() << "w: " << lecturerScreen->getPresentationWidgetSize().width() << "dpri: " << lecturerScreen->devicePixelRatio();
 
@@ -383,3 +398,9 @@ void MainWindow::on_cb_splitPDF_toggled(bool checked)
 }
 
 
+
+void MainWindow::on_listWidget_doubleClicked(const QModelIndex &index)
+{
+    presentation.goToPage(index.row());
+    updatePresentation();
+}

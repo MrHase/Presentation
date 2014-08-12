@@ -20,22 +20,12 @@
 
 using namespace std;
 
-//class RenderInfo
-//{
-//public:
-//    uint32_t requested_width = 0; // size in points? ich geh jetzt davon aus
-//    uint32_t requested_height = 0;
-//    bool splitscreen = false; // two slides on one page
-//};
-
 class DotsPerInch
 {
 public:
     double dpiWidth;
     double dpiHeight;
 };
-
-
 
 class DynamicPdfPageCache
 {
@@ -49,7 +39,7 @@ public:
 
     QImage* getElementFromPos(int pos);
 
-    void initializeCache();
+    void initializeCache(bool generateThumbnails = false);
 
     QSize getDisplaySize() const;
     void setDisplaySize(const QSize &value);
@@ -61,19 +51,28 @@ public:
 
     bool getIsDocumentSet() const;
 
+    void deleteAndResetCache();
 
+
+
+    vector<QImage> getThumbnails() const;
 
 private:
 
     const uint8_t DISTANCE_TO_CACHE_BORDER = 8;
     const uint8_t ELEMENTS_IN_CACHE = (DISTANCE_TO_CACHE_BORDER *2) +1;
 
+    const uint8_t THUMBNAIL_HIGHT_IN_PIXEL = 64;
+    const double  DPI_CONSTANT = 72.0;
+
     Poppler::Document *doc;
     vector<QImage*> pageCache;
+    vector<QImage> thumbnails;
 
-    double splitscreen=1.0;
+    double splitscreen = 1.0;
 
     bool isDocumentSet = false;
+    bool thumbnailsCreated = false;
 
 
     // current position of the cache
@@ -110,6 +109,8 @@ private:
 
     void deletePagesFromCachePositiveDirection(int start, int end);
     void deletePagesFromCacheNegativeDirection(int start, int end);
+
+    void generateThumbnails();
 
 };
 

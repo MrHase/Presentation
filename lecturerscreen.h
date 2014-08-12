@@ -13,22 +13,31 @@
 #include <QResizeEvent>
 #include <QShowEvent>
 
+#include <memory>
+#include <vector>
+#include "presentation.h"
+
+
+using namespace std;
+
 namespace Ui {
 class lecturerscreen;
 }
+
+using namespace std;
 
 class LecturerScreen : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit LecturerScreen(QWidget *parent = 0);
+    explicit LecturerScreen(QWidget *parent = 0, Presentation *aPresentation = nullptr);
     ~LecturerScreen();
 
 
 
     //!UGLY!!! maybe inheritance useful?
-    //!                      /-HelperScreen
+    //!                      /-LecturerScreen
     //! PresentationWidget <-
     //!                      \-FullScreen
     //! ???????????????????????????????????
@@ -55,6 +64,8 @@ private slots:
     void on_pushButton_clicked();
     void updateClockWidget();
 
+    void on_listWidget_doubleClicked(const QModelIndex &index);
+
 private:
     Ui::lecturerscreen *ui;
     QGraphicsScene helperScreenScene;
@@ -64,6 +75,8 @@ private:
     QTimer timer;
     int seconds = 0;
     int minutes = 0;
+
+    Presentation *presentation;
 
 };
 

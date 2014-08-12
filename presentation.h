@@ -4,6 +4,10 @@
 #include "dynamicpdfpagecache.h"
 #include <iostream>
 #include <unistd.h>
+#include <vector>
+
+using namespace std;
+
 
 class Presentation
 {
@@ -30,11 +34,15 @@ public:
     QImage getCurrentMainScreen();
     QImage getCurrentLectureScreen();
 
+    vector<QImage> getThumbnailsFromDocument();
+
 
     bool documentSet() const;
 
     void nextPage();
     void previousPage();
+
+    void goToPage(uint16_t pageNum);
 
     void setHelperScreenDocument(int dpri, double splitscreen);
     void setMainScreenDocument(int dpri, double splitscreen);
@@ -58,7 +66,7 @@ private:
     QImage getCurrentImageFromCache(DynamicPdfPageCache & cache);
 
 
-    void setCacheDocument(int dpri, DynamicPdfPageCache & cache, QSize size, double splitscreen);
+    void setCacheDocument(int dpri, DynamicPdfPageCache & cache, QSize size, double splitscreen, bool createThumbnails = false);
 
 
     DynamicPdfPageCache cache_preview;

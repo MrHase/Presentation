@@ -30,15 +30,26 @@
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
          <layout class="QGridLayout" name="gridLayout">
-          <item row="4" column="2">
-           <widget class="QGraphicsView" name="graphicsView_right">
-            <property name="lineWidth">
-             <number>0</number>
-            </property>
-            <property name="sizeAdjustPolicy">
-             <enum>QAbstractScrollArea::AdjustToContents</enum>
+          <item row="4" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QCheckBox" name="cb_splitPDF">
+              <property name="text">
+               <string>Split PDF</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="label_mainScreen">
+            <property name="text">
+             <string>Main Screen</string>
             </property>
            </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QComboBox" name="outputList_MainScreen"/>
           </item>
           <item row="5" column="2">
            <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -54,19 +65,15 @@
             </item>
            </layout>
           </item>
-          <item row="5" column="1">
-           <widget class="QComboBox" name="outputList_MainScreen"/>
-          </item>
-          <item row="4" column="0">
-           <layout class="QHBoxLayout" name="horizontalLayout">
-            <item>
-             <widget class="QCheckBox" name="cb_splitPDF">
-              <property name="text">
-               <string>Split PDF</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
+          <item row="4" column="2">
+           <widget class="QGraphicsView" name="graphicsView_right">
+            <property name="lineWidth">
+             <number>0</number>
+            </property>
+            <property name="sizeAdjustPolicy">
+             <enum>QAbstractScrollArea::AdjustToContents</enum>
+            </property>
+           </widget>
           </item>
           <item row="4" column="1">
            <widget class="QGraphicsView" name="graphicsView_left">
@@ -90,10 +97,19 @@
             </property>
            </widget>
           </item>
-          <item row="5" column="0">
-           <widget class="QLabel" name="label_mainScreen">
-            <property name="text">
-             <string>Main Screen</string>
+          <item row="4" column="3">
+           <widget class="QListWidget" name="listWidget">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>200</width>
+              <height>0</height>
+             </size>
             </property>
            </widget>
           </item>
