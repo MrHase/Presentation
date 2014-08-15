@@ -90,21 +90,25 @@ MainWindow::~MainWindow()
 void MainWindow::updatePresentation()
 {
 
-    QImage leftSide, rightSide;
-
     scene_left.clear();
     scene_right.clear();
 
-    if (split)
-    {
-        leftSide = presentation.getLeftSideOfPreviewPage();
+
+//    QImage leftSide, rightSide;
+
+//    if (split)
+//    {
+//        leftSide = presentation.getLeftSideOfPreviewPage();
 //        rightSide = presentation.getRightSideOfPreviewPage();
-    }
-    else
-    {
-        leftSide=presentation.preview_getCurrentPage();
+//    }
+//    else
+//    {
+//        leftSide=presentation.preview_getCurrentPage();
 //        rightSide=presentation.preview_getCurrentPage();
-    }
+    //}
+
+    QImage leftSide=(split)? presentation.getLeftSideOfPreviewPage(): presentation.preview_getCurrentPage();
+    QImage rightSide=(split)? presentation.getRightSideOfPreviewPage(): presentation.preview_getCurrentPage();
 
     leftSide.setDevicePixelRatio(this->devicePixelRatio());
     rightSide.setDevicePixelRatio(this->devicePixelRatio());
