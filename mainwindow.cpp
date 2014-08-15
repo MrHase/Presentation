@@ -69,6 +69,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     updateOutputLists();
 
+    //connect()
+
 }
 
 MainWindow::~MainWindow()
@@ -309,6 +311,14 @@ void MainWindow::startPresentation()
     if (screen_helper)
     {
         lecturerScreen = new LecturerScreen(0,&presentation);
+        //! irgendwie vereinheitlichen, da es hier auch noch ne methode gibt void MainWindow::on_listWidget_clicked(const QModelIndex &index) die das gleiche macht
+        connect(lecturerScreen,&LecturerScreen::pageChanged,[&](int index)
+        {
+            qDebug()<<"MainWindow received a signal from lecturerScreen - change to Page: "<<index;
+            presentation.goToPage(index);
+            updatePresentation();
+        });
+
         moveWidgetToScreenAndShowFullScreen(lecturerScreen,screen_helper);
         qDebug()<<"helper screen resolution: h:" << lecturerScreen->getPresentationWidgetSize().height() << "w: " << lecturerScreen->getPresentationWidgetSize().width() << "dpri: " << lecturerScreen->devicePixelRatio();
 
@@ -403,7 +413,7 @@ void MainWindow::on_cb_splitPDF_toggled(bool checked)
 
 
 
-void MainWindow::on_listWidget_doubleClicked(const QModelIndex &index)
+void MainWindow::on_listWidget_clicked(const QModelIndex &index)
 {
     presentation.goToPage(index.row());
     updatePresentation();

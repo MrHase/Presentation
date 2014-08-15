@@ -60,11 +60,14 @@ public:
     QSize getPresentationWidgetSize();
     void setHelperScreenScene(const QGraphicsScene &value);
 
+signals:
+    void pageChanged(int index);
+
 private slots:
     void on_pushButton_clicked();
     void updateClockWidget();
 
-    void on_listWidget_doubleClicked(const QModelIndex &index);
+    void on_listWidget_clicked(const QModelIndex &index);
 
 private:
     Ui::lecturerscreen *ui;

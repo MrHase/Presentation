@@ -46,7 +46,8 @@ private slots:
 
     void on_cb_splitPDF_toggled(bool checked);
 
-    void on_listWidget_doubleClicked(const QModelIndex &index);
+
+    void on_listWidget_clicked(const QModelIndex &index);
 
 private:
     void updatePresentation();
