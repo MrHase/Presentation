@@ -60,7 +60,8 @@ public:
 private:
 
     const uint8_t DISTANCE_TO_CACHE_BORDER = 8;
-    const uint8_t ELEMENTS_IN_CACHE = (DISTANCE_TO_CACHE_BORDER *2) +1;
+//    const uint8_t ELEMENTS_IN_CACHE = (DISTANCE_TO_CACHE_BORDER *2) +1;
+    const uint8_t ELEMENTS_IN_CACHE = 8;
 
     const uint8_t THUMBNAIL_HIGHT_IN_PIXEL = 64;
     const double  DPI_CONSTANT = 72.0;

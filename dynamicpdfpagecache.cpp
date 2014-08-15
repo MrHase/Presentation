@@ -66,15 +66,15 @@ void DynamicPdfPageCache::fillCacheAfterCacheEnd(int pos)
     // cache has to be completely new generated...
     if (distanceToCacheEnd > DISTANCE_TO_CACHE_BORDER)
     {
-        qDebug() << __FUNCTION__ << "++++++++++++++++++ Completely generating new cache";
+        qDebug() <<"++++++++++++++++++ " << __FUNCTION__ << "++++++++++++++++++ Completely generating new cache";
         renderPagesAsThreadsNegativeDirection(pos-1, cacheBegin);
         renderPagesAsThreadsPositiveDirection(pos+1, cacheEnd);
     }
     //borders lay within already present data
     else
     {
-        qDebug() << __FUNCTION__ << "++++++++++++++++++ partly generating new cache";
-        renderPagesAsThreadsNegativeDirection(pos-1, pos+distanceToCacheEnd);
+            qDebug() <<"++++++++++++++++++ " << __FUNCTION__ << "++++++++++++++++++ partly generating new cache";
+        renderPagesAsThreadsNegativeDirection(pos-1, pos-distanceToCacheEnd);
         renderPagesAsThreadsPositiveDirection(pos+1, cacheEnd);
     }
 
@@ -83,6 +83,11 @@ void DynamicPdfPageCache::fillCacheAfterCacheEnd(int pos)
 
     //delete all pages laying behind the cache
     deletePagesFromCachePositiveDirection(cacheEnd+1, pageCache.size());
+
+    qDebug()<<"Accessing Pos: " << pos;
+    qDebug()<<"CacheBegin: " << cacheBegin;
+    qDebug()<<"CacheEnd: " << cacheEnd;
+
 }
 
 void DynamicPdfPageCache::fillCacheBeforeCacheBegin(int pos)
@@ -97,13 +102,13 @@ void DynamicPdfPageCache::fillCacheBeforeCacheBegin(int pos)
     // cache has to be completely new generated
     if (distanceToCacheBegin > DISTANCE_TO_CACHE_BORDER )
     {
-        qDebug() << __FUNCTION__ << "++++++++++++++++++ Completely generating new cache";
+        qDebug()<<"++++++++++++++++++ " << __FUNCTION__ << "++++++++++++++++++ Completely generating new cache";
         renderPagesAsThreadsNegativeDirection(pos-1, cacheBegin);
         renderPagesAsThreadsPositiveDirection(pos+1, pos + DISTANCE_TO_CACHE_BORDER);
     }
     else
     {
-        qDebug() << __FUNCTION__ << "++++++++++++++++++ partly generating new cache";
+        qDebug()<<"++++++++++++++++++ "  << __FUNCTION__ << "++++++++++++++++++ partly generating new cache";
         renderPagesAsThreadsNegativeDirection(pos-1, cacheBegin);
         renderPagesAsThreadsPositiveDirection(pos+1, pos + distanceToCacheBegin);
     }
@@ -113,7 +118,11 @@ void DynamicPdfPageCache::fillCacheBeforeCacheBegin(int pos)
     deletePagesFromCachePositiveDirection(0, cacheBegin);
 
     //delete all pages laying behind the cache
-    deletePagesFromCachePositiveDirection(cacheEnd, pageCache.size());
+    deletePagesFromCachePositiveDirection(cacheEnd+1, pageCache.size());
+
+    qDebug()<<"Accessing Pos: " << pos;
+    qDebug()<<"CacheBegin: " << cacheBegin;
+    qDebug()<<"CacheEnd: " << cacheEnd;
 
 }
 
@@ -160,7 +169,7 @@ void DynamicPdfPageCache::renderPage( Poppler::Page *page,int i)
     DotsPerInch dpiRequest = calculateDPI(displaySize,page);
     QImage image = page->renderToImage(dpiRequest.dpiWidth*pixelRatio, dpiRequest.dpiHeight*pixelRatio);
 
-    qDebug() << "+++++ Image "<<  i <<" rendered..... h: " << image.size().height() << " w: " << image.size().width();
+//    qDebug() << "+++++ Image "<<  i <<" rendered..... h: " << image.size().height() << " w: " << image.size().width();
 
     cache_mutex.lock();
     pageCache[i] = new QImage(image);
@@ -276,11 +285,10 @@ void DynamicPdfPageCache::fillCacheAndSetNewBorders(int pos)
     if (distanceToCacheBegin < distanceToCacheEnd)
     {
         int changeDistance = DISTANCE_TO_CACHE_BORDER - distanceToCacheBegin;
-        int end = 0;
 
         if ((cacheBegin - changeDistance ) >= 0)
         {
-            end = cacheBegin - changeDistance;
+            int end = cacheBegin - changeDistance;
             qDebug() << "Extending cache in a negative direction with: " << changeDistance ;
 
             renderPagesAsThreadsNegativeDirection(cacheBegin-1, end);
@@ -302,11 +310,10 @@ void DynamicPdfPageCache::fillCacheAndSetNewBorders(int pos)
     {
         //check first if we are running out of bounces...
         int changeDistance = DISTANCE_TO_CACHE_BORDER - distanceToCacheEnd;
-        int end = 0;
 
-        if ((cacheEnd + changeDistance ) <= pageCache.size()-1){
-
-            end = cacheEnd + changeDistance;
+        if ((cacheEnd + changeDistance ) <= pageCache.size()-1)
+        {
+            int end = cacheEnd + changeDistance;
             qDebug() << "Extending cache in a positive direction with: " << changeDistance;
 
             renderPagesAsThreadsPositiveDirection(cacheEnd+1, end);
