@@ -108,6 +108,6 @@ void LecturerScreen::updateClockWidget()
 
 void LecturerScreen::on_listWidget_clicked(const QModelIndex &index)
 {
-    presentation->goToPage(index.row());
+    //presentation->goToPage(index.row());
     emit(pageChanged(index.row()));
 }
