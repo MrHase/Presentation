@@ -239,7 +239,7 @@ void Presentation::setPreview_size(const QSize &value)
 
 void Presentation::nextPage()
 {
-    if(currentPage < (numOfPages-1)) //! numOfPages instead of numOfPages-1??
+    if(currentPage < numOfPages-1)
     {
         currentPage++;
         emit(pageChanged(currentPage));
@@ -258,7 +258,7 @@ void Presentation::previousPage()
 void Presentation::goToPage(uint16_t pageNum)
 {
     //just to make sure
-    if ( pageNum <= numOfPages ) //! numOfPages-1?
+    if ( pageNum < numOfPages )
     {
         if(currentPage!=pageNum)
         {

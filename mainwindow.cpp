@@ -68,6 +68,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     updateOutputLists();
+    // set the lecturer output to the primary screen
+
+    ui->outputList_HelperScreen->setCurrentText(QGuiApplication::primaryScreen()->name());
+//    ui->outputList_HelperScreen->setCurrentText("This should not change anything");
 
 
     connect(&presentation,&Presentation::pageChanged,[&](int index)
@@ -76,6 +80,16 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->pageList->setCurrentRow(index);
         updatePresentation();
     });
+
+
+    connect((const QGuiApplication*)QGuiApplication::instance(), &QGuiApplication::screenAdded, [&](QScreen* screen){
+        qDebug()<<"QScreen added: "<<screen->name();
+        //std::cout<<"QScreen added: "<<screen->name()<<endl;
+        //! refresh the output list!
+
+    });
+    //screenAdded(QScreen * screen)
+
 
     Reset();
 
@@ -191,16 +205,19 @@ void MainWindow::Reset()
 
 QScreen *MainWindow::getMainPresentationScreen()
 {
+    //! also save the pointer in the outputLists?
     QString name=ui->outputList_MainScreen->currentText();
 
     if(name==NO_OUTPUT)
         return nullptr;
+
     for (auto *screen: QGuiApplication::screens())
     {
         if(name==screen->name()){
             return screen;
         }
     }
+
     throw InconsitentScreenException();
     return nullptr;
 }
@@ -211,12 +228,14 @@ QScreen *MainWindow::getHelperScreen()
 
     if(name==NO_OUTPUT)
         return nullptr;
+
     for (auto *screen: QGuiApplication::screens())
     {
         if(name==screen->name()){
             return screen;
         }
     }
+
     throw InconsitentScreenException();
     return nullptr;
 }
@@ -386,6 +405,7 @@ void MainWindow::moveWidgetToScreenAndShowFullScreen(QWidget *widget, QScreen *s
 void MainWindow::next()
 {
     presentation.nextPage();
+
 }
 
 void MainWindow::prev()
