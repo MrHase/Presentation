@@ -63,11 +63,15 @@ public:
 signals:
     void pageChanged(int index); //! remove!
 
+public slots:
+    void slot_pageChanged(int index);
+
 private slots:
     void on_pushButton_clicked();
     void updateClockWidget();
 
-    void on_listWidget_clicked(const QModelIndex &index);
+
+    void on_pageList_clicked(const QModelIndex &index);
 
 private:
     Ui::lecturerscreen *ui;

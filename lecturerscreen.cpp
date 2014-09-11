@@ -30,12 +30,15 @@ LecturerScreen::LecturerScreen(QWidget *parent, Presentation *aPresentation) :
     ui->pageList->setCurrentRow(presentation->CurrentPage());
     ui->pageProgress->setValue(presentation->Progress());
 
-    connect(presentation,&Presentation::pageChanged,[&](int index)
-    {
-        ui->pageList->setCurrentRow(index);
-        ui->pageProgress->setValue(presentation->Progress());
+//    connect(presentation,&Presentation::pageChanged,[&](int index)
+//    {
+//        cout<<"New Index: "<<index<<endl;
+//        ui->pageList->setCurrentRow(index);
+//        ui->pageProgress->setValue(presentation->Progress());
 
-    });
+//    });
+    // we do not use the lambda function because it does not get disconnected when the lecturerScreen is closed
+    connect(presentation,SIGNAL(pageChanged(int)),this,SLOT(slot_pageChanged(int)));
 
     QTime time (0,minutes,seconds);
     QString text = time.toString("mm:ss");
@@ -43,9 +46,18 @@ LecturerScreen::LecturerScreen(QWidget *parent, Presentation *aPresentation) :
 
 }
 
+
+void LecturerScreen::slot_pageChanged(int index)
+{
+    ui->pageList->setCurrentRow(index);
+    ui->pageProgress->setValue(presentation->Progress());
+}
+
 LecturerScreen::~LecturerScreen()
 {
+    //disconnect()
     delete ui;
+
 }
 
 void LecturerScreen::setImage(QImage image)
@@ -117,9 +129,9 @@ void LecturerScreen::updateClockWidget()
 }
 
 
-void LecturerScreen::on_listWidget_clicked(const QModelIndex &index)
+
+
+void LecturerScreen::on_pageList_clicked(const QModelIndex &index)
 {
-    //presentation->goToPage(index.row());
-    //emit(pageChanged(index.row()));
     presentation->goToPage(index.row());
 }

@@ -77,7 +77,8 @@ MainWindow::MainWindow(QWidget *parent) :
         updatePresentation();
     });
 
-    //connect()
+    Reset();
+
 
 }
 
@@ -178,6 +179,16 @@ void MainWindow::updateOutputLists()
 
 }
 
+void MainWindow::Reset()
+{
+    //! thumbnail list clear
+
+    if(ui->cb_splitPDF->isChecked())
+        ui->cb_splitPDF->toggle();
+
+    ui->graphicsView_right->setVisible(false);
+}
+
 QScreen *MainWindow::getMainPresentationScreen()
 {
     QString name=ui->outputList_MainScreen->currentText();
@@ -219,6 +230,7 @@ void MainWindow::on_actionOpen_triggered()
         return;
     }
 
+    Reset();
 
     //set the document file, for the presentation
     presentation.setDocumentFile(filename);
@@ -320,13 +332,7 @@ void MainWindow::startPresentation()
     if (screen_helper)
     {
         lecturerScreen = new LecturerScreen(0,&presentation);
-        //! irgendwie vereinheitlichen, da es hier auch noch ne methode gibt void MainWindow::on_listWidget_clicked(const QModelIndex &index) die das gleiche macht
-        connect(lecturerScreen,&LecturerScreen::pageChanged,[&](int index) //! remove... all done via presentation class
-        {
-            qDebug()<<"MainWindow received a signal from lecturerScreen - change to Page: "<<index;
-            presentation.goToPage(index);
-            updatePresentation();
-        });
+
 
         moveWidgetToScreenAndShowFullScreen(lecturerScreen,screen_helper);
         qDebug()<<"helper screen resolution: h:" << lecturerScreen->getPresentationWidgetSize().height() << "w: " << lecturerScreen->getPresentationWidgetSize().width() << "dpri: " << lecturerScreen->devicePixelRatio();
@@ -334,6 +340,7 @@ void MainWindow::startPresentation()
         //set the sizes of the presentation attributes
         presentation.setHelper_size(lecturerScreen->getPresentationWidgetSize());
         presentation.setHelperScreenDocument(lecturerScreen->devicePixelRatio(),(ui->cb_splitPDF->isChecked())?2:1);
+        updatePresentation();
 
     }
 
@@ -417,12 +424,20 @@ void MainWindow::on_cb_splitPDF_toggled(bool checked)
 
     scene_left.setSceneRect(presentation.getRectOfImage(checked));
     scene_right.setSceneRect(presentation.getRectOfImage(checked));
+
+    if(checked)
+    {
+        ui->graphicsView_right->setVisible(true);
+    }else{
+        ui->graphicsView_right->setVisible(false);
+    }
+
     updatePresentation();
 }
 
 
 
-void MainWindow::on_listWidget_clicked(const QModelIndex &index)
+void MainWindow::on_pageList_clicked(const QModelIndex &index)
 {
     presentation.goToPage(index.row());
     updatePresentation();

@@ -30,22 +30,36 @@
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
          <layout class="QGridLayout" name="gridLayout">
-          <item row="5" column="3">
-           <layout class="QHBoxLayout" name="horizontalLayout_3">
-            <item>
-             <widget class="QLabel" name="label_mainScreen">
-              <property name="text">
-               <string>Main Screen</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="outputList_MainScreen"/>
-            </item>
-           </layout>
-          </item>
           <item row="4" column="0">
            <layout class="QVBoxLayout" name="verticalLayout_2">
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_3">
+              <item>
+               <widget class="QLabel" name="label_mainScreen">
+                <property name="text">
+                 <string>Main Screen</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="outputList_MainScreen"/>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <item>
+               <widget class="QLabel" name="label_helperScreen">
+                <property name="text">
+                 <string>Helper Screen</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="outputList_HelperScreen"/>
+              </item>
+             </layout>
+            </item>
             <item>
              <widget class="QCheckBox" name="cb_splitPDF">
               <property name="text">
@@ -68,20 +82,6 @@
                </size>
               </property>
              </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="5" column="4">
-           <layout class="QHBoxLayout" name="horizontalLayout_2">
-            <item>
-             <widget class="QLabel" name="label_helperScreen">
-              <property name="text">
-               <string>Helper Screen</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="outputList_HelperScreen"/>
             </item>
            </layout>
           </item>
@@ -114,6 +114,13 @@
             </property>
             <property name="sizeAdjustPolicy">
              <enum>QAbstractScrollArea::AdjustToContents</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="4">
+           <widget class="QRadioButton" name="radioButton">
+            <property name="text">
+             <string>RadioButton</string>
             </property>
            </widget>
           </item>
