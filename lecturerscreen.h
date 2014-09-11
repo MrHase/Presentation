@@ -61,7 +61,7 @@ public:
     void setHelperScreenScene(const QGraphicsScene &value);
 
 signals:
-    void pageChanged(int index);
+    void pageChanged(int index); //! remove!
 
 private slots:
     void on_pushButton_clicked();

@@ -69,6 +69,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
     updateOutputLists();
 
+
+    connect(&presentation,&Presentation::pageChanged,[&](int index)
+    {
+        qDebug()<<"PAGE CHANGED!";
+        ui->pageList->setCurrentRow(index);
+        updatePresentation();
+    });
+
     //connect()
 
 }
@@ -234,9 +242,10 @@ void MainWindow::on_actionOpen_triggered()
     {
         qDebug() << "adding thumbnail " << i;
         QString s = tr("Slide") + " " + QString::number(i);
-        QListWidgetItem  *item = new QListWidgetItem(s,ui->listWidget);
+        QListWidgetItem  *item = new QListWidgetItem(s,ui->pageList);
         item->setData(Qt::DecorationRole,QPixmap::fromImage(thumbs[i]));
     }
+    ui->pageList->setCurrentRow(0);
 
 
     updatePresentation();
@@ -312,7 +321,7 @@ void MainWindow::startPresentation()
     {
         lecturerScreen = new LecturerScreen(0,&presentation);
         //! irgendwie vereinheitlichen, da es hier auch noch ne methode gibt void MainWindow::on_listWidget_clicked(const QModelIndex &index) die das gleiche macht
-        connect(lecturerScreen,&LecturerScreen::pageChanged,[&](int index)
+        connect(lecturerScreen,&LecturerScreen::pageChanged,[&](int index) //! remove... all done via presentation class
         {
             qDebug()<<"MainWindow received a signal from lecturerScreen - change to Page: "<<index;
             presentation.goToPage(index);

@@ -201,6 +201,21 @@ QRect Presentation::getRectOfImage(bool split)
     return ret;
 }
 
+uint32_t Presentation::CurrentPage()
+{
+    return currentPage;
+}
+
+uint32_t Presentation::NumberOfPages()
+{
+    return numOfPages;
+}
+
+uint32_t Presentation::Progress()
+{
+    return ((float)(CurrentPage()+1)/(float)NumberOfPages())*100.0;
+}
+
 QSize Presentation::getMain_size() const
 {
     return main_size;
@@ -224,9 +239,10 @@ void Presentation::setPreview_size(const QSize &value)
 
 void Presentation::nextPage()
 {
-    if(currentPage < (numOfPages-1))
+    if(currentPage < (numOfPages-1)) //! numOfPages instead of numOfPages-1??
     {
         currentPage++;
+        emit(pageChanged(currentPage));
     }
 }
 
@@ -235,16 +251,21 @@ void Presentation::previousPage()
     if(currentPage > 0)
     {
         currentPage--;
+        emit(pageChanged(currentPage));
     }
 }
 
 void Presentation::goToPage(uint16_t pageNum)
 {
     //just to make sure
-    if (pageNum <= numOfPages )
+    if ( pageNum <= numOfPages ) //! numOfPages-1?
     {
-        currentPage = pageNum;
-        qDebug() << "set page to " << currentPage;
+        if(currentPage!=pageNum)
+        {
+            currentPage = pageNum;
+            qDebug() << "set page to " << currentPage;
+            emit(pageChanged(currentPage));
+        }
     }
 }
 

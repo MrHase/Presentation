@@ -22,9 +22,20 @@ LecturerScreen::LecturerScreen(QWidget *parent, Presentation *aPresentation) :
     for (uint8_t i = 0; i < thumbs.size(); i++)
     {
         QString s = tr("Slide") + " " + QString::number(i);
-        QListWidgetItem  *item = new QListWidgetItem(s,ui->listWidget);
+        QListWidgetItem  *item = new QListWidgetItem(s,ui->pageList);
         item->setData(Qt::DecorationRole,QPixmap::fromImage(thumbs[i]));
     }
+
+
+    ui->pageList->setCurrentRow(presentation->CurrentPage());
+    ui->pageProgress->setValue(presentation->Progress());
+
+    connect(presentation,&Presentation::pageChanged,[&](int index)
+    {
+        ui->pageList->setCurrentRow(index);
+        ui->pageProgress->setValue(presentation->Progress());
+
+    });
 
     QTime time (0,minutes,seconds);
     QString text = time.toString("mm:ss");
@@ -109,5 +120,6 @@ void LecturerScreen::updateClockWidget()
 void LecturerScreen::on_listWidget_clicked(const QModelIndex &index)
 {
     //presentation->goToPage(index.row());
-    emit(pageChanged(index.row()));
+    //emit(pageChanged(index.row()));
+    presentation->goToPage(index.row());
 }

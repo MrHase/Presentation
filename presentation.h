@@ -9,8 +9,9 @@
 using namespace std;
 
 
-class Presentation
+class Presentation:public QObject
 {
+    Q_OBJECT
 public:
     Presentation();
     Presentation(QString file_n);
@@ -58,6 +59,14 @@ public:
 
 
     QRect getRectOfImage(bool split);
+
+    uint32_t CurrentPage();
+    uint32_t NumberOfPages();
+    uint32_t Progress();
+
+signals:
+    void pageChanged(int newPage);
+
 private:
 
     QImage left_rightSideOfPage(bool left_right, QImage & image);
