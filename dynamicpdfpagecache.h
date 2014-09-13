@@ -11,6 +11,8 @@
 #include <thread>
 #include <QString>
 
+#include "cache.h"
+
 #if (__MACH__ || __linux)
 #include <pthread.h>
 #elif (__WIN32)
@@ -69,6 +71,7 @@ private:
 
     Poppler::Document *doc;
     vector<QImage*> pageCache;
+    Cache<int,QImage*> cache;
 
 
     double splitscreen = 1.0;

@@ -3,14 +3,14 @@
 DynamicPdfPageCache::DynamicPdfPageCache(int pixelRatio):
     pixelRatio(pixelRatio)
 {
-
+    cache.SetCacheSize(ELEMENTS_IN_CACHE);
 }
 
 
 
 DynamicPdfPageCache::~DynamicPdfPageCache()
 {
-
+    cache.SetCacheSize(ELEMENTS_IN_CACHE);
 }
 
 void DynamicPdfPageCache::setDocument(Poppler::Document *document, double splitscreen)
@@ -184,25 +184,32 @@ void DynamicPdfPageCache::renderPage( Poppler::Page *page,int i)
 
 //    qDebug() << "+++++ Image "<<  i <<" rendered..... h: " << image.size().height() << " w: " << image.size().width();
 
+
     cache_mutex.lock();
-    pageCache[i] = new QImage(image);
+    auto img_ptr=new QImage(image);
+    pageCache[i] = img_ptr;
+    if(!cache.Available(i)){
+        cout<<"Adde page "<<i<<" to cache"<<endl;
+        cache.Add(i,img_ptr);
+
+    }
     cache_mutex.unlock();
 }
 
 void DynamicPdfPageCache::initializeCache()
 {
-    int end = (sizeOfDocument < ELEMENTS_IN_CACHE) ? sizeOfDocument : ELEMENTS_IN_CACHE;
-    for (int i = 0; i < end; i++)
-    {
-        Poppler::Page *page = doc->page(i);
-        //new thread (&DynamicPdfPageCache::renderPage,this,page, i); //! memory leak
-        thread render_thread(&DynamicPdfPageCache::renderPage,this,page, i);
-        render_thread.detach();
-    }
+//    int end = (sizeOfDocument < ELEMENTS_IN_CACHE) ? sizeOfDocument : ELEMENTS_IN_CACHE;
+//    for (int i = 0; i < end; i++)
+//    {
+//        Poppler::Page *page = doc->page(i);
+//        //new thread (&DynamicPdfPageCache::renderPage,this,page, i); //! memory leak
+//        thread render_thread(&DynamicPdfPageCache::renderPage,this,page, i);
+//        render_thread.detach();
+//    }
 
-    cacheCurrentPos = 0;
-    cacheBegin = 0;
-    cacheEnd = end -1;
+//    cacheCurrentPos = 0;
+//    cacheBegin = 0;
+//    cacheEnd = end -1;
 
 
 }
@@ -383,31 +390,76 @@ void DynamicPdfPageCache::deletePagesFromCacheNegativeDirection(int start, int e
 QImage *DynamicPdfPageCache::getElementFromPos(int pos)
 {
 
-    // just to make sure
-    if ((pos > pageCache.size()) || (pos < 0))
-    {
-        qDebug() << "Accessing page cache out of bounces ";
-        return nullptr;
-    }
+    int begin_=pos-(ELEMENTS_IN_CACHE/2);
+    const uint32_t begin=(begin_<0)? 0:begin_;
 
-    // check if we have to render a page immediately ->
-    // it is a cache miss!
-    if ((pos > cacheEnd) || (pos < cacheBegin))
-    {
-        qDebug()<< "cache miss!!  pos: " << pos ;
-        Poppler::Page * page = doc->page(pos);
-        renderPage(page,pos);
-        fillCacheFromPos(pos);
+    int end_=pos+(ELEMENTS_IN_CACHE/2);
+    const uint32_t end=(end_>=doc->numPages())?doc->numPages():end_;
+
+    cout<<"Getting page: "<<pos<<" begin: "<<begin<<" end: "<<end<<endl;
+
+    if (cache.Available(pos)){
+        cout<<"Page found!"<<pos<<endl;
+
+
+        for(auto i=begin; i<end;i++)
+        {
+            cache.Touch(i);
+        }
+        for(auto i=begin; i<end;i++)
+        {
+            if(!cache.Available(i))
+                renderPageAsThread(i);
+        }
+
+
+
+
 
     }
-    // position lay in current cache area
-    // we have a cache hit!
-    else
-    {
-        qDebug()<< "cache hit!! pos: " << pos ;
-        fillCacheAndSetNewBorders(pos);
-    }
+    else{
+        cout<<"Page not found!"<<pos<<endl;
 
-    cacheCurrentPos = pos;
-    return getRenderedImageFromCache(cacheCurrentPos);
+        for(auto i=begin; i<end;i++)
+        {
+            cache.Touch(i);
+        }
+        renderPage(doc->page(pos),pos);
+
+        for(auto i=begin; i<end;i++)
+        {
+            if(!cache.Available(i))
+                renderPageAsThread(i);
+        }
+    }
+    return cache.Get(pos);
+
+
+//    // just to make sure
+//    if ((pos > pageCache.size()) || (pos < 0))
+//    {
+//        qDebug() << "Accessing page cache out of bounces ";
+//        return nullptr;
+//    }
+
+//    // check if we have to render a page immediately ->
+//    // it is a cache miss!
+//    if ((pos > cacheEnd) || (pos < cacheBegin))
+//    {
+//        qDebug()<< "cache miss!!  pos: " << pos ;
+//        Poppler::Page * page = doc->page(pos);
+//        renderPage(page,pos);
+//        fillCacheFromPos(pos);
+
+//    }
+//    // position lay in current cache area
+//    // we have a cache hit!
+//    else
+//    {
+//        qDebug()<< "cache hit!! pos: " << pos ;
+//        fillCacheAndSetNewBorders(pos);
+//    }
+
+//    cacheCurrentPos = pos;
+//    return getRenderedImageFromCache(cacheCurrentPos);
 }

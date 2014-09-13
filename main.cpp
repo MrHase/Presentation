@@ -6,7 +6,7 @@
 #include "cache.h"
 int main(int argc, char *argv[])
 {
-
+    //! remove
     Cache<int,int> test(3);
     test.Add(1,10);
     test.Add(2,20);
@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     cout<<test.Status()<<endl;
     cout<<test.Get(1)<<endl;
     cout<<test.Status()<<endl;
-    exit(1);
+    //exit(1);
 
 //disable all ox animations
 #if __MACH__

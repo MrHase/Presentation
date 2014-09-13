@@ -4,6 +4,7 @@
 #include <map>
 #include <iostream>
 #include <mutex>
+#include <unordered_map>
 
 using namespace std;
 
@@ -15,12 +16,17 @@ class Cache
 {
 public:
     Cache(uint32_t cachesize){
-        this->cachesize=cachesize;
+        SetCacheSize(cachesize);
     }
     Cache(){
 
     }
 
+    void SetCacheSize(uint32_t cachesize)
+    {
+        lock_guard<mutex> lock(cache_mutex);
+        this->cachesize=cachesize;
+    }
 
     void Add(IDType id,T item){
         lock_guard<mutex> lock(cache_mutex);
@@ -46,7 +52,7 @@ public:
 
     bool Available(IDType id)
     {
-        lock_guard<mutex>(cache_mutex);
+        lock_guard<mutex> lock(cache_mutex);
         return cache.find(id)!=cache.end();
     }
 
@@ -120,7 +126,7 @@ private:
 
 
     mutex cache_mutex;
-    map<IDType,Info> cache;
+    unordered_map<IDType,Info> cache; //! vector could be faster
 
 
 
