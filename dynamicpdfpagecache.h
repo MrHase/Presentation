@@ -42,7 +42,7 @@ public:
 
     QImage* getElementFromPos(int pos);
 
-    void initializeCache();
+    void initializeCache(); //! remove
 
     QSize getDisplaySize() const;
     void setDisplaySize(const QSize &value);
@@ -58,7 +58,7 @@ public:
 
 
 
-    vector<QImage> getThumbnails() const;
+
 
 private:
 
@@ -77,17 +77,6 @@ private:
     double splitscreen = 1.0;
 
 
-    bool thumbnailsCreated = false;
-
-
-    // current position of the cache
-    int cacheCurrentPos = 0;
-    //the first rendered page in the cache
-    int cacheBegin = 0;
-    //the last page in cache
-    int cacheEnd = 0;
-
-
     int sizeOfDocument = 0;
 
     QSize displaySize;
@@ -103,19 +92,7 @@ private:
     DotsPerInch calculateDPI(QSize size, Poppler::Page *page);
     QImage* getRenderedImageFromCache(int pageNum);
 
-    void fillCacheAfterCacheEnd(int pos);
-    void fillCacheBeforeCacheBegin(int pos);
 
-    void fillCacheAndSetNewBorders(int pos);
-    void fillCacheFromPos(int pos);
-
-    void renderPagesAsThreadsPositiveDirection(int start, int end);
-    void renderPagesAsThreadsNegativeDirection(int start, int end);
-
-    void deletePagesFromCachePositiveDirection(int start, int end);
-    void deletePagesFromCacheNegativeDirection(int start, int end);
-
-    void generateThumbnails();
 
 };
 
