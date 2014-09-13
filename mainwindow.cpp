@@ -68,9 +68,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     updateOutputLists();
-    // set the lecturer output to the primary screen
+    ui->outputList_HelperScreen->setCurrentText(QGuiApplication::primaryScreen()->name()); // set the lecturer output to the primary screen
 
-    ui->outputList_HelperScreen->setCurrentText(QGuiApplication::primaryScreen()->name());
 //    ui->outputList_HelperScreen->setCurrentText("This should not change anything");
 
 
@@ -144,6 +143,7 @@ void MainWindow::updatePresentation()
     ui->graphicsView_left->setScene(&scene_left);
     ui->graphicsView_right->setScene(&scene_right);
 
+    //! maybe we should do this in mainScreenPresentation. We could just listen to the pageChanged signal
     //! ugly?
     if (mainScreenPresentation)
     {
@@ -259,16 +259,19 @@ void MainWindow::on_actionOpen_triggered()
 
     //sets the previewDocument
 
+    //! the cache is initialized here... not very intuitiv
     presentation.setPreviewDocument(this->devicePixelRatio(),(ui->cb_splitPDF->isChecked())?2:1);
 
     //updates the presentation
-    vector<QImage> thumbs;
-    //!muss auch irgendwie schöner gehen, oder??
-    while(presentation.getThumbnailsFromDocument().size() == 0){
-        usleep(50000);
-    }
-    thumbs = presentation.getThumbnailsFromDocument();
+//    vector<QImage> thumbs;
 
+//    //!muss auch irgendwie schöner gehen, oder??
+//    while(presentation.getThumbnailsFromDocument().size() == 0){
+//        usleep(50000);
+//    }
+//    thumbs = presentation.getThumbnailsFromDocument();
+
+    vector<QImage> thumbs= presentation.GetThumbnails();
     for (uint8_t i = 0; i < thumbs.size(); i++)
     {
         qDebug() << "adding thumbnail " << i;
@@ -359,7 +362,7 @@ void MainWindow::startPresentation()
         //set the sizes of the presentation attributes
         presentation.setHelper_size(lecturerScreen->getPresentationWidgetSize());
         presentation.setHelperScreenDocument(lecturerScreen->devicePixelRatio(),(ui->cb_splitPDF->isChecked())?2:1);
-        updatePresentation();
+        //updatePresentation();
 
     }
 

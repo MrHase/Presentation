@@ -10,30 +10,43 @@ DynamicPdfPageCache::DynamicPdfPageCache(int pixelRatio):
 
 DynamicPdfPageCache::~DynamicPdfPageCache()
 {
-    delete doc;
+
 }
 
-void DynamicPdfPageCache::setDocument(QString docFilePath,double splitscreen)
+void DynamicPdfPageCache::setDocument(Poppler::Document *document, double splitscreen)
 {
 
-    //! alle threads anhalten
-    //! cache löschen+leeren
-
-    isDocumentSet = true;
     this->splitscreen=splitscreen;
 
-    doc = Poppler::Document::load(docFilePath);
-
-    doc->setRenderBackend(Poppler::Document::SplashBackend);
-    doc->setRenderHint(Poppler::Document::Antialiasing, true);
-    doc->setRenderHint(Poppler::Document::TextAntialiasing, true);
+    doc = document;
 
     sizeOfDocument = doc->numPages();
     pageCache.resize(sizeOfDocument);
 
 
-
 }
+
+//void DynamicPdfPageCache::setDocument(QString docFilePath,double splitscreen)
+//{
+
+//    //! alle threads anhalten
+//    //! cache löschen+leeren
+
+//    isDocumentSet = true;
+//    this->splitscreen=splitscreen;
+
+//    doc = Poppler::Document::load(docFilePath);
+
+//    doc->setRenderBackend(Poppler::Document::SplashBackend);
+//    doc->setRenderHint(Poppler::Document::Antialiasing, true);
+//    doc->setRenderHint(Poppler::Document::TextAntialiasing, true);
+
+//    sizeOfDocument = doc->numPages();
+//    pageCache.resize(sizeOfDocument);
+
+
+
+//}
 
 QImage* DynamicPdfPageCache::getRenderedImageFromCache(int pageNum)
 {
@@ -176,7 +189,7 @@ void DynamicPdfPageCache::renderPage( Poppler::Page *page,int i)
     cache_mutex.unlock();
 }
 
-void DynamicPdfPageCache::initializeCache(bool createThumbnails)
+void DynamicPdfPageCache::initializeCache()
 {
     int end = (sizeOfDocument < ELEMENTS_IN_CACHE) ? sizeOfDocument : ELEMENTS_IN_CACHE;
     for (int i = 0; i < end; i++)
@@ -191,11 +204,7 @@ void DynamicPdfPageCache::initializeCache(bool createThumbnails)
     cacheBegin = 0;
     cacheEnd = end -1;
 
-    if (createThumbnails)
-    {
-        thread thumbnailThread(&DynamicPdfPageCache::generateThumbnails,this);
-        thumbnailThread.detach();
-    }
+
 }
 
 QSize DynamicPdfPageCache::getDisplaySize() const
@@ -223,10 +232,6 @@ int DynamicPdfPageCache::getSizeOfDocument() const
     return sizeOfDocument;
 }
 
-bool DynamicPdfPageCache::getIsDocumentSet() const
-{
-    return isDocumentSet;
-}
 
 void DynamicPdfPageCache::deleteAndResetCache()
 {
@@ -239,17 +244,7 @@ void DynamicPdfPageCache::deleteAndResetCache()
 //    pageCache.resize(0);
 }
 
-vector<QImage> DynamicPdfPageCache::getThumbnails() const
-{
-    if (thumbnailsCreated)
-    {
-        return thumbnails;
-    }
-    else
-    {
-        return vector<QImage>();
-    }
-}
+
 
 
 void DynamicPdfPageCache::renderPageAsThread(int pageNum)
@@ -384,20 +379,6 @@ void DynamicPdfPageCache::deletePagesFromCacheNegativeDirection(int start, int e
     }
 }
 
-void DynamicPdfPageCache::generateThumbnails()
-{
-    thumbnails.resize(doc->numPages());
-    for (uint16_t i = 0; i < doc->numPages(); i++)
-    {
-        Poppler::Page *p = doc->page(i);
-
-        double dpi = (THUMBNAIL_HIGHT_IN_PIXEL * DPI_CONSTANT) / p->pageSizeF().height();
-        QImage thumb = p->renderToImage(dpi,dpi);
-
-        thumbnails[i] = thumb;
-    }
-    thumbnailsCreated = true;
-}
 
 QImage *DynamicPdfPageCache::getElementFromPos(int pos)
 {

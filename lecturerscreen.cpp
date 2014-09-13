@@ -18,7 +18,7 @@ LecturerScreen::LecturerScreen(QWidget *parent, Presentation *aPresentation) :
     }
 
     // set thumbnails to the preview list
-    vector<QImage> thumbs = presentation->getThumbnailsFromDocument();
+    vector<QImage> thumbs = presentation->GetThumbnails();
     for (uint8_t i = 0; i < thumbs.size(); i++)
     {
         QString s = tr("Slide") + " " + QString::number(i);

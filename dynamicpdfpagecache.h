@@ -35,11 +35,12 @@ public:
 
     ~DynamicPdfPageCache();
 
-    void setDocument(QString docFilePath, double splitscreen);
+    //void setDocument(QString docFilePath, double splitscreen);
+    void setDocument(Poppler::Document *document, double splitscreen);
 
     QImage* getElementFromPos(int pos);
 
-    void initializeCache(bool generateThumbnails = false);
+    void initializeCache();
 
     QSize getDisplaySize() const;
     void setDisplaySize(const QSize &value);
@@ -49,7 +50,7 @@ public:
 
     int getSizeOfDocument() const;
 
-    bool getIsDocumentSet() const;
+
 
     void deleteAndResetCache();
 
@@ -63,16 +64,16 @@ private:
 //    const uint8_t ELEMENTS_IN_CACHE = (DISTANCE_TO_CACHE_BORDER *2) +1;
     const uint8_t ELEMENTS_IN_CACHE = 8;
 
-    const uint8_t THUMBNAIL_HIGHT_IN_PIXEL = 64;
-    const double  DPI_CONSTANT = 72.0;
+    const uint8_t THUMBNAIL_HIGHT_IN_PIXEL = 64; //! remove when thumbnails are created in the presentation.cpp
+    const double  DPI_CONSTANT = 72.0;  //! global or something
 
     Poppler::Document *doc;
     vector<QImage*> pageCache;
-    vector<QImage> thumbnails;
+
 
     double splitscreen = 1.0;
 
-    bool isDocumentSet = false;
+
     bool thumbnailsCreated = false;
 
 

@@ -14,7 +14,7 @@ class Presentation:public QObject
     Q_OBJECT
 public:
     Presentation();
-    Presentation(QString file_n);
+
 
     void setDocumentFile(QString file_n);
 
@@ -34,8 +34,6 @@ public:
 
     QImage getCurrentMainScreen();
     QImage getCurrentLectureScreen();
-
-    vector<QImage> getThumbnailsFromDocument();
 
 
     bool documentSet() const;
@@ -60,6 +58,9 @@ public:
 
     QRect getRectOfImage(bool split);
 
+    vector<QImage> GetThumbnails();
+
+
     uint32_t CurrentPage();
     uint32_t NumberOfPages();
     uint32_t Progress();
@@ -69,13 +70,15 @@ signals:
 
 private:
 
+    void generateThumbnails();
+
     QImage left_rightSideOfPage(bool left_right, QImage & image);
 
 
     QImage getCurrentImageFromCache(DynamicPdfPageCache & cache);
 
 
-    void setCacheDocument(int dpri, DynamicPdfPageCache & cache, QSize size, double splitscreen, bool createThumbnails = false);
+    void setCacheDocument(int dpri, DynamicPdfPageCache & cache, QSize size, double splitscreen);
 
 
     DynamicPdfPageCache cache_preview;
@@ -90,6 +93,8 @@ private:
     uint32_t numOfPages = 0;
 
     QString filename;
+    Poppler::Document *doc;
+    vector<QImage> thumbnails;
 
 
 

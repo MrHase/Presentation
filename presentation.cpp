@@ -7,33 +7,40 @@ Presentation::Presentation():
 //    renderer_mainScreen(0),
 //    renderer_helperScreen(0)
 {
+    doc=nullptr;
 }
 
 
-Presentation::Presentation(QString file_n):
-//    renderer_preview(0),
-    cache_preview(0),
-    cache_mainScreen(0),
-    cache_lecturerScreen(0),
-//    renderer_mainScreen(0),
-//    renderer_helperScreen(0),
-    filename(file_n)
-{
 
-}
 
 void Presentation::setDocumentFile(QString file_n)
 {
     filename = file_n;
+
+
+    //! it is crucial that no render threads are running, because we delete doc!
+    if(doc!=nullptr)
+        delete doc;
+
+    doc = Poppler::Document::load(filename);
+
+    doc->setRenderBackend(Poppler::Document::SplashBackend);
+    doc->setRenderHint(Poppler::Document::Antialiasing, true);
+    doc->setRenderHint(Poppler::Document::TextAntialiasing, true);
+
+    numOfPages=doc->numPages();
+
+    generateThumbnails(); //! this takes too long -> own thread with signal when finished
+
 }
 
 void Presentation::setPreviewDocument(int dpri,double splitscreen)
 {
 //    setRendererDocument(dpri, renderer_preview, preview_size);
 
-    setCacheDocument(dpri,cache_preview,preview_size,splitscreen,true);
+    setCacheDocument(dpri,cache_preview,preview_size,splitscreen);
 
-    numOfPages = cache_preview.getSizeOfDocument();
+
 
 //    // setup the renderer and the size for rendering
 //    renderer_preview.setDocument(filename);
@@ -109,25 +116,12 @@ QImage Presentation::getCurrentLectureScreen()
     return getCurrentImageFromCache(cache_lecturerScreen);
 }
 
-vector<QImage> Presentation::getThumbnailsFromDocument()
-{
-    return cache_preview.getThumbnails();
-}
+
 
 bool Presentation::documentSet() const
 {
-    bool ret = false;
-    if (cache_preview.getIsDocumentSet() || cache_mainScreen.getIsDocumentSet() || cache_lecturerScreen.getIsDocumentSet())
-    {
-        ret = true;
-    }
+    return doc!=nullptr;
 
-    return ret;
-//    return (cache_helperScreen.getIsDocumentSet()
-//            || cache_mainScreen.getIsDocumentSet()
-//            || cache_helperScreen.getIsDocumentSet()) ?
-//                true: false;
-//    return renderer_preview.documentSet();
 }
 
 
@@ -163,15 +157,15 @@ QImage Presentation::getCurrentImageFromCache(DynamicPdfPageCache &cache)
 }
 
 
-void Presentation::setCacheDocument(int dpri, DynamicPdfPageCache &cache, QSize size, double splitscreen, bool createThumbnails)
+void Presentation::setCacheDocument(int dpri, DynamicPdfPageCache &cache, QSize size, double splitscreen)
 {
     //! alter cache deleten und neu anlegen?
 
-    cache.setDocument(filename,splitscreen); //!
+    cache.setDocument(doc,splitscreen); //!
     cache.setPixelRatio(dpri); //! mit in den SetDocument/Constructur
     cache.setDisplaySize(size); //! constructor
 
-    cache.initializeCache(createThumbnails); //! constructor
+    cache.initializeCache(); //! constructor
 }
 
 QSize Presentation::getHelper_size() const
@@ -199,6 +193,30 @@ QRect Presentation::getRectOfImage(bool split)
     }
 
     return ret;
+}
+
+vector<QImage> Presentation::GetThumbnails()
+{
+    return thumbnails; //! maybe pointer?
+}
+
+void Presentation::generateThumbnails()
+{
+    const uint8_t THUMBNAIL_HIGHT_IN_PIXEL = 64; //! somewhere else
+    const double  DPI_CONSTANT = 72.0;  //! global or something
+
+    thumbnails.clear();
+    thumbnails.resize(doc->numPages());
+
+    for (uint16_t i = 0; i < doc->numPages(); i++)
+    {
+        Poppler::Page *p = doc->page(i);
+
+        double dpi = (THUMBNAIL_HIGHT_IN_PIXEL * DPI_CONSTANT) / p->pageSizeF().height();
+        QImage thumb = p->renderToImage(dpi,dpi);
+
+        thumbnails[i] = thumb;
+    }
 }
 
 uint32_t Presentation::CurrentPage()
