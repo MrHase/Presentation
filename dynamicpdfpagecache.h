@@ -40,7 +40,7 @@ public:
     //void setDocument(QString docFilePath, double splitscreen);
     void setDocument(Poppler::Document *document, double splitscreen);
 
-    QImage* getElementFromPos(int pos);
+    QImage getElementFromPos(int pos);
 
     void initializeCache(); //! remove
 
@@ -71,7 +71,7 @@ private:
 
     Poppler::Document *doc;
     vector<QImage*> pageCache;
-    Cache<int,QImage*> cache;
+    Cache<int,QImage> cache;
 
 
     double splitscreen = 1.0;
@@ -90,7 +90,7 @@ private:
     void renderPage(Poppler::Page *page, int i);
 
     DotsPerInch calculateDPI(QSize size, Poppler::Page *page);
-    QImage* getRenderedImageFromCache(int pageNum);
+
 
 
 

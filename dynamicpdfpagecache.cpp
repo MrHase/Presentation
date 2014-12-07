@@ -48,23 +48,6 @@ void DynamicPdfPageCache::setDocument(Poppler::Document *document, double splits
 
 //}
 
-QImage* DynamicPdfPageCache::getRenderedImageFromCache(int pageNum)
-{
-    QImage *ret = nullptr;
-
-    cache_mutex.lock();
-    if (pageCache[pageNum] != nullptr)
-    {
-        ret = pageCache[pageNum];
-    }
-    else
-    {
-        qDebug()<<"!!!!!!!!!! Cache " << pageNum <<"was nullpointer... should never happen...";
-    }
-    cache_mutex.unlock();
-
-    return ret;
-}
 
 
 DotsPerInch DynamicPdfPageCache::calculateDPI(QSize size, Poppler::Page *page)
@@ -106,20 +89,24 @@ void DynamicPdfPageCache::renderPage( Poppler::Page *page,int i)
 #endif
 
     DotsPerInch dpiRequest = calculateDPI(displaySize,page);
-    QImage image = page->renderToImage(dpiRequest.dpiWidth*pixelRatio, dpiRequest.dpiHeight*pixelRatio);
+    //QImage image = page->renderToImage(dpiRequest.dpiWidth*pixelRatio, dpiRequest.dpiHeight*pixelRatio);
+    cache.Lock();
+    if(!cache.Available(i)){
+        cout<<"Adde page "<<i<<" to cache"<<endl;
+//        cache.Add(i,img_ptr);
+        cache.Add(i,page->renderToImage(dpiRequest.dpiWidth*pixelRatio, dpiRequest.dpiHeight*pixelRatio));
+
+    }
+    cache.Unlock();
 
 //    qDebug() << "+++++ Image "<<  i <<" rendered..... h: " << image.size().height() << " w: " << image.size().width();
 
 
-    cache_mutex.lock();
-    auto img_ptr=new QImage(image);
-    pageCache[i] = img_ptr;
-    if(!cache.Available(i)){
-        cout<<"Adde page "<<i<<" to cache"<<endl;
-        cache.Add(i,img_ptr);
+//    cache_mutex.lock();
+//    auto img_ptr=new QImage(image);
+//    pageCache[i] = img_ptr;
+//    cache_mutex.unlock();
 
-    }
-    cache_mutex.unlock();
 }
 
 void DynamicPdfPageCache::initializeCache()
@@ -190,7 +177,7 @@ void DynamicPdfPageCache::renderPageAsThread(int pageNum)
 
 
 
-QImage *DynamicPdfPageCache::getElementFromPos(int pos)
+QImage DynamicPdfPageCache::getElementFromPos(int pos)
 {
 
     int begin_=pos-(ELEMENTS_IN_CACHE/2);
@@ -200,6 +187,7 @@ QImage *DynamicPdfPageCache::getElementFromPos(int pos)
     const uint32_t end=(end_>=doc->numPages())?doc->numPages():end_;
 
     cout<<"Getting page: "<<pos<<" begin: "<<begin<<" end: "<<end<<endl;
+    cache.Lock();
 
     if (cache.Available(pos)){
         cout<<"Page found!"<<pos<<endl;
@@ -221,13 +209,18 @@ QImage *DynamicPdfPageCache::getElementFromPos(int pos)
 
     }
     else{
-        cout<<"Page not found!"<<pos<<endl;
+        cout<<"Page not found! "<<pos<<endl;
 
         for(auto i=begin; i<end;i++)
         {
             cache.Touch(i);
         }
-        renderPage(doc->page(pos),pos);
+
+        auto page=doc->page(pos);
+        DotsPerInch dpiRequest = calculateDPI(displaySize,page);
+        cache.Add(pos,page->renderToImage(dpiRequest.dpiWidth*pixelRatio, dpiRequest.dpiHeight*pixelRatio));
+//        renderPage(doc->page(pos),pos);
+
 
         for(auto i=begin; i<end;i++)
         {
@@ -235,7 +228,11 @@ QImage *DynamicPdfPageCache::getElementFromPos(int pos)
                 renderPageAsThread(i);
         }
     }
-    return cache.Get(pos);
+
+    QImage img= cache.Get(pos);
+    cache.Unlock();
+
+    return img;
 
 
 //    // just to make sure

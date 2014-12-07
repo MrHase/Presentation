@@ -24,11 +24,13 @@ public:
 
     void SetCacheSize(uint32_t cachesize)
     {
+
         lock_guard<mutex> lock(cache_mutex);
         this->cachesize=cachesize;
     }
 
     void Add(IDType id,T item){
+
         lock_guard<mutex> lock(cache_mutex);
 
         while(cache.size()>=cachesize)
@@ -38,7 +40,7 @@ public:
         }
 
         {
-            cout<<"free -> adde "<<item<<endl;
+            //cout<<"free -> adde "<<item<<endl;
             //Info info(id,CurrentTimestamp()+1);
             Info info;
             info.object=item;
@@ -52,11 +54,13 @@ public:
 
     bool Available(IDType id)
     {
+
         lock_guard<mutex> lock(cache_mutex);
         return cache.find(id)!=cache.end();
     }
 
     T Get(IDType id){
+
         lock_guard<mutex> lock(cache_mutex);
 
         if(cache.find(id)!=cache.end())
@@ -74,6 +78,7 @@ public:
 
     void Touch(IDType id)
     {
+
         lock_guard<mutex> lock(cache_mutex);
         if(cache.find(id)!=cache.end())
             cache[id].timestamp=CurrentTimestamp()+1;
@@ -81,11 +86,13 @@ public:
 
     void Clear()
     {
+        extern_lock.lock();
         lock_guard<mutex> lock(cache_mutex);
         cache.clear();
     }
 
     string Status(){
+        extern_lock.lock();
         lock_guard<mutex> lock(cache_mutex);
         //! implement
         string str="";
@@ -94,6 +101,18 @@ public:
             cout<<i.first<<" ts: "<<i.second.timestamp<<"\n";
         }
         return str;
+    }
+
+    void Lock()
+    {
+        cout<<"LOCK"<<endl;
+        extern_lock.lock();
+
+    }
+
+    void Unlock(){
+        cout<<"UNLOCK"<<endl;
+        extern_lock.unlock();
     }
 
 private:
@@ -126,6 +145,7 @@ private:
 
 
     mutex cache_mutex;
+    mutex extern_lock;
     unordered_map<IDType,Info> cache; //! vector could be faster
 
 

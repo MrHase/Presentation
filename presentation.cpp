@@ -145,15 +145,17 @@ QImage Presentation::left_rightSideOfPage(bool left_right, QImage &image)
 
 QImage Presentation::getCurrentImageFromCache(DynamicPdfPageCache &cache)
 {
-    QImage ret;
-    QImage * tmp = cache.getElementFromPos(currentPage);
+//    QImage ret;
+//    QImage * tmp = cache.getElementFromPos(currentPage);
 
-    if (tmp != nullptr)
-    {
-        ret = *tmp;
-    }
+//    if (tmp != nullptr)
+//    {
+//        ret = *tmp;
+//    }
 
-    return ret;
+//    return ret;
+
+    return cache.getElementFromPos(currentPage);
 }
 
 
