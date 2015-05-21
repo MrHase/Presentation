@@ -45,6 +45,12 @@
      </property>
      <item row="4" column="0" colspan="2">
       <widget class="QListWidget" name="listWidget">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>1</verstretch>
+        </sizepolicy>
+       </property>
        <property name="autoFillBackground">
         <bool>false</bool>
        </property>
@@ -67,11 +73,17 @@
      </item>
      <item row="3" column="1">
       <widget class="QLabel" name="label_2">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>1</verstretch>
+        </sizepolicy>
+       </property>
        <property name="styleSheet">
         <string notr="true"/>
        </property>
        <property name="text">
-        <string>Time</string>
+        <string>Time Progress</string>
        </property>
       </widget>
      </item>
@@ -79,12 +91,17 @@
       <widget class="QLCDNumber" name="lcdNumber">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
+         <horstretch>1</horstretch>
+         <verstretch>1</verstretch>
         </sizepolicy>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>18</pointsize>
+        </font>
+       </property>
        <property name="styleSheet">
-        <string notr="true">color:black</string>
+        <string notr="true">color:rgb(128, 255, 0)</string>
        </property>
        <property name="frameShape">
         <enum>QFrame::NoFrame</enum>
@@ -121,6 +138,12 @@
      </item>
      <item row="2" column="0">
       <widget class="QProgressBar" name="progressBar">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>1</verstretch>
+        </sizepolicy>
+       </property>
        <property name="value">
         <number>24</number>
        </property>
@@ -131,6 +154,12 @@
      </item>
      <item row="3" column="0">
       <widget class="QProgressBar" name="progressBar_2">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>1</verstretch>
+        </sizepolicy>
+       </property>
        <property name="value">
         <number>24</number>
        </property>
@@ -141,11 +170,17 @@
      </item>
      <item row="2" column="1">
       <widget class="QLabel" name="label">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>1</verstretch>
+        </sizepolicy>
+       </property>
        <property name="styleSheet">
         <string notr="true"/>
        </property>
        <property name="text">
-        <string>Slides</string>
+        <string>Slides Progress</string>
        </property>
       </widget>
      </item>
@@ -183,6 +218,15 @@
      </property>
      <property name="styleSheet">
       <string notr="true">background-color:black;</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <property name="lineWidth">
+      <number>0</number>
      </property>
      <property name="verticalScrollBarPolicy">
       <enum>Qt::ScrollBarAlwaysOff</enum>

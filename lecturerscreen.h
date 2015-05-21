@@ -32,6 +32,7 @@ class LecturerScreen : public QWidget
 
 public:
     explicit LecturerScreen(QWidget *parent = 0, Presentation *aPresentation = nullptr);
+    explicit LecturerScreen(QWidget *parent = 0, Presentation *aPresentation = nullptr, QTime targetPresentationTime);
     ~LecturerScreen();
 
 
@@ -62,11 +63,14 @@ public:
 
 private slots:
     void on_pushButton_clicked();
-    void updateClockWidget();
+    void updateClockDependingWidgets();
 
     void on_listWidget_doubleClicked(const QModelIndex &index);
 
 private:
+    void privateConstructor ();
+
+
     Ui::lecturerscreen *ui;
     QGraphicsScene helperScreenScene;
     QImage image;
@@ -75,6 +79,9 @@ private:
     QTimer timer;
     int seconds = 0;
     int minutes = 0;
+
+    QTime currentPresentationTime;
+    QTime targetPresentationTime;
 
     Presentation *presentation;
 

@@ -6,10 +6,28 @@ LecturerScreen::LecturerScreen(QWidget *parent, Presentation *aPresentation) :
     ui(new Ui::lecturerscreen),
     timerIsRunning(false),
     timer(this),
+    currentPresentationTime(0,0,0),
     presentation(aPresentation)
 {
+   privateConstructor();
+}
+
+LecturerScreen::LecturerScreen(QWidget *parent, Presentation *aPresentation, QTime targetPresentationTime) :
+    QWidget(parent),
+    ui(new Ui::lecturerscreen),
+    timerIsRunning(false),
+    timer(this),
+    currentPresentationTime(0,0,0),
+    targetPresentationTime(targetPresentationTime),
+    presentation(aPresentation)
+{
+    privateConstructor();
+}
+
+LecturerScreen::privateConstructor()
+{
     ui->setupUi(this);
-    connect(&timer,SIGNAL(timeout()),this,SLOT(updateClockWidget()));
+    connect(&timer,SIGNAL(timeout()),this,SLOT(updateClockDependingWidgets()));
 
     if (presentation == nullptr)
     {
@@ -26,11 +44,16 @@ LecturerScreen::LecturerScreen(QWidget *parent, Presentation *aPresentation) :
         item->setData(Qt::DecorationRole,QPixmap::fromImage(thumbs[i]));
     }
 
-    QTime time (0,minutes,seconds);
-    QString text = time.toString("mm:ss");
-    ui->lcdNumber->display(text);
+//    QTime time (0,minutes,seconds);
+//    QString text = time.toString("mm:ss");
 
+//    currentPresentationTime.setHMS(0,0,0,0);
+
+    QString text = currentPresentationTime.toString("mm:ss");
+
+    ui->lcdNumber->display(text);
 }
+
 
 LecturerScreen::~LecturerScreen()
 {
@@ -71,7 +94,7 @@ void LecturerScreen::on_pushButton_clicked()
     if (!timerIsRunning)
     {
         timerIsRunning = true;
-        ui->pushButton->setText("StopTimer");
+        ui->pushButton->setText("Stop Timer");
 
         //run every second
         timer.start(1000);
@@ -80,25 +103,30 @@ void LecturerScreen::on_pushButton_clicked()
     {
         timer.stop();
         timerIsRunning = false;
-        ui->pushButton->setText("StartTimer");
-        seconds = 0;
-        minutes = 0;
+        ui->pushButton->setText("Start Timer");
+//        seconds = 0;
+//        minutes = 0;
+
+        currentPresentationTime.setHMS(0,0,0,0);
     }
 
 }
 
-void LecturerScreen::updateClockWidget()
+void LecturerScreen::updateClockDependingWidgets()
 {
-    seconds ++;
-    if (seconds %60 == 0)
-    {
-        minutes++;
-        seconds = 0;
-    }
+//    seconds ++;
+//    if (seconds %60 == 0)
+//    {
+//        minutes++;
+//        seconds = 0;
+//    }
+    currentPresentationTime = currentPresentationTime.addSecs(1);
+    qDebug() << "update Clock widget.... " << currentPresentationTime.second() << endl;
 
-    QTime time (0,minutes,seconds);
-    QString text = time.toString("mm:ss");
-    if ((time.second() % 2) == 0)
+//    QTime time (0,minutes,seconds);
+//    QString text = time.toString("mm:ss");
+    QString text = currentPresentationTime.toString("mm:ss");
+    if ((currentPresentationTime.second() % 2) == 0)
     {
              text[2] = ' ';
     }
@@ -108,5 +136,7 @@ void LecturerScreen::updateClockWidget()
 
 void LecturerScreen::on_listWidget_doubleClicked(const QModelIndex &index)
 {
+    qDebug() << "widget was clicked...";
     presentation->goToPage(index.row());
+    updatePresentation();
 }

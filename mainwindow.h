@@ -42,6 +42,8 @@ protected:
 private slots:
 
     void on_actionOpen_triggered();
+    void on_actionClosed_triggered();
+
     void on_actionToggle_Presentation_F5_triggered();
 
     void on_cb_splitPDF_toggled(bool checked);
@@ -65,8 +67,9 @@ private:
     void prev();
 
     Ui::MainWindow *ui;
-    bool split;
-    bool presentationRunning;
+    bool split = false;
+    bool presentationRunning = false;
+    bool fileLoaded = false;
 
     QGraphicsScene scene;
     QGraphicsScene scene_left;

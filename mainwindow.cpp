@@ -232,7 +232,9 @@ void MainWindow::on_actionOpen_triggered()
         item->setData(Qt::DecorationRole,QPixmap::fromImage(thumbs[i]));
     }
 
-
+    // after setting the thumbnails we need to set the fileLoaded
+    this->ui->cb_splitPDF->setCheckable(true);
+    fileLoaded = true;
     updatePresentation();
 }
 
@@ -387,17 +389,25 @@ void MainWindow::on_cb_splitPDF_toggled(bool checked)
 {
     qDebug()<<"Checked: "<<checked;
 
-    split=checked;
+    //we need to check whether a file was loaded or not
+    if (fileLoaded)
+    {
+        split=checked;
 
-    scene_left.clear();
-    scene_right.clear();
+        scene_left.clear();
+        scene_right.clear();
 
-    scene_left.setSceneRect(presentation.getRectOfImage(checked));
-    scene_right.setSceneRect(presentation.getRectOfImage(checked));
-    updatePresentation();
+        scene_left.setSceneRect(presentation.getRectOfImage(checked));
+        scene_right.setSceneRect(presentation.getRectOfImage(checked));
+        updatePresentation();
+    }
 }
 
-
+void MainWindow::on_actionClosed_triggered()
+{
+    fileLoaded = false;
+    this->ui->cb_splitPDF->setCheckable(false);
+}
 
 void MainWindow::on_listWidget_doubleClicked(const QModelIndex &index)
 {

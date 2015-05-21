@@ -239,6 +239,7 @@ void DynamicPdfPageCache::deleteAndResetCache()
 //    pageCache.resize(0);
 }
 
+//! raus und in den presenter, bzw in eine neue klasse...
 vector<QImage> DynamicPdfPageCache::getThumbnails() const
 {
     if (thumbnailsCreated)
@@ -384,6 +385,7 @@ void DynamicPdfPageCache::deletePagesFromCacheNegativeDirection(int start, int e
     }
 }
 
+//! raus und in eine andere klasse und in den presenter!!
 void DynamicPdfPageCache::generateThumbnails()
 {
     thumbnails.resize(doc->numPages());
