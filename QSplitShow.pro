@@ -22,7 +22,8 @@ SOURCES += main.cpp\
     exception.cpp \
     dynamicpdfpagecache.cpp \
     lecturerscreen.cpp \
-    cache.cpp
+    cache.cpp \
+    filecache.cpp
 
 HEADERS  += mainwindow.h \
     presentation.h \
@@ -31,7 +32,8 @@ HEADERS  += mainwindow.h \
     exception.h \
     dynamicpdfpagecache.h \
     lecturerscreen.h \
-    cache.h
+    cache.h \
+    filecache.h
 
 FORMS    += mainwindow.ui \
     fullscreenpresentation.ui \

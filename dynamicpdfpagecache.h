@@ -12,6 +12,7 @@
 #include <QString>
 
 #include "cache.h"
+#include "filecache.h"
 
 #if (__MACH__ || __linux)
 #include <pthread.h>
@@ -89,8 +90,11 @@ private:
     void deletePageFromCache(int pageNum);
     void renderPage(Poppler::Page *page, int i);
 
+    void renderPageToImage(Poppler::Page *page,int i);
+
     DotsPerInch calculateDPI(QSize size, Poppler::Page *page);
 
+    FileCache fileCache;
 
 
 

@@ -109,20 +109,55 @@ void DynamicPdfPageCache::renderPage( Poppler::Page *page,int i)
 
 }
 
+void DynamicPdfPageCache::renderPageToImage(Poppler::Page *page, int i)
+{
+    //return page->renderToImage(dpiRequest.dpiWidth*pixelRatio, dpiRequest.dpiHeight*pixelRatio);
+}
+
 void DynamicPdfPageCache::initializeCache()
 {
-//    int end = (sizeOfDocument < ELEMENTS_IN_CACHE) ? sizeOfDocument : ELEMENTS_IN_CACHE;
-//    for (int i = 0; i < end; i++)
-//    {
-//        Poppler::Page *page = doc->page(i);
-//        //new thread (&DynamicPdfPageCache::renderPage,this,page, i); //! memory leak
-//        thread render_thread(&DynamicPdfPageCache::renderPage,this,page, i);
-//        render_thread.detach();
-//    }
 
-//    cacheCurrentPos = 0;
-//    cacheBegin = 0;
-//    cacheEnd = end -1;
+
+    std::vector<std::thread> workers;
+    for (int i = 0; i < sizeOfDocument; i++) {
+        workers.push_back(std::thread([=]()
+        {
+            std::cout << "Adding Image "<<i<<" to File\n";
+            Poppler::Page *page = doc->page(i);
+            DotsPerInch dpiRequest = calculateDPI(displaySize,page);
+
+            QImage img=page->renderToImage(dpiRequest.dpiWidth*pixelRatio, dpiRequest.dpiHeight*pixelRatio);
+
+            fileCache.Add(i,img);
+
+        }));
+    }
+
+    std::for_each(workers.begin(), workers.end(), [](std::thread &t)
+    {
+        t.join();
+    });
+
+    //for(auto w:workers)
+
+    /*
+
+    for (int i = 0; i < sizeOfDocument; i++)
+    {
+        Poppler::Page *page = doc->page(i);
+
+
+        std::cout << "main thread\n";
+
+        // Looping every thread via for_each
+        // The 3rd argument assigns a task
+        // It tells the compiler we're using lambda ([])
+        // The lambda function takes its argument as a reference to a thread, t
+        // Then, joins one by one, and this works like barrier
+
+    }
+    */
+
 
 
 }
@@ -180,6 +215,8 @@ void DynamicPdfPageCache::renderPageAsThread(int pageNum)
 QImage DynamicPdfPageCache::getElementFromPos(int pos)
 {
 
+    //return fileCache.GetPage(pos); // use this for fileCache
+
     int begin_=pos-(ELEMENTS_IN_CACHE/2);
     const uint32_t begin=(begin_<0)? 0:begin_;
 
@@ -222,11 +259,13 @@ QImage DynamicPdfPageCache::getElementFromPos(int pos)
 //        renderPage(doc->page(pos),pos);
 
 
+        /*
         for(auto i=begin; i<end;i++)
         {
             if(!cache.Available(i))
                 renderPageAsThread(i);
         }
+        */
     }
 
     QImage img= cache.Get(pos);
