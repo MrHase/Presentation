@@ -215,7 +215,7 @@ void DynamicPdfPageCache::renderPageAsThread(int pageNum)
 QImage DynamicPdfPageCache::getElementFromPos(int pos)
 {
 
-    //return fileCache.GetPage(pos); // use this for fileCache
+    return fileCache.GetPage(pos); // use this for fileCache
 
     int begin_=pos-(ELEMENTS_IN_CACHE/2);
     const uint32_t begin=(begin_<0)? 0:begin_;
