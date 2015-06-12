@@ -260,6 +260,7 @@ void MainWindow::on_actionOpen_triggered()
     //sets the previewDocument
 
     //! the cache is initialized here... not very intuitiv
+    //! no, not really -.-
     presentation.setPreviewDocument(this->devicePixelRatio(),(ui->cb_splitPDF->isChecked())?2:1);
 
     //updates the presentation
@@ -281,6 +282,9 @@ void MainWindow::on_actionOpen_triggered()
     }
     ui->pageList->setCurrentRow(0);
 
+    //!TODO fileLoaded must be set to false at some point, if we can open files twice :)
+    fileLoaded = true;
+    ui->cb_splitPDF->setEnabled(true);
 
     updatePresentation();
 }
@@ -439,23 +443,29 @@ void MainWindow::togglePresentation()
 void MainWindow::on_cb_splitPDF_toggled(bool checked)
 {
     qDebug()<<"Checked: "<<checked;
-
-    split=checked;
-
-    scene_left.clear();
-    scene_right.clear();
-
-    scene_left.setSceneRect(presentation.getRectOfImage(checked));
-    scene_right.setSceneRect(presentation.getRectOfImage(checked));
-
-    if(checked)
+    if (fileLoaded)
     {
-        ui->graphicsView_right->setVisible(true);
-    }else{
-        ui->graphicsView_right->setVisible(false);
-    }
+        split=checked;
 
-    updatePresentation();
+        scene_left.clear();
+        scene_right.clear();
+
+        scene_left.setSceneRect(presentation.getRectOfImage(checked));
+        scene_right.setSceneRect(presentation.getRectOfImage(checked));
+
+        if(checked)
+        {
+            ui->graphicsView_right->setVisible(true);
+        }else{
+            ui->graphicsView_right->setVisible(false);
+        }
+
+        updatePresentation();
+    }
+    else
+    {
+//        ui->cb_splitPDF->setEnabled(false);
+    }
 }
 
 

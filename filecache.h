@@ -15,6 +15,7 @@ class FileCache
 {
 public:
     FileCache();
+    virtual ~FileCache();
 
     QImage GetPage(int index);
 

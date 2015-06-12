@@ -45,6 +45,12 @@
      </property>
      <item row="4" column="0" colspan="2">
       <widget class="QListWidget" name="pageList">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>5</verstretch>
+        </sizepolicy>
+       </property>
        <property name="autoFillBackground">
         <bool>false</bool>
        </property>
@@ -71,20 +77,20 @@
         <string notr="true"/>
        </property>
        <property name="text">
-        <string>Time</string>
+        <string>Time Progress</string>
        </property>
       </widget>
      </item>
      <item row="1" column="0">
       <widget class="QLCDNumber" name="lcdNumber">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
          <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
+         <verstretch>1</verstretch>
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">color:black</string>
+        <string notr="true">color: rgb(128, 255, 0);</string>
        </property>
        <property name="frameShape">
         <enum>QFrame::NoFrame</enum>
@@ -145,7 +151,7 @@
         <string notr="true"/>
        </property>
        <property name="text">
-        <string>Slides</string>
+        <string>Slides Progress</string>
        </property>
       </widget>
      </item>
@@ -183,6 +189,15 @@
      </property>
      <property name="styleSheet">
       <string notr="true">background-color:black;</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <property name="lineWidth">
+      <number>1</number>
      </property>
      <property name="verticalScrollBarPolicy">
       <enum>Qt::ScrollBarAlwaysOff</enum>

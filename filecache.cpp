@@ -8,6 +8,11 @@ FileCache::FileCache()
 
 }
 
+FileCache::~FileCache()
+{
+
+}
+
 QImage FileCache::GetPage(int index)
 {
 
@@ -33,11 +38,13 @@ void FileCache::Add(int index, QImage img)
     QTemporaryFile* tmp=new QTemporaryFile();
     test[index]=tmp;
 
+
+
     //tmp->setFileTemplate(tmp->fileTemplate() + ".png");
     success=tmp->open();
 
     qDebug()<<"Open success: "<<success;
-
+    qDebug() << " FILEEEEEEEEEE NAME :"<< tmp->fileName();
 
     //tmp->setAutoRemove(false);
 
@@ -46,6 +53,8 @@ void FileCache::Add(int index, QImage img)
     //qint64 c=tmp->write(ba);
     //qDebug()<<"Writing success: "<<c;
 
+    //! die bilder sind ca. 2,5 MB gross auf meinem MacBook mit Retina Display...
+    //! Wie würde sich das auf anderen Computern verhalten?
     success=img.save(tmp,"PNG");
     qDebug()<<"Save success"<<success;
 

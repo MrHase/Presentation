@@ -48,7 +48,11 @@ private slots:
 
     void on_pageList_clicked(const QModelIndex &index);
 
+
 private:
+
+    bool fileLoaded = false;
+
     void updatePresentation();
     void updateOutputLists();
 
