@@ -31,7 +31,7 @@ class LecturerScreen : public QWidget
     Q_OBJECT
 
 public:
-    explicit LecturerScreen(QWidget *parent = 0, Presentation *aPresentation = nullptr);
+    explicit LecturerScreen(QWidget *parent = 0, Presentation *aPresentation = nullptr, QTime aTargetPresetationTime = QTime());
     ~LecturerScreen();
 
 
@@ -68,7 +68,7 @@ public slots:
 
 private slots:
     void on_pushButton_clicked();
-    void updateClockWidget();
+    void updateClockAndTimeProgressWidget();
 
 
     void on_pageList_clicked(const QModelIndex &index);
@@ -80,10 +80,18 @@ private:
 
     bool timerIsRunning;
     QTimer timer;
-    int seconds = 0;
-    int minutes = 0;
 
     Presentation *presentation;
+//    int seconds = 0;
+//    int minutes = 0;
+
+
+    QTime targetPresentationTime;
+    QTime currentPresentationTime;
+
+
+    //helperFunctionsBelow
+    int calculateTimeProgressInPercent();
 
 };
 
