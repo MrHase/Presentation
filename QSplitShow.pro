@@ -12,7 +12,7 @@ TARGET = QSplitShow
 TEMPLATE = app
 
 CONFIG += c++11
-QMAKE_CXXFLAGS += -std=c++11
+#QMAKE_CXXFLAGS += -std=c++11
 
 SOURCES += main.cpp\
         mainwindow.cpp \
@@ -39,10 +39,19 @@ FORMS    += mainwindow.ui \
     fullscreenpresentation.ui \
     lecturerscreen.ui
 
-unix|win32: LIBS += -lpoppler-qt5
+win32: {
+    INCLUDEPATH += \
+        D:/DEV/Workspaces/workspace_qtcreator/Presentation/windows_x64/lib/poppler/include
+    LIBS += \
+        D:/DEV/Workspaces/workspace_qtcreator/Presentation/windows_x64/lib/poppler/bin/Release/poppler-qt5.lib
+}
 
-INCLUDEPATH += \
-    /usr/local/include
+unix: {
+    INCLUDEPATH += \
+        /usr/local/include
+    LIBS += \
+        -lpoppler-qt5
+}
 
 QMAKE_LIBDIR += \
     /usr/local/lib

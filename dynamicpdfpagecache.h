@@ -4,7 +4,10 @@
 #include <vector>
 #include <QImage>
 #include <mutex>
+
 #include <poppler/qt5/poppler-qt5.h>
+
+
 #include <QDebug>
 #include <QRect>
 
@@ -39,6 +42,7 @@ public:
     ~DynamicPdfPageCache();
 
     //void setDocument(QString docFilePath, double splitscreen);
+
     void setDocument(Poppler::Document *document, double splitscreen);
 
     QImage getElementFromPos(int pos);
@@ -71,6 +75,7 @@ private:
     const double  DPI_CONSTANT = 72.0;  //! global or something
 
     Poppler::Document *doc;
+
     vector<QImage*> pageCache;
     Cache<int,QImage> cache;
 
@@ -88,6 +93,7 @@ private:
 
     void renderPageAsThread(int pageNum);
     void deletePageFromCache(int pageNum);
+
     void renderPage(Poppler::Page *page, int i);
 
     void renderPageToImage(Poppler::Page *page,int i);

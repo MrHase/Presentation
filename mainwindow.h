@@ -13,8 +13,11 @@
 #include <QWindow>
 
 #include "presentation.h"
+#ifndef _WIN64
 #include <unistd.h>
-
+#else
+#include <io.h>
+#endif
 
 #include "fullscreenpresentation.h"
 #include "lecturerscreen.h"

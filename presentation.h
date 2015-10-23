@@ -3,7 +3,11 @@
 
 #include "dynamicpdfpagecache.h"
 #include <iostream>
+#ifndef _WIN64
 #include <unistd.h>
+#else
+#include <io.h>
+#endif
 #include <vector>
 
 using namespace std;
