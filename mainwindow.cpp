@@ -68,7 +68,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     updateOutputLists();
-    ui->outputList_HelperScreen->setCurrentText(QGuiApplication::primaryScreen()->name()); // set the lecturer output to the primary screen
+    ui->outputList_HelperScreen->setCurrentText(QGuiApplication::primaryScreen()->name()); // set the rer output to the primary screen
 
 //    ui->outputList_HelperScreen->setCurrentText("This should not change anything");
 
@@ -197,9 +197,11 @@ void MainWindow::Reset()
 {
     //! thumbnail list clear
 
-    if(ui->cb_splitPDF->isChecked())
-        ui->cb_splitPDF->toggle();
+//    if(ui->cb_splitPDF->isChecked())
+//        ui->cb_splitPDF->toggle();
 
+    if(ui->checkBox->isChecked())
+            ui->checkBox->toggle();
     ui->graphicsView_right->setVisible(false);
 }
 
@@ -261,7 +263,7 @@ void MainWindow::on_actionOpen_triggered()
 
     //! the cache is initialized here... not very intuitiv
     //! no, not really -.-
-    presentation.setPreviewDocument(this->devicePixelRatio(),(ui->cb_splitPDF->isChecked())?2:1);
+    presentation.setPreviewDocument(this->devicePixelRatio(),(ui->checkBox->isChecked())?2:1);
 
     //updates the presentation
 //    vector<QImage> thumbs;
@@ -284,7 +286,7 @@ void MainWindow::on_actionOpen_triggered()
 
     //!TODO fileLoaded must be set to false at some point, if we can open files twice :)
     fileLoaded = true;
-    ui->cb_splitPDF->setEnabled(true);
+    ui->checkBox->setEnabled(true);
 
     updatePresentation();
 }
@@ -351,13 +353,14 @@ void MainWindow::startPresentation()
 
         //set the sizes of the presentation attributes
         presentation.setMain_size(mainScreenPresentation->getPresentationWidgetSize());
-        presentation.setMainScreenDocument(mainScreenPresentation->devicePixelRatio(),(ui->cb_splitPDF->isChecked())?2:1);
+        presentation.setMainScreenDocument(mainScreenPresentation->devicePixelRatio(),(ui->checkBox->isChecked())?2:1);
 
     }
 
     if (screen_helper)
     {
-        lecturerScreen = new LecturerScreen(0,&presentation);
+        QTime targetPresentationTime = this->ui->timeEdit_targetTime->dateTime().time();
+        lecturerScreen = new LecturerScreen(0,&presentation,targetPresentationTime);
 
 
         moveWidgetToScreenAndShowFullScreen(lecturerScreen,screen_helper);
@@ -365,7 +368,7 @@ void MainWindow::startPresentation()
 
         //set the sizes of the presentation attributes
         presentation.setHelper_size(lecturerScreen->getPresentationWidgetSize());
-        presentation.setHelperScreenDocument(lecturerScreen->devicePixelRatio(),(ui->cb_splitPDF->isChecked())?2:1);
+        presentation.setHelperScreenDocument(lecturerScreen->devicePixelRatio(),(ui->checkBox->isChecked())?2:1);
         //updatePresentation();
 
     }
