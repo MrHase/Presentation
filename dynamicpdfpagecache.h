@@ -1,18 +1,17 @@
 #ifndef DYNAMICPDFPAGECACHE_H
 #define DYNAMICPDFPAGECACHE_H
 
-#include <vector>
 #include <QImage>
 #include <mutex>
+#include <vector>
 
 #include <poppler/qt5/poppler-qt5.h>
-
 
 #include <QDebug>
 #include <QRect>
 
-#include <thread>
 #include <QString>
+#include <thread>
 
 #include "cache.h"
 #include "filecache.h"
@@ -23,87 +22,73 @@
 #include <windows.h>
 #endif
 
-
 using namespace std;
 
 class DotsPerInch
 {
 public:
-    double dpiWidth;
-    double dpiHeight;
+	double dpiWidth;
+	double dpiHeight;
 };
 
 class DynamicPdfPageCache
 {
 public:
+	DynamicPdfPageCache(int pixelRatio);
 
-    DynamicPdfPageCache(int pixelRatio);
+	~DynamicPdfPageCache();
 
-    ~DynamicPdfPageCache();
+	// void setDocument(QString docFilePath, double splitscreen);
 
-    //void setDocument(QString docFilePath, double splitscreen);
+	void setDocument(Poppler::Document* document, double splitscreen);
 
-    void setDocument(Poppler::Document *document, double splitscreen);
+	QImage getElementFromPos(int pos);
 
-    QImage getElementFromPos(int pos);
+	void initializeCache();  //! remove
 
-    void initializeCache(); //! remove
+	QSize getDisplaySize() const;
+	void setDisplaySize(const QSize& value);
 
-    QSize getDisplaySize() const;
-    void setDisplaySize(const QSize &value);
+	int getPixelRatio() const;
+	void setPixelRatio(int value);
 
-    int getPixelRatio() const;
-    void setPixelRatio(int value);
+	int getSizeOfDocument() const;
 
-    int getSizeOfDocument() const;
-
-
-
-    void deleteAndResetCache();
-
-
-
-
+	void deleteAndResetCache();
 
 private:
+	const uint8_t DISTANCE_TO_CACHE_BORDER = 8;
+	//    const uint8_t ELEMENTS_IN_CACHE = (DISTANCE_TO_CACHE_BORDER *2) +1;
+	const uint8_t ELEMENTS_IN_CACHE = 8;
 
-    const uint8_t DISTANCE_TO_CACHE_BORDER = 8;
-//    const uint8_t ELEMENTS_IN_CACHE = (DISTANCE_TO_CACHE_BORDER *2) +1;
-    const uint8_t ELEMENTS_IN_CACHE = 8;
+	const uint8_t THUMBNAIL_HIGHT_IN_PIXEL = 64;    //! remove when thumbnails are created in the presentation.cpp
+	const double DPI_CONSTANT              = 72.0;  //! global or something
 
-    const uint8_t THUMBNAIL_HIGHT_IN_PIXEL = 64; //! remove when thumbnails are created in the presentation.cpp
-    const double  DPI_CONSTANT = 72.0;  //! global or something
+	Poppler::Document* doc;
 
-    Poppler::Document *doc;
+	vector<QImage*> pageCache;
+	Cache<int, QImage> cache;
 
-    vector<QImage*> pageCache;
-    Cache<int,QImage> cache;
+	double splitscreen = 1.0;
 
+	int sizeOfDocument = 0;
 
-    double splitscreen = 1.0;
+	QSize displaySize;
+	int pixelRatio = 1;
 
+	mutex cache_mutex;
+	mutex doc_mutex;
 
-    int sizeOfDocument = 0;
+	void renderPageAsThread(int pageNum);
+	void deletePageFromCache(int pageNum);
 
-    QSize displaySize;
-    int pixelRatio = 1;
+	void renderPage(Poppler::Page* page, int i);
 
-    mutex cache_mutex;
-    mutex doc_mutex;
+	//	void renderPageToImage(Poppler::Page* page, int i);
 
-    void renderPageAsThread(int pageNum);
-    void deletePageFromCache(int pageNum);
+	DotsPerInch calculateDPI(QSize size, Poppler::Page* page);
 
-    void renderPage(Poppler::Page *page, int i);
-
-    void renderPageToImage(Poppler::Page *page,int i);
-
-    DotsPerInch calculateDPI(QSize size, Poppler::Page *page);
-
-    FileCache fileCache;
-
-
-
+	FileCache fileCache;
 };
 
-#endif // DYNAMICPDFPAGECACHE_H
+#endif  // DYNAMICPDFPAGECACHE_H

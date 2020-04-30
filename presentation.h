@@ -1,8 +1,8 @@
 #ifndef PRESENTATION_H
 #define PRESENTATION_H
 
-#include "dynamicpdfpagecache.h"
 #include <iostream>
+#include "dynamicpdfpagecache.h"
 #ifndef _WIN64
 #include <unistd.h>
 #else
@@ -12,103 +12,90 @@
 
 using namespace std;
 
-
-class Presentation:public QObject
+class Presentation : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    Presentation();
+	Presentation();
 
+	void setDocumentFile(QString file_n);
 
-    void setDocumentFile(QString file_n);
+	// Init preview
+	void setPreviewDocument(int dpri, double splitscreen);
 
-    // Init preview
-    void setPreviewDocument(int dpri, double splitscreen);
+	QImage preview_getCurrentPage();
 
-    QImage preview_getCurrentPage();
+	QImage getRightSideOfPreviewPage();
+	QImage getLeftSideOfPreviewPage();
 
-    QImage getRightSideOfPreviewPage();
-    QImage getLeftSideOfPreviewPage();
+	QImage getRightSideOfMainScreen();
+	QImage getLeftSideOfMainScreen();
 
-    QImage getRightSideOfMainScreen();
-    QImage getLeftSideOfMainScreen();
+	QImage getRightSideOfLecturerScreen();
+	QImage getLeftSideOfLecturerScreen();
 
-    QImage getRightSideOfLecturerScreen();
-    QImage getLeftSideOfLecturerScreen();
+	QImage getCurrentMainScreen();
+	QImage getCurrentLectureScreen();
 
-    QImage getCurrentMainScreen();
-    QImage getCurrentLectureScreen();
+	bool documentSet() const;
 
+	void nextPage();
+	void previousPage();
 
-    bool documentSet() const;
+	void goToPage(uint16_t pageNum);
 
-    void nextPage();
-    void previousPage();
+	void setHelperScreenDocument(int dpri, double splitscreen);
+	void setMainScreenDocument(int dpri, double splitscreen);
 
-    void goToPage(uint16_t pageNum);
+	QSize getPreview_size() const;
+	void setPreview_size(const QSize& value);
 
-    void setHelperScreenDocument(int dpri, double splitscreen);
-    void setMainScreenDocument(int dpri, double splitscreen);
+	QSize getMain_size() const;
+	void setMain_size(const QSize& value);
 
-    QSize getPreview_size() const;
-    void setPreview_size(const QSize &value);
+	QSize getHelper_size() const;
+	void setHelper_size(const QSize& value);
 
-    QSize getMain_size() const;
-    void setMain_size(const QSize &value);
+	QRect getRectOfImage(bool split);
 
-    QSize getHelper_size() const;
-    void setHelper_size(const QSize &value);
+	vector<QImage> GetThumbnails();
 
-
-    QRect getRectOfImage(bool split);
-
-    vector<QImage> GetThumbnails();
-
-
-    uint32_t CurrentPage();
-    uint32_t NumberOfPages();
-    uint32_t Progress();
+	uint32_t CurrentPage();
+	uint32_t NumberOfPages();
+	uint32_t Progress();
 
 signals:
-    void pageChanged(int newPage);
+	void pageChanged(int newPage);
 
 private:
+	void generateThumbnails();
 
-    void generateThumbnails();
+	QImage left_rightSideOfPage(bool left_right, QImage& image);
 
-    QImage left_rightSideOfPage(bool left_right, QImage & image);
+	QImage getCurrentImageFromCache(DynamicPdfPageCache& cache);
 
+	void setCacheDocument(int dpri, DynamicPdfPageCache& cache, QSize size, double splitscreen);
 
-    QImage getCurrentImageFromCache(DynamicPdfPageCache & cache);
+	DynamicPdfPageCache cache_preview;
+	DynamicPdfPageCache cache_mainScreen;
+	DynamicPdfPageCache cache_lecturerScreen;
 
+	//    PdfRenderer renderer_preview;
+	//    PdfRenderer renderer_mainScreen;
+	//    PdfRenderer renderer_helperScreen;
 
-    void setCacheDocument(int dpri, DynamicPdfPageCache & cache, QSize size, double splitscreen);
+	uint32_t currentPage = 0;
+	uint32_t numOfPages  = 0;
 
+	QString filename;
+	Poppler::Document* doc;
+	vector<QImage> thumbnails;
 
-    DynamicPdfPageCache cache_preview;
-    DynamicPdfPageCache cache_mainScreen;
-    DynamicPdfPageCache cache_lecturerScreen;
-
-//    PdfRenderer renderer_preview;
-//    PdfRenderer renderer_mainScreen;
-//    PdfRenderer renderer_helperScreen;
-
-    uint32_t currentPage = 0;
-    uint32_t numOfPages = 0;
-
-    QString filename;
-    Poppler::Document *doc;
-    vector<QImage> thumbnails;
-
-
-
-    // rectangles for the supported screens
-    // should be okay for now, maybe once a map...
-    QSize preview_size;
-    QSize main_size;
-    QSize helper_size;
-
-
+	// rectangles for the supported screens
+	// should be okay for now, maybe once a map...
+	QSize preview_size;
+	QSize main_size;
+	QSize helper_size;
 };
 
-#endif // PRESENTATION_H
+#endif  // PRESENTATION_H

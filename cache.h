@@ -1,189 +1,173 @@
 #ifndef CACHE_H
 #define CACHE_H
 
-#include <map>
 #include <iostream>
+#include <map>
 #include <mutex>
 #include <unordered_map>
 
 using namespace std;
 
-//template <typename IDType>
+// template <typename IDType>
 
-
-template<typename IDType,typename T>
+template<typename IDType, typename T>
 class Cache
 {
 public:
-    Cache(uint32_t cachesize){
-        SetCacheSize(cachesize);
-    }
-    Cache(){
+	Cache(uint32_t cachesize) { SetCacheSize(cachesize); }
+	Cache() {}
 
-    }
+	void SetCacheSize(uint32_t cachesize)
+	{
+		lock_guard<mutex> lock(cache_mutex);
+		this->cachesize = cachesize;
+	}
 
-    void SetCacheSize(uint32_t cachesize)
-    {
+	void Add(IDType id, T item)
+	{
+		lock_guard<mutex> lock(cache_mutex);
 
-        lock_guard<mutex> lock(cache_mutex);
-        this->cachesize=cachesize;
-    }
+		while (cache.size() >= cachesize)
+		{
+			cout << "full -> removing an entry" << endl;
+			RemoveOldestEntry();
+		}
 
-    void Add(IDType id,T item){
+		{
+			// cout<<"free -> adde "<<item<<endl;
+			// Info info(id,CurrentTimestamp()+1);
+			Info info;
+			info.object    = item;
+			info.id        = id;
+			info.timestamp = CurrentTimestamp() + 1;
 
-        lock_guard<mutex> lock(cache_mutex);
+			cache[id] = info;
+		}
+	}
 
-        while(cache.size()>=cachesize)
-        {
-            cout<<"full -> removing an entry"<<endl;
-            RemoveOldestEntry();
-        }
+	bool Available(IDType id)
+	{
+		lock_guard<mutex> lock(cache_mutex);
+		return cache.find(id) != cache.end();
+	}
 
-        {
-            //cout<<"free -> adde "<<item<<endl;
-            //Info info(id,CurrentTimestamp()+1);
-            Info info;
-            info.object=item;
-            info.id=id;
-            info.timestamp=CurrentTimestamp()+1;
+	T Get(IDType id)
+	{
+		lock_guard<mutex> lock(cache_mutex);
 
-            cache[id]=info;
-        }
+		if (cache.find(id) != cache.end())
+		{
+			cache[id].timestamp = CurrentTimestamp() + 1;
+			return cache[id].object;
+		}
+		else
+		{
+			//! exception
+			// return nullptr;
+			throw;
+		}
+	}
 
-    }
+	void Touch(IDType id)
+	{
+		lock_guard<mutex> lock(cache_mutex);
+		if (cache.find(id) != cache.end())
+			cache[id].timestamp = CurrentTimestamp() + 1;
+	}
 
-    bool Available(IDType id)
-    {
+	void Clear()
+	{
+		extern_lock.lock();
+		lock_guard<mutex> lock(cache_mutex);
+		cache.clear();
+	}
 
-        lock_guard<mutex> lock(cache_mutex);
-        return cache.find(id)!=cache.end();
-    }
+	string Status()
+	{
+		extern_lock.lock();
+		lock_guard<mutex> lock(cache_mutex);
+		//! implement
+		string str = "";
+		for (auto i : cache)
+		{
+			cout << i.first << " ts: " << i.second.timestamp << "\n";
+		}
+		return str;
+	}
 
-    T Get(IDType id){
+	void Lock()
+	{
+		cout << "LOCK" << endl;
+		extern_lock.lock();
+	}
 
-        lock_guard<mutex> lock(cache_mutex);
-
-        if(cache.find(id)!=cache.end())
-        {
-
-            cache[id].timestamp=CurrentTimestamp()+1;
-            return cache[id].object;
-        }
-        else{
-            //! exception
-            //return nullptr;
-        }
-
-    }
-
-    void Touch(IDType id)
-    {
-
-        lock_guard<mutex> lock(cache_mutex);
-        if(cache.find(id)!=cache.end())
-            cache[id].timestamp=CurrentTimestamp()+1;
-    }
-
-    void Clear()
-    {
-        extern_lock.lock();
-        lock_guard<mutex> lock(cache_mutex);
-        cache.clear();
-    }
-
-    string Status(){
-        extern_lock.lock();
-        lock_guard<mutex> lock(cache_mutex);
-        //! implement
-        string str="";
-        for(auto i:cache)
-        {
-            cout<<i.first<<" ts: "<<i.second.timestamp<<"\n";
-        }
-        return str;
-    }
-
-    void Lock()
-    {
-        cout<<"LOCK"<<endl;
-        extern_lock.lock();
-
-    }
-
-    void Unlock(){
-        cout<<"UNLOCK"<<endl;
-        extern_lock.unlock();
-    }
+	void Unlock()
+	{
+		cout << "UNLOCK" << endl;
+		extern_lock.unlock();
+	}
 
 private:
+	class Info
+	{
+	public:
+		//        Info(IDType identifier,uint32_t ts)
+		//        {
+		//            id=identifier;
+		//            timestamp=ts;
+		//        }
 
-    class Info{
-    public:
-//        Info(IDType identifier,uint32_t ts)
-//        {
-//            id=identifier;
-//            timestamp=ts;
-//        }
+		bool operator<(Info op2) const { return id < op2.id; }
 
+		//    bool operator < (const Info op2){
+		//        return false;
+		//    }
 
-        bool operator < (Info op2)const{
-            return id<op2.id;
-        }
+		IDType id;
+		uint32_t timestamp;
+		T object;
+	};
 
+	uint32_t cachesize = 0;
 
-    //    bool operator < (const Info op2){
-    //        return false;
-    //    }
+	mutex cache_mutex;
+	mutex extern_lock;
+	unordered_map<IDType, Info> cache;  //! vector could be faster
 
-        IDType id;
-        uint32_t timestamp;
-        T object;
+	void RemoveOldestEntry()
+	{
+		uint32_t ts = CurrentTimestamp();
 
-    };
+		for (auto i : cache)
+		{
+			if (i.second.timestamp < ts)
+			{
+				ts = i.second.timestamp;
+			}
+		}
 
-    uint32_t cachesize=0;
+		auto iterator = cache.end();
+		for (auto it = cache.begin(); it != cache.end(); it++)
+		{
+			if (it->second.timestamp == ts)
+				iterator = it;
+		}
+		cache.erase(iterator);
+		// return ts;
+	}
 
-
-    mutex cache_mutex;
-    mutex extern_lock;
-    unordered_map<IDType,Info> cache; //! vector could be faster
-
-
-
-    void RemoveOldestEntry()
-    {
-        uint32_t ts=CurrentTimestamp();
-
-
-        for(auto i :cache){
-
-            if(i.second.timestamp<ts)
-            {
-                ts=i.second.timestamp;
-            }
-        }
-
-        auto iterator=cache.end();
-        for(auto it=cache.begin();it!=cache.end();it++)
-        {
-            if(it->second.timestamp==ts)
-                iterator=it;
-        }
-        cache.erase(iterator);
-        //return ts;
-    }
-
-    uint32_t CurrentTimestamp()
-    {
-        uint32_t ts=0;
-        for(auto i :cache){
-            if(i.second.timestamp>ts)
-            {
-                ts=i.second.timestamp;
-            }
-        }
-        return ts;
-    }
+	uint32_t CurrentTimestamp()
+	{
+		uint32_t ts = 0;
+		for (auto i : cache)
+		{
+			if (i.second.timestamp > ts)
+			{
+				ts = i.second.timestamp;
+			}
+		}
+		return ts;
+	}
 };
 
-#endif // CACHE_H
+#endif  // CACHE_H

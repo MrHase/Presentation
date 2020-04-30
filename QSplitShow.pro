@@ -11,7 +11,10 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = QSplitShow
 TEMPLATE = app
 
-CONFIG += c++11
+CONFIG += c++14 \
+	warn_on
+
+QMAKE_CXXFLAGS += -Werror
 #QMAKE_CXXFLAGS += -std=c++11
 
 SOURCES += main.cpp\

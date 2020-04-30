@@ -1,11 +1,5 @@
 #include "exception.h"
 
-InconsitentScreenException::InconsitentScreenException()
-{
-}
+InconsitentScreenException::InconsitentScreenException() {}
 
-
-RendererException::RendererException()
-{
-
-}
+RendererException::RendererException() {}
