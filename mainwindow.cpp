@@ -369,7 +369,7 @@ void MainWindow::startPresentation()
 		// set the sizes of the presentation attributes
 		presentation.setHelper_size(lecturerScreen->getPresentationWidgetSize());
 		presentation.setHelperScreenDocument(lecturerScreen->devicePixelRatio(), (ui->checkBox->isChecked()) ? 2 : 1);
-		mainScreenPresentation->setImage(presentation.getCurrentLectureScreen());
+		lecturerScreen->setImage(presentation.getCurrentLectureScreen());
 		// updatePresentation();
 	}
 }
