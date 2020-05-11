@@ -4,6 +4,7 @@
 #include <iostream>
 #include <map>
 #include <mutex>
+#include <stdexcept>
 #include <unordered_map>
 
 using namespace std;
@@ -14,97 +15,96 @@ template<typename IDType, typename T>
 class Cache
 {
 public:
-	Cache(uint32_t cachesize) { SetCacheSize(cachesize); }
+	Cache(const uint32_t cachesize) : m_cachesize(cachesize) {}
 	Cache() {}
 
-	void SetCacheSize(uint32_t cachesize)
+	void setCacheSize(const uint32_t cachesize)
 	{
-		lock_guard<mutex> lock(cache_mutex);
-		this->cachesize = cachesize;
+		lock_guard<mutex> lock(m_cache_mutex);
+		this->m_cachesize = cachesize;
 	}
 
-	void Add(IDType id, T item)
+	//! is it good to use a copy here?
+	void add(const IDType id, const T item)
 	{
-		lock_guard<mutex> lock(cache_mutex);
+		lock_guard<mutex> lock(m_cache_mutex);
 
-		while (cache.size() >= cachesize)
+		while (m_cache.size() >= m_cachesize)
 		{
 			cout << "full -> removing an entry" << endl;
-			RemoveOldestEntry();
+			removeOldestEntry();
 		}
 
 		{
 			// cout<<"free -> adde "<<item<<endl;
 			// Info info(id,CurrentTimestamp()+1);
 			Info info;
-			info.object    = item;
-			info.id        = id;
-			info.timestamp = CurrentTimestamp() + 1;
+			info.m_object    = item;
+			info.m_id        = id;
+			info.m_timestamp = currentTimestamp() + 1;
 
-			cache[id] = info;
+			m_cache[id] = info;
 		}
 	}
 
-	bool Available(IDType id)
+	bool available(const IDType id)
 	{
-		lock_guard<mutex> lock(cache_mutex);
-		return cache.find(id) != cache.end();
+		lock_guard<mutex> lock(m_cache_mutex);
+		return m_cache.find(id) != m_cache.end();
 	}
 
-	T Get(IDType id)
+	T get(const IDType id)
 	{
-		lock_guard<mutex> lock(cache_mutex);
+		lock_guard<mutex> lock(m_cache_mutex);
 
-		if (cache.find(id) != cache.end())
+		if (m_cache.find(id) != m_cache.end())
 		{
-			cache[id].timestamp = CurrentTimestamp() + 1;
-			return cache[id].object;
+			m_cache[id].m_timestamp = currentTimestamp() + 1;
+			return m_cache[id].m_object;
 		}
 		else
 		{
-			//! exception
-			// return nullptr;
-			throw;
+			throw std::runtime_error("Couldn't find element in cache.");
 		}
 	}
 
-	void Touch(IDType id)
+	void touch(const IDType id)
 	{
-		lock_guard<mutex> lock(cache_mutex);
-		if (cache.find(id) != cache.end())
-			cache[id].timestamp = CurrentTimestamp() + 1;
+		lock_guard<mutex> lock(m_cache_mutex);
+		if (m_cache.find(id) != m_cache.end())
+			m_cache[id].m_timestamp = currentTimestamp() + 1;
 	}
 
-	void Clear()
+	void clear()
 	{
-		extern_lock.lock();
-		lock_guard<mutex> lock(cache_mutex);
-		cache.clear();
+		m_extern_lock.lock();
+		lock_guard<mutex> lock(m_cache_mutex);
+		m_cache.clear();
 	}
 
-	string Status()
+	string status()
 	{
-		extern_lock.lock();
-		lock_guard<mutex> lock(cache_mutex);
+		m_extern_lock.lock();
+		lock_guard<mutex> lock(m_cache_mutex);
 		//! implement
 		string str = "";
-		for (auto i : cache)
+		for (auto i : m_cache)
 		{
 			cout << i.first << " ts: " << i.second.timestamp << "\n";
 		}
 		return str;
 	}
 
-	void Lock()
+	void lock()
 	{
 		cout << "LOCK" << endl;
-		extern_lock.lock();
+		m_extern_lock.lock();
 	}
 
-	void Unlock()
+	void unlock()
 	{
 		cout << "UNLOCK" << endl;
-		extern_lock.unlock();
+		m_extern_lock.unlock();
 	}
 
 private:
@@ -117,53 +117,55 @@ private:
 		//            timestamp=ts;
 		//        }
 
-		bool operator<(Info op2) const { return id < op2.id; }
+		bool operator<(const Info op2) const { return m_id < op2.m_id; }
 
 		//    bool operator < (const Info op2){
 		//        return false;
 		//    }
 
-		IDType id;
-		uint32_t timestamp;
-		T object;
+		IDType m_id;
+		uint32_t m_timestamp;
+		T m_object;
 	};
 
-	uint32_t cachesize = 0;
+	uint32_t m_cachesize = 0;
 
-	mutex cache_mutex;
-	mutex extern_lock;
-	unordered_map<IDType, Info> cache;  //! vector could be faster
+	mutex m_cache_mutex;
+	mutex m_extern_lock;
+	unordered_map<IDType, Info> m_cache;  //! vector could be faster
 
-	void RemoveOldestEntry()
+	void removeOldestEntry()
 	{
-		uint32_t ts = CurrentTimestamp();
+		uint32_t ts = currentTimestamp();
 
-		for (auto i : cache)
+		for (auto entry : m_cache)
 		{
-			if (i.second.timestamp < ts)
+			if (entry.second.m_timestamp < ts)
 			{
-				ts = i.second.timestamp;
+				ts = entry.second.m_timestamp;
 			}
 		}
 
-		auto iterator = cache.end();
-		for (auto it = cache.begin(); it != cache.end(); it++)
+		auto iterator = m_cache.end();
+		for (auto it = m_cache.begin(); it != m_cache.end(); ++it)
 		{
-			if (it->second.timestamp == ts)
+			if (it->second.m_timestamp == ts)
+			{
 				iterator = it;
+			}
 		}
-		cache.erase(iterator);
+		m_cache.erase(iterator);
 		// return ts;
 	}
 
-	uint32_t CurrentTimestamp()
+	uint32_t currentTimestamp()
 	{
 		uint32_t ts = 0;
-		for (auto i : cache)
+		for (auto entry : m_cache)
 		{
-			if (i.second.timestamp > ts)
+			if (entry.second.m_timestamp > ts)
 			{
-				ts = i.second.timestamp;
+				ts = entry.second.m_timestamp;
 			}
 		}
 		return ts;

@@ -2,12 +2,12 @@
 
 DynamicPdfPageCache::DynamicPdfPageCache(int pixelRatio) : pixelRatio(pixelRatio)
 {
-	cache.SetCacheSize(ELEMENTS_IN_CACHE);
+	cache.setCacheSize(ELEMENTS_IN_CACHE);
 }
 
 DynamicPdfPageCache::~DynamicPdfPageCache()
 {
-	cache.SetCacheSize(ELEMENTS_IN_CACHE);
+	cache.setCacheSize(ELEMENTS_IN_CACHE);
 }
 
 void DynamicPdfPageCache::setDocument(Poppler::Document* document, double splitscreen)
@@ -78,14 +78,14 @@ void DynamicPdfPageCache::renderPage(Poppler::Page* page, int i)
 
 	DotsPerInch dpiRequest = calculateDPI(displaySize, page);
 	// QImage image = page->renderToImage(dpiRequest.dpiWidth*pixelRatio, dpiRequest.dpiHeight*pixelRatio);
-	cache.Lock();
-	if (!cache.Available(i))
+	cache.lock();
+	if (!cache.available(i))
 	{
 		cout << "Adde page " << i << " to cache" << endl;
 		//        cache.Add(i,img_ptr);
-		cache.Add(i, page->renderToImage(dpiRequest.dpiWidth * pixelRatio, dpiRequest.dpiHeight * pixelRatio));
+		cache.add(i, page->renderToImage(dpiRequest.dpiWidth * pixelRatio, dpiRequest.dpiHeight * pixelRatio));
 	}
-	cache.Unlock();
+	cache.unlock();
 
 	//    qDebug() << "+++++ Image "<<  i <<" rendered..... h: " << image.size().height() << " w: " <<
 	//    image.size().width();
@@ -194,19 +194,19 @@ QImage DynamicPdfPageCache::getElementFromPos(int pos)
 	const uint32_t end = (end_ >= doc->numPages()) ? doc->numPages() : end_;
 
 	cout << "Getting page: " << pos << " begin: " << begin << " end: " << end << endl;
-	cache.Lock();
+	cache.lock();
 
-	if (cache.Available(pos))
+	if (cache.available(pos))
 	{
 		cout << "Page found!" << pos << endl;
 
 		for (auto i = begin; i < end; i++)
 		{
-			cache.Touch(i);
+			cache.touch(i);
 		}
 		for (auto i = begin; i < end; i++)
 		{
-			if (!cache.Available(i))
+			if (!cache.available(i))
 				renderPageAsThread(i);
 		}
 	}
@@ -216,12 +216,12 @@ QImage DynamicPdfPageCache::getElementFromPos(int pos)
 
 		for (auto i = begin; i < end; i++)
 		{
-			cache.Touch(i);
+			cache.touch(i);
 		}
 
 		auto page              = doc->page(pos);
 		DotsPerInch dpiRequest = calculateDPI(displaySize, page);
-		cache.Add(pos, page->renderToImage(dpiRequest.dpiWidth * pixelRatio, dpiRequest.dpiHeight * pixelRatio));
+		cache.add(pos, page->renderToImage(dpiRequest.dpiWidth * pixelRatio, dpiRequest.dpiHeight * pixelRatio));
 		//        renderPage(doc->page(pos),pos);
 
 		/*
@@ -233,8 +233,8 @@ QImage DynamicPdfPageCache::getElementFromPos(int pos)
 		*/
 	}
 
-	QImage img = cache.Get(pos);
-	cache.Unlock();
+	QImage img = cache.get(pos);
+	cache.unlock();
 
 	return img;
 

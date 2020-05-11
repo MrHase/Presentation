@@ -189,8 +189,8 @@ void MainWindow::Reset()
 	//    if(ui->cb_splitPDF->isChecked())
 	//        ui->cb_splitPDF->toggle();
 
-	if (ui->checkBox->isChecked())
-		ui->checkBox->toggle();
+	if (ui->chkBoxSplitScreen->isChecked())
+		ui->chkBoxSplitScreen->toggle();
 	ui->graphicsView_right->setVisible(false);
 }
 
@@ -254,7 +254,7 @@ void MainWindow::on_actionOpen_triggered()
 
 	//! the cache is initialized here... not very intuitiv
 	//! no, not really -.-
-	presentation.setPreviewDocument(this->devicePixelRatio(), (ui->checkBox->isChecked()) ? 2 : 1);
+	presentation.setPreviewDocument(this->devicePixelRatio(), (ui->chkBoxSplitScreen->isChecked()) ? 2 : 1);
 
 	// updates the presentation
 	//    vector<QImage> thumbs;
@@ -277,7 +277,7 @@ void MainWindow::on_actionOpen_triggered()
 
 	//! TODO fileLoaded must be set to false at some point, if we can open files twice :)
 	fileLoaded = true;
-	ui->checkBox->setEnabled(true);
+	ui->chkBoxSplitScreen->setEnabled(true);
 
 	updatePresentation();
 }
@@ -352,8 +352,8 @@ void MainWindow::startPresentation()
 		// set the sizes of the presentation attributes
 		presentation.setMain_size(mainScreenPresentation->getPresentationWidgetSize());
 		presentation.setMainScreenDocument(mainScreenPresentation->devicePixelRatio(),
-		                                   (ui->checkBox->isChecked()) ? 2 : 1);
-		mainScreenPresentation->setImage(presentation.getCurrentMainScreen());
+		                                   (ui->chkBoxSplitScreen->isChecked()) ? 2 : 1);
+		mainScreenPresentation->setImage(presentation.getLeftSideOfMainScreen());
 	}
 
 	if (screen_helper)
@@ -368,8 +368,9 @@ void MainWindow::startPresentation()
 
 		// set the sizes of the presentation attributes
 		presentation.setHelper_size(lecturerScreen->getPresentationWidgetSize());
-		presentation.setHelperScreenDocument(lecturerScreen->devicePixelRatio(), (ui->checkBox->isChecked()) ? 2 : 1);
-		lecturerScreen->setImage(presentation.getCurrentLectureScreen());
+		presentation.setHelperScreenDocument(lecturerScreen->devicePixelRatio(),
+		                                     (ui->chkBoxSplitScreen->isChecked()) ? 2 : 1);
+		lecturerScreen->setImage(presentation.getRightSideOfLecturerScreen());
 		// updatePresentation();
 	}
 }
